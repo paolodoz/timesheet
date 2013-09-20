@@ -1,0 +1,15 @@
+
+server:
+  server.socket_host: 0.0.0.0
+  server.socket_port: 9090
+  server.ssl_certificate: core/ts.pem
+  server.ssl_module: pyopenssl
+  server.ssl_private_key: core/ts.pem
+  
+static:
+  /static:
+    tools.staticdir.dir: www/static
+    tools.staticdir.on: true
+
+auth:
+  page: www/auth.html
