@@ -1,4 +1,4 @@
-import cherrypy, os
+import cherrypy, os, traceback
 from core.auth import AuthController, require, member_of
 from core import db
 from mako.lookup import TemplateLookup
@@ -27,7 +27,7 @@ class Routes:
     # Serves HTML views stored in 'views/<view>.html' rendered with 
     # template 'templates/index.tpl'
     #
-    # GET /index/<view> -> HTML
+    # GET /index/<view>
     
     @cherrypy.expose
     @require(member_of("users"))
@@ -39,37 +39,62 @@ class Routes:
             raise cherrypy.HTTPError(404)
         
 
-    # Add new element. Admin session required. Expects and respond JSON.
-    # POST /add/<document>/ <- json -> json
+    # Add new element.
+    
+    # POST /add/<document>/ 
+    # Expects a JSON defined by schema
+    # Returns { 'error' : string, '_id' : string  }
+    
     @cherrypy.expose
     @require(member_of("users"))
     @cherrypy.tools.allow(methods=['POST'])
     @cherrypy.tools.json_in(on = True)
     @cherrypy.tools.json_out(on = True)
-    def add(self, document):
-        json = cherrypy.request.json 
+    def add(self, collection):
+        json_in = cherrypy.request.json 
         try:
-            db.add(document, json)
+            id = db.add(collection, json_in)
         except Exception as e:
-            return self._format_err(e)
+            return {'error' : '%s: %s' % (type(e).__name__, str(e)), '_id' : -1}
+        else:
+            return { 'error' : None, '_id' : id }
         
-    # Get elements. Admin session required. Expects and respond JSON.
-    # POST /get/<document>/ <- json -> json
+    # Get elements. 
+    
+    # POST /get/<document>/
+    # Expects a JSON filter defined by schema
+    # Returns { 'error' : string, 'records' : [ {}, {}, .. ]  } 
+    
     @cherrypy.expose
     @require(member_of("users"))
     @cherrypy.tools.allow(methods=['POST'])
     @cherrypy.tools.json_in(on = True)
     @cherrypy.tools.json_out(on = True)
-    def get(self, document):
-        json = cherrypy.request.json 
+    def get(self, collection):
+        json_in = cherrypy.request.json 
         try:
-            return db.get(document, json)
+            records = db.get(collection, json_in)
+            return { 'error' : None, 'records' : records}
         except Exception as e:
-            return self._format_err(e)
+            return {'error' : '%s: %s' % (type(e).__name__, str(e)), 'records' : []}
     
     
-    # Format returning json in case of errors 
-    def _format_err(self, e):
-        json = {'error' : '%s: %s' % (type(e).__name__, str(e))}
-        print json
-        return json
+    # Remove elements. 
+    
+    # POST /remove/<document>/
+    # Expects a JSON filter defined by schema
+    # Returns { 'error' : string  } 
+    
+    @cherrypy.expose
+    @require(member_of("users"))
+    @cherrypy.tools.allow(methods=['POST'])
+    @cherrypy.tools.json_in(on = True)
+    @cherrypy.tools.json_out(on = True)
+    def remove(self, collection):
+        json_in = cherrypy.request.json 
+        try:
+            db.remove(collection, json_in)
+            return { 'error' : None, }
+        except Exception as e:
+            return {'error' : '%s: %s' % (type(e).__name__, str(e)) }
+        
