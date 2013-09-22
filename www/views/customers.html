@@ -1,0 +1,122 @@
+<script type="text/javascript">
+$(document).ready(function() {
+loadCustomers("custList");
+$("#custForm").submit(function(event) {
+	alert("ajax submit");
+	event.preventDefault();
+});
+
+});
+
+function loadCustomers(container) {
+//load complete list of customers
+
+$(".list-group-item").click(function() {
+	$(".list-group-item").removeClass("active");
+	$(this).addClass("active");
+	//load data
+});
+
+$(".list-group-item:last").click(function() {
+	$("#custForm")[0].reset();
+});
+
+}
+</script>
+<h2>Customer Management</h2>
+<div class="row">
+    <div class="col-lg-5">
+<h3>Current customer list</h3>
+<p>Click on a customer to edit its data or to last element to add a new one</p>
+<ul class="list-group col-lg-8" id="custList">
+<li class="list-group-item"><span class="glyphicon glyphicon-edit"></span> Customer 1</li>
+<li class="list-group-item"><span class="glyphicon glyphicon-edit"></span> Customer 2</li>
+<li class="list-group-item"><span class="glyphicon glyphicon-edit"></span> Customer 3</li>
+<li class="list-group-item"><span class="glyphicon glyphicon-edit"></span> Customer 4</li>
+<li class="list-group-item"><span class="glyphicon glyphicon-edit"></span> Customer 5</li>
+<li class="list-group-item"><span class="glyphicon glyphicon-plus"></span> New Customer</li>
+</ul>
+
+</div>
+<div class="col-lg-6">
+<h3>Customer details</h3>
+
+<form class="form-horizontal" role="form" method="post" action="/index/customer" id="custForm">
+  <input type="hidden" id="custId" value="0">
+  <div class="form-group">
+    <label for="custName" class="col-lg-4 control-label">Name</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control" id="custName" placeholder="Name">
+    </div>
+  </div>
+
+  <div class="form-group">
+    <label for="custDescr" class="col-lg-4 control-label">Description</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control" id="custDescr" placeholder="Description">
+    </div>
+  </div>
+
+<div class="form-group">
+    <label for="custAddr" class="col-lg-4 control-label">Address</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control" id="custAddr" placeholder="Address">
+    </div>
+  </div>
+<div class="form-group">
+    <label for="custCity" class="col-lg-4 control-label">City</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control" id="custCity" placeholder="City">
+    </div>
+  </div>
+<div class="form-group">
+    <label for="custPCode" class="col-lg-4 control-label">Postal Code</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control" id="custPCode" placeholder="Postal Code">
+    </div>
+  </div>
+<div class="form-group">
+    <label for="custCountry" class="col-lg-4 control-label">Country</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control" id="custCountry" placeholder="Country">
+    </div>
+  </div>
+<div class="form-group">
+    <label for="custVAT" class="col-lg-4 control-label">VAT</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control" id="custVAT" placeholder="VAT">
+    </div>
+  </div>
+<div class="form-group">
+    <label for="custWebsite" class="col-lg-4 control-label">Website</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control" id="custWebsite" placeholder="Website">
+    </div>
+  </div>
+<div class="form-group">
+    <label for="custCommercial" class="col-lg-4 control-label">Contact Person</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control" id="custCommercial" placeholder="Contact Person">
+    </div>
+  </div>
+<div class="form-group">
+    <label for="custPhone" class="col-lg-4 control-label">Phone</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control" id="custPhone" placeholder="Phone">
+    </div>
+  </div>
+<div class="form-group">
+    <label for="custEmail" class="col-lg-4 control-label">Email</label>
+    <div class="col-lg-6">
+      <input type="email" class="form-control" id="custEmail" placeholder="Email">
+    </div>
+  </div>
+  <div class="form-group">
+    <div class="col-lg-offset-4 col-lg-6">
+      <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span>Aggiungi</button>
+      <button type="reset" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span>Reset</button>
+    </div>
+
+  </div>
+</form>
+</div>
