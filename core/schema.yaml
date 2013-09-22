@@ -1,0 +1,35 @@
+
+# customer
+# name, address, phone, contact_person, vat_number
+
+customer:
+  type: object
+  properties: 
+    name: 
+      type: string
+    address:
+      type: string
+    phone:
+      type: string
+    contact_person:
+      type: string
+    vat_number:
+      type: string
+
+# user
+# name, surname, email, phone, mobile, city
+user:
+  type: object
+  properties: 
+    name: 
+      type: string
+    surname:
+      type: string
+    email:
+      type: string
+    phone:
+      type: string
+    mobile:
+      type: string
+    city:
+      type: string
