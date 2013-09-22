@@ -59,7 +59,7 @@ class Routes:
         else:
             return { 'error' : None, '_id' : id }
         
-    # Get elements. 
+    # Get an elements list. 
     
     # POST /get/<document>/
     # Expects a JSON filter defined by schema
@@ -79,7 +79,7 @@ class Routes:
             return {'error' : '%s: %s' % (type(e).__name__, str(e)), 'records' : []}
     
     
-    # Remove elements. 
+    # Remove an element. 
     
     # POST /remove/<document>/
     # Expects a JSON filter defined by schema
