@@ -1,7 +1,4 @@
 
-# customer
-# name, address, phone, contact_person, vat_number
-
 customer:
   type: object
   properties: 
@@ -28,8 +25,6 @@ customer:
     vat_number:
       type: string
 
-# user
-# name, surname, email, phone, mobile, city
 user:
   type: object
   properties: 
@@ -44,4 +39,6 @@ user:
     mobile:
       type: string
     city:
+      type: string
+    role:
       type: string

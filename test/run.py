@@ -51,23 +51,23 @@ _assert('/add/user', [ { 'wrong': 'param' } ], {'error' : 'ValidationError: Requ
 # Remove already unexistant customer
 _assert('/remove/customer', [ { 'name' : 'CUSTOMERTEST' } ], { 'error' : None  })
 # Add one customer (return one id)
-_assert('/add/customer', [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT' } ], { 'error' : None, 'ids' : [ '' ] })
+_assert('/add/customer', [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC' } ], { 'error' : None, 'ids' : [ '' ] })
 # Get the inserted customer
-_assert('/get/customer', { 'name' : 'CUSTOMERTEST' }, { 'error': None, 'records' : [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', '_id' : '' } ] })
+_assert('/get/customer', { 'name' : 'CUSTOMERTEST' }, { 'error': None, 'records' : [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', '_id' : '', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC'   } ] })
 
 ## API USER
 # Remove already unexistant user
 _assert('/remove/user', [ { 'name' : 'USERTEST'  } ], { 'error' : None  })
 # Add one customer (return one user)
-_assert('/add/user', [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY' } ], { 'error' : None, 'ids' : [ '' ] })
+_assert('/add/user', [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'role' : 'user' } ], { 'error' : None, 'ids' : [ '' ] })
 # Get the inserted customer
-_assert('/get/user', { 'name' : 'USERTEST' }, { 'error': None, 'records' : [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', '_id' : ''  } ] })
+_assert('/get/user', { 'name' : 'USERTEST' }, { 'error': None, 'records' : [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', '_id' : '' , 'role' : 'user' } ] })
 # Delete the one inserted
 _assert('/remove/user', [ { 'name' : 'USERTEST'  } ], { 'error' : None })
 # Get the empty customers list
 _assert('/get/user', { 'name' : 'USERTEST' }, { 'error': None, 'records' : [ ] })
 # Add two elements USERTEST1 and USERTEST2
-_assert('/add/user', [ { 'name' : 'USERTEST1', 'surname' : 'SURNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY' }, { 'name' : 'USERTEST2', 'surname' : 'SURNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY' } ], { 'error' : None, 'ids' : [ '', '' ] })
+_assert('/add/user', [ { 'name' : 'USERTEST1', 'surname' : 'SURNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'role' : 'user' }, { 'name' : 'USERTEST2', 'surname' : 'SURNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'role' : 'user' } ], { 'error' : None, 'ids' : [ '', '' ] })
 # Delete USERTEST1
 _assert('/remove/user', [ { 'name' : 'USERTEST1'  } ], { 'error' : None })
 # Check if USERTEST1 is deleted
