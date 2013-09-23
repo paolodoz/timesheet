@@ -1,18 +1,5 @@
-try:
-    from pymongo import MongoClient as Connection
-except ImportError, e:
-    from pymongo import Connection
-
+from core.db import db
 from core.validation import validate_sanitize_json, validate_sanitize_json_list, sanitize_json, sanitize_json_list, stringify_objectid_list, stringify_json_list_with_objectid
-from core.config import collections, conf_mongodb
-
-
-connection = Connection(conf_mongodb['hostname'], conf_mongodb['port'])
-db = connection[conf_mongodb['db']]
-
-# Create on database missing collections names
-for missing_collection in (set(collections) - set(db.collection_names())):
-    db[missing_collection]
 
 # Get selected records from collection, and return it as json
 # Called by GET /<collection>/
