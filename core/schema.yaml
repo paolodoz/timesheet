@@ -32,6 +32,8 @@ user:
       type: string
     surname:
       type: string
+    username:
+      type: string
     email:
       type: string
     phone:
