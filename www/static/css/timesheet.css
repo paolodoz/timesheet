@@ -1,0 +1,9 @@
+#custlist {
+	padding:0px;
+}
+#custlist li {
+	list-style-type:none;
+}
+.list-group-item:hover {
+	background-color:#F5F5F5;
+}
