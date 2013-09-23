@@ -8,7 +8,10 @@ def sanitize_json(json_record):
     
     sanitized_json = {}
     for key, value in json_record.items():
-        sanitized_json[key] = cgi.escape(value, quote=True)
+        if isinstance(value, str):
+            sanitized_json[key] = cgi.escape(value, quote=True)
+        else:
+            sanitized_json[key] = value
         
     return sanitized_json
 

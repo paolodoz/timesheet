@@ -1,9 +1,14 @@
 from core.db import db
 from core.validation import validate_sanitize_json, validate_sanitize_json_list, sanitize_json, sanitize_json_list, stringify_objectid_list, stringify_json_list_with_objectid
+from bson.objectid import ObjectId
 
 # Get selected records from collection, and return it as json
 # Called by GET /<collection>/
 def get(collection, selection = {}):
+    
+    if '_id' in selection:
+        selection['_id'] = ObjectId(selection['_id'])
+    
     return stringify_json_list_with_objectid(db[collection].find(sanitize_json(selection)))
 
 # Remove selected records from collection
