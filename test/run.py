@@ -19,21 +19,24 @@ def _login(values):
 def _assert(uri, json_in, json_expected):
     request = urllib2.Request('https://localhost:9090/%s' % uri.lstrip('/'), data=json.dumps(json_in), headers={'Content-Type': 'application/json'})
     json_returned = json.loads(opener.open(request).read())
+    json_returned_noid = json_returned.copy()
     
     # Dirty code to remove records real '_id's to simplify the comparison
-    if 'records' in json_returned:
-        records = json_returned['records']
+    if 'records' in json_returned_noid:
+        records = json_returned_noid['records']
         for rec in records:
             if '_id' in rec:
                 rec['_id'] = ''
-    elif 'ids' in json_returned:
-        json_returned['ids'] = ['']*len(json_returned['ids']) 
+    elif 'ids' in json_returned_noid:
+        json_returned_noid['ids'] = ['']*len(json_returned_noid['ids']) 
     else:
-        records = [ json_returned ]
+        records = [ json_returned_noid ]
     
-    print '\nPOST ', uri , json_in, '\nRETURNED ', json_returned, '\nEXPECTED ', json_expected
-    assert(json_returned == json_expected)
+    print '\nPOST ', uri , json_in, '\nRETURNED ', json_returned_noid, '\nEXPECTED ', json_expected
+    assert(json_returned_noid == json_expected)
     print 'OK!'
+    
+    return json_returned
 
 
 # LOGIN
@@ -51,9 +54,15 @@ _assert('/add/user', [ { 'wrong': 'param' } ], {'error' : 'ValidationError: Requ
 # Remove already unexistant customer
 _assert('/remove/customer', [ { 'name' : 'CUSTOMERTEST' } ], { 'error' : None  })
 # Add one customer (return one id)
-_assert('/add/customer', [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC' } ], { 'error' : None, 'ids' : [ '' ] })
-# Get the inserted customer
+json_returned = _assert('/add/customer', [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC' } ], { 'error' : None, 'ids' : [ '' ] })
+# Get the inserted customer by name
 _assert('/get/customer', { 'name' : 'CUSTOMERTEST' }, { 'error': None, 'records' : [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', '_id' : '', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC'   } ] })
+# Get the inserted customer by id
+_assert('/get/customer', { '_id' : json_returned['ids'][0] }, { 'error': None, 'records' : [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', '_id' : '', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC'   } ] })
+# Remove all customers
+_assert('/remove/customer', [ { } ], { 'error' : None  })
+# Check if collection is empty
+_assert('/get/customer', { }, { 'error': None, 'records' : [ ] })
 
 ## API USER
 # Remove already unexistant user
