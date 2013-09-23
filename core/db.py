@@ -3,14 +3,12 @@ try:
 except ImportError, e:
     from pymongo import Connection
 
-from bson import json_util
 from core.validation import validate_sanitize_json, validate_sanitize_json_list, sanitize_json, sanitize_json_list, stringify_objectid_list, stringify_json_list_with_objectid
-from core.config import collections
-import json
+from core.config import collections, conf_mongodb
 
 
-connection = Connection('localhost', 27017)
-db = connection.ts
+connection = Connection(conf_mongodb['hostname'], conf_mongodb['port'])
+db = connection[conf_mongodb['db']]
 
 # Create on database missing collections names
 for missing_collection in (set(collections) - set(db.collection_names())):

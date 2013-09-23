@@ -27,3 +27,4 @@ conf['static']['/']['tools.staticdir.root'] = root_folder
 conf_server = conf['server']
 conf_static = conf['static']
 conf_auth = conf['auth']
+conf_mongodb = conf['mongodb']
