@@ -42,8 +42,8 @@ class Routes:
     # Add new element.
     
     # POST /add/<document>/ 
-    # Expects a JSON defined by schema
-    # Returns { 'error' : string, '_id' : string  }
+    # Expects a list of JSON defined by core/schema.yaml
+    # Returns { 'error' : string, 'ids' : []  }
     
     @cherrypy.expose
     @require(member_of("users"))
@@ -53,11 +53,11 @@ class Routes:
     def add(self, collection):
         json_in = cherrypy.request.json 
         try:
-            id = db.add(collection, json_in)
+            ids = db.add(collection, json_in)
         except Exception as e:
-            return {'error' : '%s: %s' % (type(e).__name__, str(e)), '_id' : -1}
+            return {'error' : '%s: %s' % (type(e).__name__, str(e)), 'ids' : []}
         else:
-            return { 'error' : None, '_id' : id }
+            return { 'error' : None, 'ids' : ids }
         
     # Get an elements list. 
     
@@ -74,16 +74,17 @@ class Routes:
         json_in = cherrypy.request.json 
         try:
             records = db.get(collection, json_in)
-            return { 'error' : None, 'records' : records}
         except Exception as e:
             return {'error' : '%s: %s' % (type(e).__name__, str(e)), 'records' : []}
+        else:
+            return { 'error' : None, 'records' : records}
     
     
     # Remove an element. 
     
     # POST /remove/<document>/
-    # Expects a JSON filter defined by schema
-    # Returns { 'error' : string  } 
+    # Expects a list of JSON defined by core/schema.yaml
+    # Returns { 'error' : string }
     
     @cherrypy.expose
     @require(member_of("users"))
@@ -93,8 +94,10 @@ class Routes:
     def remove(self, collection):
         json_in = cherrypy.request.json 
         try:
-            db.remove(collection, json_in)
-            return { 'error' : None, }
+            ids = db.remove(collection, json_in)
         except Exception as e:
             return {'error' : '%s: %s' % (type(e).__name__, str(e)) }
+        else:
+            return { 'error' : None }
+            
         
