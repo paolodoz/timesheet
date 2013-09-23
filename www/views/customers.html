@@ -3,31 +3,103 @@ $(document).ready(function() {
 	loadCustomers("custList");
 	$("#custForm").submit(function(event) {
 		alert("ajax submit");
-		var customer = {};
+		var customer = [{}];
 		$("#custForm input").each(function (){
 			var property = $(this).attr("id").substr(4);
-			customer[property] = $(this).val();
+			if (property == "_id")
+				return;
+			customer[0][property] = $(this).val();
 		});
 		event.preventDefault();
-		$.post("/add/customer", JSON.stringify(customer), function (data) {
-			alert(data);
+		$.ajax({
+			type: "POST",
+			url: "/add/customer",
+			data: JSON.stringify(customer),
+			success: function(data) {
+				$("#custForm")[0].reset();
+				loadCustomers("custList");
+			},
+			contentType: 'application/json; charset=utf-8',
+			dataType: "json",
+			});
+	});
+	$("#btnreset").click(function() {
+		$("#cust_id").val(0);
+		$("#btnremove").addClass("hidden");
+		$("#custList li").removeClass("active");
+	});
+	$("#btnremove").click(function() {
+		var id = $("#cust_id").val();
+		if (id == 0)
+			return;
+		var filter = [{}];
+		filter[0]._id = id;
+		$.ajax({
+			type: "POST",
+			url: "/remove/customer",
+			data: JSON.stringify(filter),
+			success: function(data) {
+				alert("ok");
+				$("#custForm")[0].reset();
+				$("#btnremove").addClass("hidden");
+				loadCustomers("custList");
+			},
+			contentType: 'application/json; charset=utf-8',
+			dataType: "json",
 		});
 	});
 });
 
 function loadCustomers(container) {
-//load complete list of customers
+	//load complete list of customers
+	var filter = {};
+	$.ajax({
+		type: "POST",
+		url: "/get/customer",
+		data: JSON.stringify(filter),
+		success: function(data) {
+			var i;
+			var htmllist = "";
+			for(i=0;i < data.records.length; i++) {
+				htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data.records[i].name + "</li>";
+			}
+			//add line for new customer
+			htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Customer ...</li>";
+			$("#" + container).html(htmllist);
+			$(".list-group-item").click(function() {
+				$(".list-group-item").removeClass("active");
+				$(this).addClass("active");
+				loadCustomerDetails(this.id, container);
+			});
+			$(".list-group-item:last").click(function() {
+				$("#custForm")[0].reset();
+				$("#cust_id").val(0);
+				$(".btn-danger").addClass("hidden");
+			});
+		},
+		contentType: 'application/json; charset=utf-8',
+		dataType: "json",
+		});
+}
 
-$(".list-group-item").click(function() {
-	$(".list-group-item").removeClass("active");
-	$(this).addClass("active");
-	//load data
-});
-
-$(".list-group-item:last").click(function() {
-	$("#custForm")[0].reset();
-});
-
+function loadCustomerDetails(id,container) {
+	var filter = {};
+	if(id == "")
+		return;
+	filter._id = id;	
+	$.ajax({
+		type: "POST",
+		url: "/get/customer",
+		data: JSON.stringify(filter),
+		success: function(data) {
+			for(var key in data.records[0]) {
+				$("#cust" + key).val( data.records[0][key]);
+				$(".btn-danger").removeClass("hidden");
+			}
+		},
+		contentType: 'application/json; charset=utf-8',
+		dataType: "json",
+		});
 }
 </script>
 <h2>Customer Management</h2>
@@ -36,12 +108,6 @@ $(".list-group-item:last").click(function() {
 <h3>Current customer list</h3>
 <p>Click on a customer to edit its data or to last element to add a new one</p>
 <ul class="list-group col-lg-8" id="custList">
-<li class="list-group-item"><span class="glyphicon glyphicon-edit"></span> Customer 1</li>
-<li class="list-group-item"><span class="glyphicon glyphicon-edit"></span> Customer 2</li>
-<li class="list-group-item"><span class="glyphicon glyphicon-edit"></span> Customer 3</li>
-<li class="list-group-item"><span class="glyphicon glyphicon-edit"></span> Customer 4</li>
-<li class="list-group-item"><span class="glyphicon glyphicon-edit"></span> Customer 5</li>
-<li class="list-group-item"><span class="glyphicon glyphicon-plus"></span> New Customer</li>
 </ul>
 
 </div>
@@ -49,7 +115,7 @@ $(".list-group-item:last").click(function() {
 <h3>Customer details</h3>
 
 <form class="form-horizontal" role="form" method="post" action="/index/customers" id="custForm">
-  <input type="hidden" id="custid" value="0">
+  <input type="hidden" id="cust_id" value="0">
   <div class="form-group">
     <label for="custname" class="col-lg-4 control-label">Name</label>
     <div class="col-lg-6">
@@ -120,8 +186,9 @@ $(".list-group-item:last").click(function() {
   </div>
   <div class="form-group">
     <div class="col-lg-offset-4 col-lg-6">
-      <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span>Add</button>
-      <button type="reset" class="btn btn-danger"><span class="glyphicon glyphicon-remove"></span>Reset</button>
+      <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add</button>
+      <button type="reset" class="btn" id="btnreset"> Reset</button>
+      <button type="button" class="btn btn-danger hidden" id="btnremove"><span class="glyphicon glyphicon-remove"></span> Remove</button>
     </div>
 
   </div>
