@@ -7,7 +7,19 @@ customer:
   properties: 
     name: 
       type: string
+    description:
+      type: string
     address:
+      type: string
+    city:
+      type: string
+    postal_code:
+      type: string
+    country:
+      type: string
+    website:
+      type: string
+    email:
       type: string
     phone:
       type: string
