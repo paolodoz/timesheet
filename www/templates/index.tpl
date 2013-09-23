@@ -9,6 +9,7 @@
     <link href="/static/css/timesheet.css" rel="stylesheet" media="screen">
     <!-- JavaScript plugins (requires jQuery) -->
     <script src="/static/js/jquery-1.10.2.js"></script>
+    <script src="/static/js/json2.js"></script>
     <script src="/static/js/jquery-ui-1.10.3.custom.min.js"></script>
 
   </head>
