@@ -39,9 +39,9 @@ class Routes:
             raise cherrypy.HTTPError(404)
         
 
-    # Add new element.
+    # Add new elements.
     
-    # POST /add/<document>/ 
+    # POST /add/<collection>/ 
     # Expects a list of JSON defined by core/schema.yaml
     # Returns { 'error' : string, 'ids' : []  }
     
@@ -59,9 +59,9 @@ class Routes:
         else:
             return { 'error' : None, 'ids' : ids }
         
-    # Get an elements list. 
+    # Get elements list. 
     
-    # POST /get/<document>/
+    # POST /get/<collection>/
     # Expects a JSON filter defined by schema
     # Returns { 'error' : string, 'records' : [ {}, {}, .. ]  } 
     
@@ -80,9 +80,9 @@ class Routes:
             return { 'error' : None, 'records' : records}
     
     
-    # Remove an element. 
+    # Remove elements. 
     
-    # POST /remove/<document>/
+    # POST /remove/<collection>/
     # Expects a list of JSON defined by core/schema.yaml
     # Returns { 'error' : string }
     
