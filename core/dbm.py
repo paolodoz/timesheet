@@ -15,6 +15,10 @@ def get(collection, selection = {}):
 # Called by POST /remove/<collection>
 def remove(collection, selections = []):
     for selection in selections:
+        
+        if '_id' in selection:
+            selection['_id'] = ObjectId(selection['_id'])
+        
         db[collection].remove(sanitize_json(selection))
             
     

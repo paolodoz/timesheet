@@ -59,8 +59,8 @@ json_returned = _assert('/add/customer', [ { 'name' : 'CUSTOMERTEST', 'address' 
 _assert('/get/customer', { 'name' : 'CUSTOMERTEST' }, { 'error': None, 'records' : [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', '_id' : '', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC'   } ] })
 # Get the inserted customer by id
 _assert('/get/customer', { '_id' : json_returned['ids'][0] }, { 'error': None, 'records' : [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', '_id' : '', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC'   } ] })
-# Remove all customers
-_assert('/remove/customer', [ { } ], { 'error' : None  })
+# Remove customer by id
+_assert('/remove/customer', [ { '_id' : json_returned['ids'][0] } ], { 'error' : None  })
 # Check if collection is empty
 _assert('/get/customer', { }, { 'error': None, 'records' : [ ] })
 
