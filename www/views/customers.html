@@ -27,6 +27,7 @@ $(document).ready(function() {
 		$("#cust_id").val(0);
 		$("#btnremove").addClass("hidden");
 		$("#custList li").removeClass("active");
+		$("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
 	});
 	$("#btnremove").click(function() {
 		var id = $("#cust_id").val();
@@ -42,6 +43,7 @@ $(document).ready(function() {
 				alert("ok");
 				$("#custForm")[0].reset();
 				$("#btnremove").addClass("hidden");
+				$("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
 				loadCustomers("custList");
 			},
 			contentType: 'application/json; charset=utf-8',
@@ -96,6 +98,7 @@ function loadCustomerDetails(id,container) {
 				$("#cust" + key).val( data.records[0][key]);
 				$(".btn-danger").removeClass("hidden");
 			}
+			$("#btnsubmit").html("<span class='glyphicon glyphicon-edit'></span> Update");
 		},
 		contentType: 'application/json; charset=utf-8',
 		dataType: "json",
@@ -186,9 +189,9 @@ function loadCustomerDetails(id,container) {
   </div>
   <div class="form-group">
     <div class="col-lg-offset-4 col-lg-6">
-      <button type="submit" class="btn btn-primary"><span class="glyphicon glyphicon-plus"></span> Add</button>
+      <button type="submit" class="btn btn-primary" id="btnsubmit"><span class="glyphicon glyphicon-plus"></span> Add</button>
       <button type="reset" class="btn" id="btnreset"> Reset</button>
-      <button type="button" class="btn btn-danger hidden" id="btnremove"><span class="glyphicon glyphicon-remove"></span> Remove</button>
+      <button type="button" class="btn btn-danger hidden" id="btnremove"><span class="glyphicon glyphicon-trash"></span> Remove</button>
     </div>
 
   </div>
