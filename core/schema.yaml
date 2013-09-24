@@ -50,3 +50,24 @@ user:
     salt: 
       type: string
       blank: True
+
+project:
+  type: object
+  properties:
+    customer:
+      type: string
+    type:
+      type: string
+    name: 
+      type: string
+    description:
+      type: string
+    start:
+      type: date
+    end:
+      type: date
+    grand_total:
+      type: decimal
+    expences:
+      type: decimal
+
