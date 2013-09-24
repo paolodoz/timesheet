@@ -56,9 +56,9 @@ def stringify_objectid_list(objectid_list):
             stringified.append(str(objid))
     return stringified
     
-def validate_sanitize_json(document, json_record):
+def validate_sanitize_json(collection, json_record):
     """JSON validation method"""
-    validate(json_record, schema[document])
+    validate(json_record, schema[collection])
     return sanitize_json(json_record)
 
 

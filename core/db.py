@@ -11,31 +11,31 @@ import string, hashlib, random
 connection = Connection(conf_mongodb['hostname'], conf_mongodb['port'])
 db = connection[conf_mongodb['db']]
 
-# Get selected records from collection, and return it as json
-# Called by GET /<collection>/
 def get(collection, selection = {}):
+    """Get selected records from collection, and return it as json
+    Called by GET /<collection>/"""
     
-#     if '_id' in selection:
-#         selection['_id'] = ObjectId(selection['_id'])
     selection = objectify_json_with_idstring(selection)
     
     return stringify_json_list_with_objectid(db[collection].find(sanitize_json(selection)))
 
-# Remove selected records from collection
-# Called by POST /remove/<collection>
+
 def remove(collection, selections = []):
+    """Remove selected records from collection
+    Called by POST /remove/<collection>"""
     for selection in selections:
         
-#         if '_id' in selection:
-#             selection['_id'] = ObjectId(selection['_id'])
         selection = objectify_json_with_idstring(selection)
         
         db[collection].remove(sanitize_json(selection))
             
-    
-# Insert new record list to collection
-# Called by POST /add/<collection>/
+
 def add(collection, elements_list):
+    """Insert new record list to collection
+    Called by POST /add/<collection>/"""
+    
+    # Rewrite 'salt' and 'password' parameters 
+
     return stringify_objectid_list(db[collection].insert(validate_sanitize_json_list(collection, elements_list)))
 
     
