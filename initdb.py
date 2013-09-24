@@ -55,5 +55,5 @@ print 'OK!\n[+] Adding administrator credential in \'user\' collection with %s:%
 
 password_and_salt = calculate_password_and_salt(conf_auth_db['init.default.password'])
 
-db['users'].update( { '_id' : 1 }, dict({ '_id' : 1, 'name' : 'Admin', 'surname' : 'Default', 'username': conf_auth_db['init.default.admin'], 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : 'administrator'  }, **password_and_salt), True)
+db['user'].update( { '_id' : 1 }, dict({ '_id' : 1, 'name' : 'Admin', 'surname' : 'Default', 'username': conf_auth_db['init.default.admin'], 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : 'administrator'  }, **password_and_salt), True)
     

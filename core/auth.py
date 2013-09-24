@@ -64,7 +64,7 @@ def require(*conditions):
 def member_of(groupname):
     def check():
         
-        user_record = db['users'].find_one({ 'username' : cherrypy.request.login })
+        user_record = db['user'].find_one({ 'username' : cherrypy.request.login })
         if user_record:
             user_group = user_record.get('group', None)
             if user_group:
