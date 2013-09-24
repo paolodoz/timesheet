@@ -34,7 +34,12 @@ def add(collection, elements_list):
     """Insert new record list to collection
     Called by POST /add/<collection>/"""
     
-    # Rewrite 'salt' and 'password' parameters 
+    # Rewrite 'salt' and 'password' parameters, if passed
+    if collection == 'user':
+        for element in elements_list:
+            password = element.get('password', None)
+            if password:
+                element.update(calculate_password_and_salt(element['password']))
 
     return stringify_objectid_list(db[collection].insert(validate_sanitize_json_list(collection, elements_list)))
 

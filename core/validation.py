@@ -1,4 +1,4 @@
-import cgi, yaml, os
+import cgi, yaml, random, string, hashlib
 from core.config import schema, core_folder
 from validictory import ValidationError, validate
 from bson import ObjectId
@@ -74,3 +74,15 @@ def validate_sanitize_json_list(document, json_list):
         validated.append(validate_sanitize_json(document, json_record))
     
     return validated
+
+def calculate_password_and_salt(password_in):
+    """Method to hash password_in and salt, if inserted"""
+    
+    salt = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(16))
+    password_out = hashlib.sha256( salt + password_in ).hexdigest()
+    
+    return { 'password': password_out, 'salt' : salt }
+    
+    
+    
+    

@@ -1,10 +1,10 @@
 #!/usr/bin/env python
 
-import sys, random, string, hashlib
-import core.config
-from core.config import conf_auth_db
+import sys
+from core.config import conf_auth_db, version
+from core.validation import calculate_password_and_salt
 
-print '[+] Welcome to Abinsula Timesheet version %s\n' % (core.config.version)
+print '[+] Welcome to Abinsula Timesheet version %s\n' % (version)
 print '[+] Checking libraries.. ',
 
 libraries = { 
@@ -51,8 +51,7 @@ for missing_collection in (set(collections) - set(db.collection_names())):
 
 print 'OK!\n[+] Adding administrator credential in \'user\' collection with %s:%s.. ' % (conf_auth_db['init.default.admin'], conf_auth_db['init.default.password']),
 
-salt = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(16))
-key = hashlib.sha256( salt + conf_auth_db['init.default.password'] ).hexdigest()
+password_and_salt = calculate_password_and_salt(conf_auth_db['init.default.password'])
 
-db['users'].update( { '_id' : 1 }, { '_id' : 1, 'name' : 'Admin', 'surname' : 'Default', 'username': conf_auth_db['init.default.admin'], 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : 'administrator', 'password' : '', 'salt' : '' }, True)
+db['users'].update( { '_id' : 1 }, dict({ '_id' : 1, 'name' : 'Admin', 'surname' : 'Default', 'username': conf_auth_db['init.default.admin'], 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : 'administrator'  }, **password_and_salt), True)
     
