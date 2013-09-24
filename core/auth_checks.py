@@ -13,11 +13,11 @@ def check_db_credentials(username, password):
         user_id = user_record.get('_id', None)
         
         if user_id:
-           password_record = db['password'].find_one({ 'user_id' : user_id }, { 'salt' : 1, 'salted_sha256' : 1})
+           password_record = db['password'].find_one({ 'user_id' : user_id }, { 'salt' : 1, 'key' : 1})
            if password_record:
                password_salt = password_record.get('salt', None)
-               password_salted_sha256 = password_record.get('salted_sha256', None)
-               if password_salt and password_salted_sha256 and password_salted_sha256 == hashlib.sha256( password_salt + password ).hexdigest():
+               password_key = password_record.get('key', None)
+               if password_salt and password_key and password_key == hashlib.sha256( password_salt + password ).hexdigest():
                     return None
            
     return u"Incorrect username or password."

@@ -44,16 +44,9 @@ user:
       type: string
     group:
       type: string
-
-# Note: This table is used only if using auth_db authentication
-password:
-  type: object
-  properties: 
-    salted_sha256: 
+    password: 
       type: string
-    salt:
+      blank: True
+    salt: 
       type: string
-    user_id:
-      type: string
-      
-      
+      blank: True

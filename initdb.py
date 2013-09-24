@@ -54,6 +54,5 @@ print 'OK!\n[+] Adding administrator credential in \'user\' collection with %s:%
 salt = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(16))
 key = hashlib.sha256( salt + conf_auth_db['init.default.password'] ).hexdigest()
 
-db['users'].update( { '_id' : 1 }, { '_id' : 1, 'name' : 'Admin', 'surname' : 'Default', 'username': conf_auth_db['init.default.admin'], 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : 'administrator' }, True)
-db['password'].update( { 'user_id' : 1 }, { 'user_id' : 1, 'salt' : salt, 'key' : key },  True)
+db['users'].update( { '_id' : 1 }, { '_id' : 1, 'name' : 'Admin', 'surname' : 'Default', 'username': conf_auth_db['init.default.admin'], 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : 'administrator', 'password' : '', 'salt' : '' }, True)
     
