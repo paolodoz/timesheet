@@ -1,6 +1,6 @@
 import cherrypy, os, traceback
 from core.auth import AuthController, require, member_of
-from core import dbm
+from core import db
 from mako.lookup import TemplateLookup
 from config import templates_folder, views_folder
 from glob import glob
@@ -53,7 +53,7 @@ class Routes:
     def add(self, collection):
         json_in = cherrypy.request.json 
         try:
-            ids = dbm.add(collection, json_in)
+            ids = db.add(collection, json_in)
         except Exception as e:
             return {'error' : '%s: %s' % (type(e).__name__, str(e)), 'ids' : []}
         else:
@@ -73,7 +73,7 @@ class Routes:
     def get(self, collection):
         json_in = cherrypy.request.json 
         try:
-            records = dbm.get(collection, json_in)
+            records = db.get(collection, json_in)
         except Exception as e:
             return {'error' : '%s: %s' % (type(e).__name__, str(e)), 'records' : []}
         else:
@@ -94,7 +94,7 @@ class Routes:
     def remove(self, collection):
         json_in = cherrypy.request.json 
         try:
-            ids = dbm.remove(collection, json_in)
+            ids = db.remove(collection, json_in)
         except Exception as e:
             return {'error' : '%s: %s' % (type(e).__name__, str(e)) }
         else:
