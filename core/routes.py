@@ -23,15 +23,14 @@ class Routes:
     }
     auth = AuthController()
     
-    
-    # Serves HTML views stored in 'views/<view>.html' rendered with 
-    # template 'templates/index.tpl'
-    #
-    # GET /index/<view>
-    
     @cherrypy.expose
     @require(member_of("users"))
     def index(self, view = 'index'):
+        """
+        Serves HTML views stored in 'views/<view>.html' rendered with template 'templates/index.tpl'
+        
+        GET /index/<view>
+        """
         
         if view in views.keys():
             return templates.get_template('index.tpl').render(view=open(views[view]).read())
@@ -39,18 +38,21 @@ class Routes:
             raise cherrypy.HTTPError(404)
         
 
-    # Add new elements.
-    
-    # POST /add/<collection>/ 
-    # Expects a list of JSON defined by core/schema.yaml
-    # Returns { 'error' : string, 'ids' : []  }
-    
     @cherrypy.expose
     @require(member_of("users"))
     @cherrypy.tools.allow(methods=['POST'])
     @cherrypy.tools.json_in(on = True)
     @cherrypy.tools.json_out(on = True)
     def add(self, collection):
+        """
+        Add new elements.
+        
+        POST /add/<collection>/ 
+        
+        Expects a list of JSON defined by core/schema.yaml
+        Returns { 'error' : string, 'ids' : []  }
+        """
+        
         json_in = cherrypy.request.json 
         try:
             ids = db.add(collection, json_in)
@@ -59,18 +61,22 @@ class Routes:
         else:
             return { 'error' : None, 'ids' : ids }
         
-    # Get elements list. 
-    
-    # POST /get/<collection>/
-    # Expects a JSON filter defined by schema
-    # Returns { 'error' : string, 'records' : [ {}, {}, .. ]  } 
-    
+
     @cherrypy.expose
     @require(member_of("users"))
     @cherrypy.tools.allow(methods=['POST'])
     @cherrypy.tools.json_in(on = True)
     @cherrypy.tools.json_out(on = True)
     def get(self, collection):
+        """
+        Get elements list. 
+        
+        POST /get/<collection>/
+        
+        Expects a JSON filter defined by schema
+        Returns { 'error' : string, 'records' : [ {}, {}, .. ]  } 
+        """
+        
         json_in = cherrypy.request.json 
         try:
             records = db.get(collection, json_in)
@@ -78,20 +84,22 @@ class Routes:
             return {'error' : '%s: %s' % (type(e).__name__, str(e)), 'records' : []}
         else:
             return { 'error' : None, 'records' : records}
-    
-    
-    # Remove elements. 
-    
-    # POST /remove/<collection>/
-    # Expects a list of JSON defined by core/schema.yaml
-    # Returns { 'error' : string }
-    
+     
     @cherrypy.expose
     @require(member_of("users"))
     @cherrypy.tools.allow(methods=['POST'])
     @cherrypy.tools.json_in(on = True)
     @cherrypy.tools.json_out(on = True)
     def remove(self, collection):
+        """
+        Remove elements. 
+        
+        POST /remove/<collection>/
+        
+        Expects a list of JSON defined by core/schema.yaml
+        Returns { 'error' : string }
+        """
+
         json_in = cherrypy.request.json 
         try:
             ids = db.remove(collection, json_in)
