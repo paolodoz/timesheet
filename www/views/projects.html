@@ -1,0 +1,177 @@
+<script type="text/javascript">
+$(document).ready(function() {
+  loadProjects("projectsList");
+  loadCustomers("projectcustomer");
+  $(".datepicker").datepicker();
+  $("#usersList .list-group-item").click(function() {
+    $(this).toggleClass("active");
+    var selectusers = $("#usersList .active").length;
+    if(selectusers == 1) {
+      $("#usersForm h4 span").text($(this).text());
+    }
+    else if(selectusers == 0) {
+      $("#usersForm h4 span").text("");
+    }
+  });
+  $('.rapidsearch').keyup(function () {
+    var list = this.id.substr(3);
+    var currenttext = $(this).val().toLowerCase();
+    if (currenttext == "") {
+      resetvisibility($('#' + list + 'List li'));
+      return;
+    }
+    filterlist($('#' + list + 'List li'), currenttext);
+  });
+});
+
+function loadProjects(container) {
+//load complete list of customers
+	var filter = {};
+	$.ajax({
+		type: "POST",
+		url: "/get/projects",
+		data: JSON.stringify(filter),
+		success: function(data) {
+			var i;
+			var htmllist = "";
+			for(i=0;i < data.records.length; i++) {
+				htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data.records[i].name + "</li>";
+			}
+			//add line for new project
+			htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Project ...</li>";
+			$("#" + container).html(htmllist);
+			$("#projectsList .list-group-item").click(function() {
+				$("#projectsList .list-group-item").removeClass("active");
+				$(this).addClass("active");
+			});
+			$("#projectsList .list-group-item:last").click(function() {
+				$("#projectForm")[0].reset();
+				$("#prject_id").val(0);
+				$(".btn-danger").addClass("hidden");
+			});
+		},
+		contentType: 'application/json; charset=utf-8',
+		dataType: "json",
+		});
+}
+
+function loadCustomers(container) {
+	//load complete list of customers
+	var filter = {};
+	$.ajax({
+		type: "POST",
+		url: "/get/customer",
+		data: JSON.stringify(filter),
+		success: function(data) {
+			var i;
+			var htmlselect = "<option value=''></option>";
+			for(i=0;i < data.records.length; i++) {
+				htmlselect += "<option value='" + data.records[i]._id + "'>" + data.records[i].name + "</option>";
+			}
+			$("#" + container).html(htmlselect);
+		},
+		contentType: 'application/json; charset=utf-8',
+		dataType: "json",
+		});
+}
+
+
+//restore visibility for each element in list
+function resetvisibility(elem) {
+    $(elem).each(function () {
+        $(this).removeClass("hidden");
+    });
+}
+
+function filterlist(list, currenttext) {
+    $(list).each(function () {
+        var elemname = $(this).text().toLowerCase();
+        if (elemname.indexOf(currenttext) != -1)
+            $(this).removeClass("hidden");
+        else
+            $(this).addClass("hidden");
+    });
+}
+
+</script>
+<h2>Projects Management</h2>
+<div class="row">
+  <div class="col-lg-3">
+    <h3>Current projects list</h3>
+    <div class="input-group">
+      <span class="input-group-addon glyphicon glyphicon-search"></span>
+      <input type="text" class="form-control rapidsearch" placeholder="Rapid Search" id="txtprojects">
+    </div>
+    <p></p>
+    <ul class="list-group" id="projectsList">
+  </div>
+  <div class="col-lg-4">
+    <h3>Project Details</h3>
+    <form class="form-horizontal" role="form" id="projectForm" method="post" action="/index/projects">
+<input type="hidden" id="project_id" value="0">
+<div class="form-group">
+    <label for="projectcustomer" class="col-lg-4 control-label">Customer</label>
+    <div class="col-lg-6">
+      <select class="form-control" id="projectcustomer">
+      </select>
+    </div>
+  </div>
+<div class="form-group">
+    <label for="projecttype" class="col-lg-4 control-label">Type</label>
+    <div class="col-lg-6">
+      <select class="form-control" id="projecttype">
+  <option>Development</option>
+  <option>Research</option>
+  <option>Business</option>
+      </select>
+    </div>
+  </div>
+
+<div class="form-group">
+    <label for="projectname" class="col-lg-4 control-label">Name</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control" id="projectname" placeholder="Name">
+    </div>
+  </div>
+
+<div class="form-group">
+    <label for="custname" class="col-lg-4 control-label">Date start</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control datepicker" id="projectstart" placeholder="1/1/2013">
+    </div>
+  </div>
+<div class="form-group">
+    <label for="custname" class="col-lg-4 control-label">Date end</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control datepicker" id="projectend" placeholder="31/12/2020">
+    </div>
+  </div>
+<div class="form-group">
+    <div class="col-lg-offset-4 col-lg-7">
+      <button type="submit" class="btn btn-primary" id="btnsubmit"><span class="glyphicon glyphicon-plus"></span> Add</button>
+      <button type="reset" class="btn" id="btnreset"> Reset</button>
+      <button type="button" class="btn btn-danger hidden" id="btnremove"><span class="glyphicon glyphicon-trash"></span> Remove</button>
+    </div>
+</div>
+    </form>
+  </div>
+  <div class="col-lg-4">
+    <h3>Team components</h3>
+    <form class="form-horizontal" role="form" id="usersForm" method="post" action="/index/projects">
+    <p>Select responsible and then people involved in the project.</p>
+    <h4>Responsible: <span></span></h4>
+<div class="input-group">
+      <span class="input-group-addon glyphicon glyphicon-search"></span>
+      <input type="text" class="form-control rapidsearch" placeholder="Rapid Search" id="txtusers">
+    </div>
+<p></p>
+    <ul class="list-group" id="usersList">
+      <li id="1" class="list-group-item"><span class="glyphicon glyphicon-user"></span> Paolo 1</li>
+      <li id="2" class="list-group-item"><span class="glyphicon glyphicon-user"></span> Andrea 2</li>
+      <li id="3" class="list-group-item"><span class="glyphicon glyphicon-user"></span> Peppe 3</li>
+      <li id="4" class="list-group-item"><span class="glyphicon glyphicon-user"></span> Emilio 4</li>
+      <li id="5" class="list-group-item"><span class="glyphicon glyphicon-user"></span> User 5</li>
+    </ul>
+  </form>
+  </div>
+</div>

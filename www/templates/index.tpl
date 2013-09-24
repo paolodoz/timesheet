@@ -41,6 +41,7 @@
       Note spese
     </a>
   </li>
+
 <li><hr></li>
  <li class="dropdown">
     <a href="#" data-toggle="dropdown" role="button">Report<b class="caret"></b></a>
@@ -58,15 +59,19 @@
             <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Aggiungi</a></li>
             <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Elimina</a></li>
             <li class="divider" role="presentation"></li>
-            <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Elenco</a></li>
+            <li role="presentation"><a href="/index/customers" tabindex="-1" role="menuitem">Elenco</a></li>
         </ul>
   </li>
-  <li>
-    <a href="#">
-      Commesse
+<li>
+    <a href="/index/projects">
+      Projects
     </a>
   </li>
-
+<li>
+    <a href="/index/users">
+      Users
+    </a>
+  </li>
   <li class="dropdown">
     <a href="#" data-toggle="dropdown" role="button">Fatture<b class="caret"></b></a>
 	<ul aria-labelledby="drop4" role="menu" class="dropdown-menu" id="menuin">
