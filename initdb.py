@@ -11,6 +11,8 @@ libraries = {
            'cherrypy' : 'Missing some cherrypy dependencies',
            'yaml' : "Missing 'python-yaml' ptyhon package", 
            'pymongo' : "Missing 'pymongo' ptyhon package", 
+           'bson' : "Missing 'python-bson' python package",
+           'mako' : "Missing 'python-mako' python package",
            }
 
 for lib, message in libraries.items():
