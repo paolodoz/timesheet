@@ -39,7 +39,7 @@ def add(collection, elements_list):
         for element in elements_list:
             password = element.get('password', None)
             if password:
-                element.update(calculate_password_and_salt(element['password']))
+                element.update(calculate_password_and_salt(password))
 
     return stringify_objectid_list(db[collection].insert(validate_sanitize_json_list(collection, elements_list)))
 
