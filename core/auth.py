@@ -5,28 +5,23 @@
 #
 
 import cherrypy
-from core.config import conf_auth
+from core.config import conf_auth, conf_auth_db, conf_auth_ldap
+from core.db import db
+import auth_checks
 
 SESSION_KEY = '_cp_username'
-
-users = { 'test' : ('test', 'users') }
-
 
 def check_credentials(username, password):
     """Verifies credentials for username and password.
     Returns None on success or a string describing the error on failure"""
-    # Adapt to your needs
-    if username in users and password == users[username][0]:
-        return None
-    else:
-        return u"Incorrect username or password."
     
-    # An example implementation which uses an ORM could be:
-    # u = User.get(username)
-    # if u is None:
-    #     return u"Username %s is unknown to me." % username
-    # if u.password != md5.new(password).hexdigest():
-    #     return u"Incorrect password"
+    # Use the proper function from core/auth_checks.py
+    auth_mode = conf_auth['mode']    
+    check_credential_function = getattr(auth_checks, 'check_%s_credentials' % auth_mode)
+
+    return check_credential_function(username, password)
+    
+
 
 def check_auth(*args, **kwargs):
     """A tool that looks in config for 'auth.require'. If found and it
@@ -68,8 +63,12 @@ def require(*conditions):
 
 def member_of(groupname):
     def check():
-        # replace with actual check if <username> is in <groupname>
-        return users[cherrypy.request.login][1] == groupname
+        
+        user_record = db['users'].find_one({ 'username' : cherrypy.request.login })
+        if user_record:
+            user_group = user_record.get('group', None)
+            if user_group:
+                return user_group == 'administrator' or user_group == groupname
     return check
 
 def name_is(reqd_username):
