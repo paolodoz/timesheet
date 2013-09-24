@@ -39,7 +39,7 @@ except Exception, e:
 
 if len(sys.argv)>1 and sys.argv[1] == '--drop':
     print 'OK!\n[+] Dropping database.. ',
-    db.drop_database(conf_mongodb['db'])
+    connection.drop_database(conf_mongodb['db'])
 else:
     print 'OK!\n[-] Skipping database drop, run with --drop argument to reset the database',
 
@@ -52,8 +52,8 @@ for missing_collection in (set(collections) - set(db.collection_names())):
 print 'OK!\n[+] Adding administrator credential in \'user\' collection with %s:%s.. ' % (conf_auth_db['init.default.admin'], conf_auth_db['init.default.password']),
 
 salt = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(16))
-salted_sha256 = hashlib.sha256( salt + conf_auth_db['init.default.password'] ).hexdigest()
+key = hashlib.sha256( salt + conf_auth_db['init.default.password'] ).hexdigest()
 
 db['users'].update( { '_id' : 1 }, { '_id' : 1, 'name' : 'Admin', 'surname' : 'Default', 'username': conf_auth_db['init.default.admin'], 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : 'administrator' }, True)
-db['password'].update( { 'user_id' : 1 }, { 'user_id' : 1, 'salt' : salt, 'salted_sha256' : salted_sha256 },  True)
+db['password'].update( { 'user_id' : 1 }, { 'user_id' : 1, 'salt' : salt, 'key' : key },  True)
     
