@@ -11,12 +11,12 @@ import string, hashlib, random
 connection = Connection(conf_mongodb['hostname'], conf_mongodb['port'])
 db = connection[conf_mongodb['db']]
 
-private_collections = [ 'password' ]
-
 # Get selected records from collection, and return it as json
 # Called by GET /<collection>/
 def get(collection, selection = {}):
     
+#     if '_id' in selection:
+#         selection['_id'] = ObjectId(selection['_id'])
     selection = objectify_json_with_idstring(selection)
     
     return stringify_json_list_with_objectid(db[collection].find(sanitize_json(selection)))
@@ -26,6 +26,8 @@ def get(collection, selection = {}):
 def remove(collection, selections = []):
     for selection in selections:
         
+#         if '_id' in selection:
+#             selection['_id'] = ObjectId(selection['_id'])
         selection = objectify_json_with_idstring(selection)
         
         db[collection].remove(sanitize_json(selection))

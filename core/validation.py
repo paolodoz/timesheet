@@ -3,9 +3,8 @@ from core.config import schema, core_folder
 from validictory import ValidationError, validate
 from bson import ObjectId
 
-# Input validation method to prevent XSS 
 def sanitize_json(json_record):
-    
+    """Input validation method to prevent XSS"""
     sanitized_json = {}
     for key, value in json_record.items():
         if isinstance(value, str):
@@ -16,9 +15,8 @@ def sanitize_json(json_record):
     return sanitized_json
 
 
-# Input validation of list of JSON
 def sanitize_json_list(json_list):
-    
+    """Input validation of list of JSON"""
     if not isinstance(json_list, list):
         raise ValidationError("list expected, not '%s'" % json_list.__class__.__name__)
     
@@ -29,41 +27,43 @@ def sanitize_json_list(json_list):
     return sanitized_list
 
 
-# Convert string to ObjectId in JSON
 def objectify_json_with_idstring(json_record):
-    if '_id' in json_record and isinstance(json_record['_id'], str):
+    """Convert string to ObjectId in JSON"""
+    if '_id' in json_record and isinstance(json_record['_id'], basestring):
         json_record['_id'] = ObjectId(json_record['_id'])
     return json_record
 
-# Convert ObjectId to string in JSON
+
 def stringify_json_with_objectid(json_record):
+    """Convert ObjectId to string in JSON"""
     if '_id' in json_record and isinstance(json_record['_id'], ObjectId):
         json_record['_id'] = str(json_record['_id'])
     return json_record
 
-# Convert ObjectId to string in JSON list
 def stringify_json_list_with_objectid(json_list):
+    """Convert ObjectId to string in JSON list"""
     stringified = []
     if json_list:
         for json_record in json_list:
             stringified.append(stringify_json_with_objectid(json_record))
     return stringified
 
-
 def stringify_objectid_list(objectid_list):
+    """Convert an ObjectId list to string list"""
     stringified = []
     if objectid_list:
         for objid in objectid_list:
             stringified.append(str(objid))
     return stringified
     
-# JSON validation method
 def validate_sanitize_json(document, json_record):
+    """JSON validation method"""
     validate(json_record, schema[document])
     return sanitize_json(json_record)
 
-# List of JSON validation method
+
 def validate_sanitize_json_list(document, json_list):
+    """JSON list validation method"""
     
     if not isinstance(json_list, list):
         raise ValidationError("list expected, not '%s'" % json_list.__class__.__name__)
