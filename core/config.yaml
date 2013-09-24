@@ -13,8 +13,16 @@ static:
 
 auth:
   page: www/auth.html
-
+  mode: db # db, ldap
+  
+auth_db:
+  init.default.admin: ts_admin
+  init.default.password: ts_admin_pwd
+  
+auth_ldap:
+  hostname: localhost
+  
 mongodb:
-  hostname: 127.0.0.1
+  hostname: localhost
   port: 27017
   db: ts

@@ -1,17 +1,30 @@
-try:
-    from pymongo import MongoClient as Connection
-except ImportError, e:
-    from pymongo import Connection
+from core.db import db
+from core.validation import validate_sanitize_json, validate_sanitize_json_list, sanitize_json, sanitize_json_list, stringify_objectid_list, stringify_json_list_with_objectid
+from bson.objectid import ObjectId
 
-from core.config import collections, conf_mongodb, conf_auth
-
-connection = Connection(conf_mongodb['hostname'], conf_mongodb['port'])
-db = connection[conf_mongodb['db']]
-
-# Create on database missing collections names
-for missing_collection in (set(collections) - set(db.collection_names())):
-    db[missing_collection]
+# Get selected records from collection, and return it as json
+# Called by GET /<collection>/
+def get(collection, selection = {}):
     
-# Create default admin user, is in conf and not already set
-# if conf_auth['admin.default.enabled'] and db['users'].findOne({ '_id' : 0 }):
-#     db['users'].insert( { '_id' : 0, 'name' : 'Admin', 'surname' : 'Default', 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'role' : 'administrator' })
+    if '_id' in selection:
+        selection['_id'] = ObjectId(selection['_id'])
+    
+    return stringify_json_list_with_objectid(db[collection].find(sanitize_json(selection)))
+
+# Remove selected records from collection
+# Called by POST /remove/<collection>
+def remove(collection, selections = []):
+    for selection in selections:
+        
+        if '_id' in selection:
+            selection['_id'] = ObjectId(selection['_id'])
+        
+        db[collection].remove(sanitize_json(selection))
+            
+    
+# Insert new record list to collection
+# Called by POST /add/<collection>/
+def add(collection, elements_list):
+    return stringify_objectid_list(db[collection].insert(validate_sanitize_json_list(collection, elements_list)))
+
+    

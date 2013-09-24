@@ -1,6 +1,7 @@
 import yaml
 import os
 
+version = '0.1'
 
 # Define common paths based on current file position
 core_folder = os.path.dirname(__file__)
@@ -27,4 +28,6 @@ conf['static']['/']['tools.staticdir.root'] = root_folder
 conf_server = conf['server']
 conf_static = conf['static']
 conf_auth = conf['auth']
+conf_auth_db = conf['auth_db']
+conf_auth_ldap = conf['auth_ldap']
 conf_mongodb = conf['mongodb']
