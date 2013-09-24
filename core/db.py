@@ -1,6 +1,15 @@
-from core.db import db
+try:
+    from pymongo import MongoClient as Connection
+except ImportError, e:
+    from pymongo import Connection
+
 from core.validation import validate_sanitize_json, validate_sanitize_json_list, sanitize_json, sanitize_json_list, stringify_objectid_list, stringify_json_list_with_objectid
 from bson.objectid import ObjectId
+from core.config import collections, conf_mongodb, conf_auth, conf_auth_db
+import string, hashlib, random
+
+connection = Connection(conf_mongodb['hostname'], conf_mongodb['port'])
+db = connection[conf_mongodb['db']]
 
 # Get selected records from collection, and return it as json
 # Called by GET /<collection>/
