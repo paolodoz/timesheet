@@ -2,9 +2,8 @@
 import urllib2, urllib, json, os
 from cookielib import CookieJar
 
-
 # Credentials
-credentials = {'username': 'test', 'password': 'test'}
+credentials = {'username': 'ts_admin', 'password': 'ts_admin_pwd'}
 
 cj = CookieJar()
 
@@ -68,21 +67,21 @@ _assert('/get/customer', { }, { 'error': None, 'records' : [ ] })
 # Remove already unexistant user
 _assert('/remove/user', [ { 'name' : 'USERTEST'  } ], { 'error' : None  })
 # Add one customer (return one user)
-_assert('/add/user', [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'role' : 'user' } ], { 'error' : None, 'ids' : [ '' ] })
+_assert('/add/user', [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'user' } ], { 'error' : None, 'ids' : [ '' ] })
 # Get the inserted customer
-_assert('/get/user', { 'name' : 'USERTEST' }, { 'error': None, 'records' : [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', '_id' : '' , 'role' : 'user' } ] })
+_assert('/get/user', { 'name' : 'USERTEST' }, { 'error': None, 'records' : [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', '_id' : '' , 'group' : 'user' } ] })
 # Delete the one inserted
 _assert('/remove/user', [ { 'name' : 'USERTEST'  } ], { 'error' : None })
 # Get the empty customers list
 _assert('/get/user', { 'name' : 'USERTEST' }, { 'error': None, 'records' : [ ] })
 # Add two elements USERTEST1 and USERTEST2
-_assert('/add/user', [ { 'name' : 'USERTEST1', 'surname' : 'SURNAME', 'username' : 'USERNAME1' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'role' : 'user' }, { 'name' : 'USERTEST2', 'surname' : 'SURNAME', 'username' : 'USERNAME2' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'role' : 'user' } ], { 'error' : None, 'ids' : [ '', '' ] })
+_assert('/add/user', [ { 'name' : 'USERTEST1', 'surname' : 'SURNAME', 'username' : 'USERNAME1' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'user' }, { 'name' : 'USERTEST2', 'surname' : 'SURNAME', 'username' : 'USERNAME2' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'user' } ], { 'error' : None, 'ids' : [ '', '' ] })
 # Delete USERTEST1
 _assert('/remove/user', [ { 'name' : 'USERTEST1'  } ], { 'error' : None })
 # Check if USERTEST1 is deleted
 _assert('/get/user', { 'name' : 'USERTEST1' }, { 'error': None, 'records' : [ ] })
 # Delete all users
-_assert('/remove/user', [ {  } ], { 'error' : None })
+_assert('/remove/user', [ { 'name' : 'USERTEST2'  } ], { 'error' : None })
 # Check if collection is empty
 _assert('/get/user', { }, { 'error': None, 'records' : [ ] })
 
