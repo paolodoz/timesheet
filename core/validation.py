@@ -28,6 +28,13 @@ def sanitize_json_list(json_list):
 
     return sanitized_list
 
+
+# Convert string to ObjectId in JSON
+def objectify_json_with_idstring(json_record):
+    if '_id' in json_record and isinstance(json_record['_id'], str):
+        json_record['_id'] = ObjectId(json_record['_id'])
+    return json_record
+
 # Convert ObjectId to string in JSON
 def stringify_json_with_objectid(json_record):
     if '_id' in json_record and isinstance(json_record['_id'], ObjectId):
@@ -41,6 +48,7 @@ def stringify_json_list_with_objectid(json_list):
         for json_record in json_list:
             stringified.append(stringify_json_with_objectid(json_record))
     return stringified
+
 
 def stringify_objectid_list(objectid_list):
     stringified = []
