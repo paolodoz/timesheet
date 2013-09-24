@@ -2,17 +2,8 @@
 $(document).ready(function() {
   loadProjects("projectsList");
   loadCustomers("projectcustomer");
+  loadUsers("usersList");
   $(".datepicker").datepicker();
-  $("#usersList .list-group-item").click(function() {
-    $(this).toggleClass("active");
-    var selectusers = $("#usersList .active").length;
-    if(selectusers == 1) {
-      $("#usersForm h4 span").text($(this).text());
-    }
-    else if(selectusers == 0) {
-      $("#usersForm h4 span").text("");
-    }
-  });
   $('.rapidsearch').keyup(function () {
     var list = this.id.substr(3);
     var currenttext = $(this).val().toLowerCase();
@@ -23,7 +14,35 @@ $(document).ready(function() {
     filterlist($('#' + list + 'List li'), currenttext);
   });
 });
-
+function loadUsers(container) {
+//load complete list of customers
+  var filter = {};
+  $.ajax({
+    type: "POST",
+    url: "/get/users",
+    data: JSON.stringify(filter),
+    success: function(data) {
+      var i;
+      var htmllist = "";
+      for(i=0;i < data.records.length; i++) {
+        htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-user'></span> " + data.records[i].name + " " + data.records[i].surname + "</li>";
+      }
+      $("#" + container).html(htmllist);
+      $("#" + container + " .list-group-item").click(function() {
+        $(this).toggleClass("active");
+        var selectusers = $("#usersList .active").length;
+        if(selectusers == 1) {
+          $("#usersForm h4 span").text($(this).text());
+        }
+        else if(selectusers == 0) {
+          $("#usersForm h4 span").text("");
+      }
+  });
+    },
+    contentType: 'application/json; charset=utf-8',
+    dataType: "json",
+    });
+}
 function loadProjects(container) {
 //load complete list of customers
 	var filter = {};
@@ -165,13 +184,7 @@ function filterlist(list, currenttext) {
       <input type="text" class="form-control rapidsearch" placeholder="Rapid Search" id="txtusers">
     </div>
 <p></p>
-    <ul class="list-group" id="usersList">
-      <li id="1" class="list-group-item"><span class="glyphicon glyphicon-user"></span> Paolo 1</li>
-      <li id="2" class="list-group-item"><span class="glyphicon glyphicon-user"></span> Andrea 2</li>
-      <li id="3" class="list-group-item"><span class="glyphicon glyphicon-user"></span> Peppe 3</li>
-      <li id="4" class="list-group-item"><span class="glyphicon glyphicon-user"></span> Emilio 4</li>
-      <li id="5" class="list-group-item"><span class="glyphicon glyphicon-user"></span> User 5</li>
-    </ul>
+    <ul class="list-group" id="usersList"></ul>
   </form>
   </div>
 </div>
