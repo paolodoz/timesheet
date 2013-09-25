@@ -62,12 +62,31 @@ project:
       type: string
     description:
       type: string
+    contact_person:
+      type: string
     start:
-      type: date
+      type: string
     end:
-      type: date
+      type: string
     grand_total:
       type: decimal
+      optional: True
     expences:
       type: decimal
+      optional: True
+    responsible:
+      type: object
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
+    employees:
+      type: array
+      optional: True
+      properties:
+        _id:
+          type: string
+        name:
+          type: string
 
