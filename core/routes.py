@@ -49,7 +49,7 @@ class Routes:
         
         POST /add/<collection>/ 
         
-        Expects a list of JSON defined by core/schema.yaml
+        Expects a list of JSONs [ { }, { } ]
         Returns { 'error' : string, 'ids' : []  }
         """
         
@@ -71,9 +71,9 @@ class Routes:
         """
         Get elements list. 
         
-        POST /get/<collection>/
+        GET /get/<collection>/
         
-        Expects a JSON filter defined by schema
+        Expects a JSON filter { 'fk1' : 'fv1', 'fk2' : 'fv2', .. }
         Returns { 'error' : string, 'records' : [ {}, {}, .. ]  } 
         """
         
@@ -96,7 +96,7 @@ class Routes:
         
         POST /remove/<collection>/
         
-        Expects a list of JSON defined by core/schema.yaml
+        Expects a list of JSON filter [ { 'fk1' : 'fv1' }, { 'fk2' : 'fv2' } ]
         Returns { 'error' : string }
         """
 
@@ -115,11 +115,12 @@ class Routes:
     @cherrypy.tools.json_out(on = True)
     def update(self, collection):
         """
-        Update elements. 
+        Update element. 
         
         POST /update/<collection>/
         
-        Expects a JSON filter defined by schema
+        Expects the JSON object containing the ID to update 
+                { '_id' : ID, 'k1' : 'p1', 'k2' : 'p2', ..  }
         Returns { 'error' : string }
         """
 
