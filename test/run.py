@@ -124,8 +124,10 @@ json_returned = _assert('/add/customer', [ { 'name' : 'CUSTOMERTEST', 'address' 
 _assert('/get/customer', { '_id' : json_returned['ids'][0] }, { 'error': None, 'records' : [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', '_id' : '', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC'   } ] })
 # Update name
 _assert('/update/customer', { '_id' : json_returned['ids'][0], 'name' : 'CUSTOMERNEWNAME', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC' }, { 'error': None })
-# Get the inserted customer by id
+# Check if the inserted customer by id is modified
 _assert('/get/customer', { '_id' : json_returned['ids'][0] }, { 'error': None, 'records' : [ { 'name' : 'CUSTOMERNEWNAME', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', '_id' : '', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC'   } ] })
+# Delete both user in one request
+_assert('/remove/customer', [ { '_id' : json_returned['ids'][0]} ], { 'error' : None })
 
 
 
