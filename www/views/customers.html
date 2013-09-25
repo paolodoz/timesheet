@@ -1,19 +1,28 @@
 <script type="text/javascript">
+var isupdate = false;
 $(document).ready(function() {
 	loadCustomers("custList");
 	$("#custForm").submit(function(event) {
-		alert("ajax submit");
-		var customer = [{}];
+		var customer, _cust, url;		
+		if(isupdate) {
+			_cust = {};
+			customer = _cust;
+			url = "/update/customer";
+		} else {
+			_cust = [{}];
+			customer = _cust[0];
+			url = "/add/customer";
+		}
 		$("#custForm input").each(function (){
 			var property = $(this).attr("id").substr(4);
-			if (property == "_id")
+			if (property == "_id" && !isupdate)
 				return;
-			customer[0][property] = $(this).val();
+			customer[property] = $(this).val();
 		});
 		event.preventDefault();
 		$.ajax({
 			type: "POST",
-			url: "/add/customer",
+			url: url,
 			data: JSON.stringify(customer),
 			success: function(data) {
 				$("#custForm")[0].reset();
@@ -28,6 +37,7 @@ $(document).ready(function() {
 		$("#btnremove").addClass("hidden");
 		$("#custList li").removeClass("active");
 		$("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
+		isupdate = false;
 	});
 	$("#btnremove").click(function() {
 		var id = $("#cust_id").val();
@@ -71,12 +81,14 @@ function loadCustomers(container) {
 			$(".list-group-item").click(function() {
 				$(".list-group-item").removeClass("active");
 				$(this).addClass("active");
+				isupdate = true;
 				loadCustomerDetails(this.id, container);
 			});
 			$(".list-group-item:last").click(function() {
 				$("#custForm")[0].reset();
 				$("#cust_id").val(0);
 				$(".btn-danger").addClass("hidden");
+				isupdate = false;
 			});
 		},
 		contentType: 'application/json; charset=utf-8',
