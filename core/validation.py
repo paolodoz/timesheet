@@ -56,26 +56,32 @@ def stringify_objectid_list(objectid_list):
             stringified.append(str(objid))
     return stringified
     
-def validate_sanitize_json(collection, json_record):
-    """JSON validation method"""
+def validate_transform_json(collection, json_record):
+
+    # Validate json schema
     validate(json_record, schema[collection])
-    return sanitize_json(json_record)
+    
+    # Sanitize user input
+    json_record.update(sanitize_json(json_record))
+    
+    # If in user collection, calculate password and salt
+    if collection == 'user' and json_record['password']:
+        json_record.update(calculate_password_and_salt_in_json_user(json_record['password']))
+            
+    return json_record
 
-
-def validate_sanitize_json_list(document, json_list):
-    """JSON list validation method"""
+def validate_transform_json_list(collection, json_list):
+    """JSON list validation and transformation method"""
     
     if not isinstance(json_list, list):
         raise ValidationError("list expected, not '%s'" % json_list.__class__.__name__)
     
-    validated = []
-    
     for json_record in json_list:
-        validated.append(validate_sanitize_json(document, json_record))
+        json_record = validate_transform_json(collection, json_record)
     
-    return validated
+    return json_list
 
-def calculate_password_and_salt(password_in):
+def calculate_password_and_salt_in_json_user(password_in):
     """Method to hash password_in and salt, if inserted"""
     
     salt = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(16))
