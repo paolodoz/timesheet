@@ -7,7 +7,7 @@
 import cherrypy
 from core.config import conf_auth, conf_auth_db, conf_auth_ldap
 from core.db import db
-import auth_checks
+import auth_providers
 
 SESSION_KEY = '_cp_username'
 
@@ -15,11 +15,15 @@ def check_credentials(username, password):
     """Verifies credentials for username and password.
     Returns None on success or a string describing the error on failure"""
     
-    # Use the proper function from core/auth_checks.py
-    auth_mode = conf_auth['mode']    
-    check_credential_function = getattr(auth_checks, 'check_%s_credentials' % auth_mode)
-
-    return check_credential_function(username, password)
+    # Use the proper function from core/auth_providers.py
+    auth_modes = conf_auth['mode']    
+    for mode in auth_modes:
+        check_credential_function = getattr(auth_providers, 'check_%s_credentials' % mode)
+        auth_error = check_credential_function(username, password)
+        if not auth_error:
+            break
+        
+    return auth_error
     
 
 

@@ -13,7 +13,9 @@ static:
 
 auth:
   page: www/auth.html
-  mode: db # db, ldap
+  mode:
+    - ldap
+    - db
   
 auth_db:
   init.default.admin: ts_admin
