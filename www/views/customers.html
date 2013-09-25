@@ -23,7 +23,7 @@ $(document).ready(function() {
 		$.ajax({
 			type: "POST",
 			url: url,
-			data: JSON.stringify(customer),
+			data: JSON.stringify(_cust),
 			success: function(data) {
 				$("#custForm")[0].reset();
 				loadCustomers("custList");
