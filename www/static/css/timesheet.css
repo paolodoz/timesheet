@@ -7,3 +7,27 @@
 .list-group-item:hover {
 	background-color:#F5F5F5;
 }
+
+.icon-car {
+   background-image: url("../images/car.png");
+   background-position: center center;
+   display: inline-block;
+   height: 22px;
+   width: 26px;
+}
+
+.icon-airplane {
+   background-image: url("../images/airplane.png");
+   background-position: center center;
+   display: inline-block;
+   height: 22px;
+   width: 26px;
+}
+
+.icon-hotel {
+   background-image: url("../images/hotel.png");
+   background-position: center center;
+   display: inline-block;
+   height: 22px;
+   width: 26px;
+}

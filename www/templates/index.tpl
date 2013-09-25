@@ -33,7 +33,15 @@
   </li>
   <li>
     <a href="#">
-      Trasferte
+      <li class="dropdown">
+	<a href="#" data-toggle="dropdown" role="button">Trasferte<b class="caret"></b></a>
+        <ul aria-labelledby="drop4" role="menu" class="dropdown-menu" id="menurep">
+            <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Nuova richiesta</a></li>
+            <li role="presentation"><a href="#" tabindex="-1" role="menuitem">In approvazione</a></li>
+	    <li class="divider" role="presentation"></li>
+            <li role="presentation"><a href="/index/trips" tabindex="-1" role="menuitem">Elenco</a></li>
+        </ul>
+
     </a>
   </li>
 <li>
