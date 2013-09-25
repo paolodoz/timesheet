@@ -4,6 +4,7 @@ $(document).ready(function() {
   loadCustomers("projectcustomer");
   loadUsers("usersList");
   $(".datepicker").datepicker();
+  $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
   $('.rapidsearch').keyup(function () {
     var list = this.id.substr(3);
     var currenttext = $(this).val().toLowerCase();
@@ -13,13 +14,59 @@ $(document).ready(function() {
     }
     filterlist($('#' + list + 'List li'), currenttext);
   });
+  $("#btnreset").click(function() {
+    resetProjectsForm();
+  });
+  $("#projectForm").submit(function(event) {
+    var project = [{}];
+    $("#projectForm input, #projectForm select, #projectForm textarea").each(function (){
+      var property = $(this).attr("id").substr(7);
+      if (property == "_id")
+        return;
+      project[0][property] = $(this).val();
+    });
+    project[0].responsible = {};
+    project[0].responsible._id = $("#responsibleid").val();
+    project[0].responsible.name  = $("#usersForm h4 span").text();
+    project[0].employees = new Array();
+    $("#usersList .active").each(function (i) {
+      project[0].employees[i] = {};
+      project[0].employees[i]._id = this.id;
+      project[0].employees[i].name = String.trim($(this).text());
+    });
+    event.preventDefault();
+
+    $.ajax({
+      type: "POST",
+      url: "/add/project",
+      data: JSON.stringify(project),
+      success: function(data) {
+        resetProjectsForm();
+        loadProjects("projectsList");
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  });
 });
+
+function resetProjectsForm()
+{
+  $("#projectForm")[0].reset();
+  $("#project_id").val(0);
+  $("#btnremove").addClass("hidden");
+  $("#projectsList li").removeClass("active");
+  $("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
+  $("#usersList li").removeClass("active");
+  $("#responsibleid").val(0);
+  $("#usersForm h4 span").text("");
+}
 function loadUsers(container) {
 //load complete list of customers
   var filter = {};
   $.ajax({
     type: "POST",
-    url: "/get/users",
+    url: "/get/user",
     data: JSON.stringify(filter),
     success: function(data) {
       var i;
@@ -29,15 +76,17 @@ function loadUsers(container) {
       }
       $("#" + container).html(htmllist);
       $("#" + container + " .list-group-item").click(function() {
+        var beforeusers = $("#usersList .active").length;
         $(this).toggleClass("active");
-        var selectusers = $("#usersList .active").length;
-        if(selectusers == 1) {
+	var afterusers = $("#usersList .active").length;
+        if(afterusers == 1 && (beforeusers-afterusers) < 0) {
           $("#usersForm h4 span").text($(this).text());
-        }
-        else if(selectusers == 0) {
+          $("#responsibleid").val(this.id);
+        } else if(afterusers == 0) {
           $("#usersForm h4 span").text("");
-      }
-  });
+          $("#responsibleid").val(0);
+       }
+    });
     },
     contentType: 'application/json; charset=utf-8',
     dataType: "json",
@@ -48,7 +97,7 @@ function loadProjects(container) {
 	var filter = {};
 	$.ajax({
 		type: "POST",
-		url: "/get/projects",
+		url: "/get/project",
 		data: JSON.stringify(filter),
 		success: function(data) {
 			var i;
@@ -62,16 +111,46 @@ function loadProjects(container) {
 			$("#projectsList .list-group-item").click(function() {
 				$("#projectsList .list-group-item").removeClass("active");
 				$(this).addClass("active");
+				loadProjectDetails(this.id, "projectForm");
 			});
 			$("#projectsList .list-group-item:last").click(function() {
-				$("#projectForm")[0].reset();
-				$("#prject_id").val(0);
-				$(".btn-danger").addClass("hidden");
+				resetProjectsForm();
 			});
 		},
 		contentType: 'application/json; charset=utf-8',
 		dataType: "json",
 		});
+}
+
+function loadProjectDetails(id,container) {
+	var filter = {};
+	if(id == "")
+		return;
+	filter._id = id;
+	$.ajax({
+		type: "POST",
+		url: "/get/project",
+		data: JSON.stringify(filter),
+		success: function(data) {
+			for(var key in data.records[0]) {
+				$("#project" + key).val(data.records[0][key]);
+			}
+			$("#usersForm h4 span").text(data.records[0].responsible.name);
+		        $("#responsibleid").val(data.records[0].responsible._id);
+			setActiveUsers(data.records[0].employees);
+			$(".btn-danger").removeClass("hidden");
+			$("#btnsubmit").html("<span class='glyphicon glyphicon-edit'></span> Update");
+		},
+		contentType: 'application/json; charset=utf-8',
+		dataType: "json",
+		});
+}
+
+function setActiveUsers(employees) {
+  var i;
+  for (i = 0; i < employees.length; i++) {
+    $("#" + employees[i]._id).addClass("active");
+  }
 }
 
 function loadCustomers(container) {
@@ -124,7 +203,7 @@ function filterlist(list, currenttext) {
     <p></p>
     <ul class="list-group" id="projectsList">
   </div>
-  <div class="col-lg-4">
+  <div class="col-lg-5">
     <h3>Project Details</h3>
     <form class="form-horizontal" role="form" id="projectForm" method="post" action="/index/projects">
 <input type="hidden" id="project_id" value="0">
@@ -139,30 +218,40 @@ function filterlist(list, currenttext) {
     <label for="projecttype" class="col-lg-4 control-label">Type</label>
     <div class="col-lg-6">
       <select class="form-control" id="projecttype">
-  <option>Development</option>
-  <option>Research</option>
-  <option>Business</option>
+  <option value="1">Development</option>
+  <option value="2">Research</option>
+  <option value="3">Business</option>
       </select>
     </div>
   </div>
-
 <div class="form-group">
     <label for="projectname" class="col-lg-4 control-label">Name</label>
     <div class="col-lg-6">
       <input type="text" class="form-control" id="projectname" placeholder="Name">
     </div>
   </div>
-
 <div class="form-group">
-    <label for="custname" class="col-lg-4 control-label">Date start</label>
+    <label for="projectname" class="col-lg-4 control-label">Description</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control datepicker" id="projectstart" placeholder="1/1/2013">
+      <textarea class="form-control" id="projectdescription" rows="3" placeholder="Description"></textarea>
     </div>
   </div>
 <div class="form-group">
-    <label for="custname" class="col-lg-4 control-label">Date end</label>
+    <label for="projectcontact_person" class="col-lg-4 control-label">Contact Person</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control datepicker" id="projectend" placeholder="31/12/2020">
+      <input type="text" class="form-control" id="projectcontact_person" placeholder="Contact Person">
+    </div>
+</div>
+<div class="form-group">
+    <label for="projectstart" class="col-lg-4 control-label">Date start</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control datepicker" id="projectstart" placeholder="2013-1-1">
+    </div>
+  </div>
+<div class="form-group">
+    <label for="projectend" class="col-lg-4 control-label">Date end</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control datepicker" id="projectend" placeholder="2020-12-31">
     </div>
   </div>
 <div class="form-group">
@@ -179,6 +268,7 @@ function filterlist(list, currenttext) {
     <form class="form-horizontal" role="form" id="usersForm" method="post" action="/index/projects">
     <p>Select responsible and then people involved in the project.</p>
     <h4>Responsible: <span></span></h4>
+    <input type="hidden" id="responsibleid" value="0">
 <div class="input-group">
       <span class="input-group-addon glyphicon glyphicon-search"></span>
       <input type="text" class="form-control rapidsearch" placeholder="Rapid Search" id="txtusers">
