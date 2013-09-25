@@ -2,7 +2,7 @@
 
 import sys
 from core.config import conf_auth_db, version
-from core.validation import calculate_password_and_salt
+from core.validation import calculate_password_and_salt_in_json_user
 
 print '[+] Welcome to Abinsula Timesheet version %s\n' % (version)
 print '[+] Checking libraries.. ',
@@ -53,7 +53,7 @@ for missing_collection in (set(collections) - set(db.collection_names())):
 
 print 'OK!\n[+] Adding administrator credential in \'user\' collection with %s:%s.. ' % (conf_auth_db['init.default.admin'], conf_auth_db['init.default.password']),
 
-password_and_salt = calculate_password_and_salt(conf_auth_db['init.default.password'])
+password_and_salt = calculate_password_and_salt_in_json_user(conf_auth_db['init.default.password'])
 
 db['user'].update( { '_id' : 1 }, dict({ '_id' : 1, 'name' : 'Admin', 'surname' : 'Default', 'username': conf_auth_db['init.default.admin'], 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : 'administrator'  }, **password_and_salt), True)
     
