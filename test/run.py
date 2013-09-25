@@ -3,23 +3,28 @@ import urllib2, urllib, json, os
 from cookielib import CookieJar
 
 # Credentials
-credentials = {'username': 'ts_admin', 'password': 'ts_admin_pwd'}
+admin_credentials = {'username': 'ts_admin', 'password': 'ts_admin_pwd'}
 
 cj = CookieJar()
 
 opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
 
 def _login(values):
-    """Login procedure using credentials"""
+    """Login procedure using admin_credentials"""
     cj.clear()
     data = urllib.urlencode(values)
     opener.open("https://localhost:9090/auth/login", data)
     
 def _assert_logged_in(check_logged = True):
     """Dirty way to assert if the user is logged in"""
+    
+    print '\nCHECK if user %s' % ('can log' if check_logged else 'can not log')
     request = urllib2.Request('https://localhost:9090/')
     page_returned = opener.open(request).read()
+    
     assert (not check_logged and 'Timesheet login' in page_returned) or (check_logged and not 'Timesheet login' in page_returned)
+    print 'OK!'
+
 
 # Assert procedure
 def _assert(uri, json_in, json_expected):
@@ -46,7 +51,7 @@ def _assert(uri, json_in, json_expected):
 
 
 ## LOGIN
-_login(credentials)
+_login(admin_credentials)
 
 ## CHECK LOGIN
 _assert_logged_in()
@@ -77,30 +82,39 @@ _assert('/get/customer', { }, { 'error': None, 'records' : [ ] })
 # Remove already unexistant user
 _assert('/remove/user', [ { 'name' : 'USERTEST'  } ], { 'error' : None  })
 # Add one customer (return one user)
-_assert('/add/user', [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'user', 'password' : '', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
+_assert('/add/user', [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : '', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
 # Get the inserted customer
-_assert('/get/user', { 'name' : 'USERTEST' }, { 'error': None, 'records' : [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', '_id' : '' , 'group' : 'user', 'password' : '', 'salt' : '' } ] })
+_assert('/get/user', { 'name' : 'USERTEST' }, { 'error': None, 'records' : [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', '_id' : '' , 'group' : 'users', 'password' : '', 'salt' : '' } ] })
 # Delete the one inserted
 _assert('/remove/user', [ { 'name' : 'USERTEST'  } ], { 'error' : None })
 # Get the empty customers list
 _assert('/get/user', { 'name' : 'USERTEST' }, { 'error': None, 'records' : [ ] })
 # Add two elements USERTEST1 and USERTEST2
-_assert('/add/user', [ { 'name' : 'USERTEST1', 'surname' : 'SURNAME', 'username' : 'USERNAME1' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'user', 'password' : '', 'salt' : '' }, { 'name' : 'USERTEST2', 'surname' : 'SURNAME', 'username' : 'USERNAME2' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'user', 'password' : '', 'salt' : '' } ], { 'error' : None, 'ids' : [ '', '' ] })
+_assert('/add/user', [ { 'name' : 'USERTEST1', 'surname' : 'SURNAME', 'username' : 'USERNAME1' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : '', 'salt' : '' }, { 'name' : 'USERTEST2', 'surname' : 'SURNAME', 'username' : 'USERNAME2' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : '', 'salt' : '' } ], { 'error' : None, 'ids' : [ '', '' ] })
 # Delete USERTEST1
-_assert('/remove/user', [ { 'name' : 'USERTEST1'  } ], { 'error' : None })
+_assert('/remove/user', [ { 'name' : 'USERTEST1'  }, { 'name' : 'USERTEST2'  } ], { 'error' : None })
 # Check if USERTEST1 is deleted
 _assert('/get/user', { 'name' : 'USERTEST1' }, { 'error': None, 'records' : [ ] })
 
 
 ## NEW USER LOGIN
-# # Add one user without password
-# _assert('/add/user', [ { 'name' : 'NEW_USER_WITH_NO_PWD', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'user' } ], { 'error' : None, 'ids' : [ '' ] })
-# # Add one user with password
-# json_returned = _assert('/add/user', [ { 'name' : 'NEW_USER_WITH_PWD', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'user' } ], { 'error' : None, 'ids' : [ '' ] })
-# json_returned['ids'][0]
-# _assert('/add/password', [ { 'name' : 'NEW_USER_WITH_PWD', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'user' } ], { 'error' : None, 'ids' : [ '' ] })
-# 
-# 
-# _login({'username' : 'NEW_USER_WITH_NO_PWD', 'password' : 'nopwd' })
-# _assert_logged_in(False)
+
+# Add one user with password, should login
+_assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
+# Add user without password, should not login 
+_assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT' } ], { 'error' : None, 'ids' : [ '' ] })
+# Check if can't login with NEW_USER_WITH_NO_PWD
+_login({'username' : 'NEW_USER_WITH_NO_PWD', 'password' : '' })
+_assert_logged_in(False)
+# Check if can login with NEW_USER_WITH_PWD
+_login({'username' : 'NEW_USER_WITH_PWD', 'password' : 'mypassword' })
+_assert_logged_in()
+# Relogin as admin
+_login(admin_credentials)
+# Delete both user in one request
+_assert('/remove/user', [ { 'name' : 'NAME_USER_LOGIN_TEST' } ], { 'error' : None })
+# Check presence
+_assert('/get/user', { 'name' : 'NAME_USER_LOGIN_TEST' }, { 'error': None, 'records' : [ ] })
+
+
 
