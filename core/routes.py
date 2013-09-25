@@ -108,4 +108,26 @@ class Routes:
         else:
             return { 'error' : None }
             
+    @cherrypy.expose
+    @require(member_of("users"))
+    @cherrypy.tools.allow(methods=['POST'])
+    @cherrypy.tools.json_in(on = True)
+    @cherrypy.tools.json_out(on = True)
+    def update(self, collection):
+        """
+        Update elements. 
         
+        POST /update/<collection>/
+        
+        Expects a JSON filter defined by schema
+        Returns { 'error' : string }
+        """
+
+        json_in = cherrypy.request.json 
+        try:
+            ids = db.update(collection, json_in)
+        except Exception as e:
+            raise
+            return {'error' : '%s: %s' % (type(e).__name__, str(e)) }
+        else:
+            return { 'error' : None }  
