@@ -18,6 +18,24 @@ $(document).ready(function() {
   $("#btnreset").click(function() {
     resetProjectsForm();
   });
+  $("#btnremove").click(function() {
+    var id = $("#project_id").val();
+    if (id == 0)
+      return;
+    var filter = [{}];
+    filter[0]._id = id;
+    $.ajax({
+      type: "POST",
+      url: "/remove/project",
+      data: JSON.stringify(filter),
+      success: function(data) {
+        resetProjectsForm();
+        loadProjects("projectsList");
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  });
   $("#projectForm").submit(function(event) {
     var project, _proj, url;
     if(isupdate) {
@@ -49,7 +67,7 @@ $(document).ready(function() {
     $.ajax({
       type: "POST",
       url: url,
-      data: JSON.stringify(project),
+      data: JSON.stringify(_proj),
       success: function(data) {
         resetProjectsForm();
         loadProjects("projectsList");
