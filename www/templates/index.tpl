@@ -27,12 +27,10 @@
     </a>
   </li>
   <li class="active">
-    <a href="#">
+    <a href="/index/calendar">
       Consuntivazione
     </a>
   </li>
-  <li>
-    <a href="#">
       <li class="dropdown">
 	<a href="#" data-toggle="dropdown" role="button">Trasferte<b class="caret"></b></a>
         <ul aria-labelledby="drop4" role="menu" class="dropdown-menu" id="menurep">
