@@ -1,1 +1,14 @@
-Calendar
+<link rel='stylesheet' type='text/css' href='/static/css/fullcalendar.css' />
+<script type="text/javascript">
+$(document).ready( function() {
+  $('#calendar').fullCalendar({
+    firstDay:1,
+    weekNumbers:true,
+    selectable:true,
+    select: function(start, end, allDay) {
+    },
+  });
+});
+</script>
+
+<div id="calendar"></div>
