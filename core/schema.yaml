@@ -47,6 +47,9 @@ user:
       blank: True
     group:
       type: string
+      enum:
+        - administrators
+        - users
     password: 
       type: string
       blank: True
@@ -75,12 +78,12 @@ project:
       type: array
       properties:
         name:
-        type: string
+          type: string
     grand_total:
-      type: decimal
+      type: number
       optional: True
     expences:
-      type: decimal
+      type: number
       optional: True
     responsible:
       type: object
