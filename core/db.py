@@ -1,6 +1,6 @@
 try:
     from pymongo import MongoClient as Connection
-except ImportError, e:
+except ImportError as e:
     from pymongo import Connection
 
 from validation import objectify_json_with_idstring, validate_transform_json_list, validate_transform_json, sanitize_json, stringify_objectid_list, stringify_json_list_with_objectid
