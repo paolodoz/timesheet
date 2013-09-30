@@ -11,9 +11,14 @@ static:
     tools.staticdir.dir: www/static
     tools.staticdir.on: true
 
+mongodb:
+  hostname: localhost
+  port: 27017
+  db: ts
+
 auth:
   page: www/auth.html
-  mode:
+  providers:
     - ldap
     - db
   
@@ -22,9 +27,12 @@ auth_db:
   init.default.password: ts_admin_pwd
   
 auth_ldap:
-  hostname: localhost
+  hostname: 127.0.0.1
   
-mongodb:
-  hostname: localhost
-  port: 27017
-  db: ts
+  # Bind/Search string to login and retrieve {username} information
+  bind_search_string: uid={username},ou=People,dc=abinsula,dc=com
+  
+  # Search filter to retrieve {username} informations
+  search_filter: uid={username}
+  
+  

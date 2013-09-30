@@ -3,9 +3,9 @@ try:
 except ImportError, e:
     from pymongo import Connection
 
-from core.validation import objectify_json_with_idstring, validate_transform_json_list, validate_transform_json, sanitize_json, stringify_objectid_list, stringify_json_list_with_objectid
+from validation import objectify_json_with_idstring, validate_transform_json_list, validate_transform_json, sanitize_json, stringify_objectid_list, stringify_json_list_with_objectid
 from bson.objectid import ObjectId
-from core.config import collections, conf_mongodb, conf_auth, conf_auth_db
+from config import collections, conf_mongodb, conf_auth, conf_auth_db
 import string, hashlib, random
 
 connection = Connection(conf_mongodb['hostname'], conf_mongodb['port'])

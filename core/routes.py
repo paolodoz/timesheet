@@ -128,7 +128,6 @@ class Routes:
         try:
             ids = db.update(collection, json_in)
         except Exception as e:
-            raise
             return {'error' : '%s: %s' % (type(e).__name__, str(e)) }
         else:
             return { 'error' : None }  

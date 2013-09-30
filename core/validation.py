@@ -1,5 +1,5 @@
 import cgi, yaml, random, string, hashlib
-from core.config import schema, core_folder
+from config import schema, core_folder
 from validictory import ValidationError, validate
 from bson import ObjectId
 

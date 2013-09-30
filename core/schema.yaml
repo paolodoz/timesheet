@@ -38,10 +38,13 @@ user:
       type: string
     phone:
       type: string
+      blank: True
     mobile:
       type: string
+      blank: True
     city:
       type: string
+      blank: True
     group:
       type: string
     password: 
