@@ -71,6 +71,11 @@ project:
       type: string
     end:
       type: string
+    tasks:
+      type: array
+      properties:
+        name:
+        type: string
     grand_total:
       type: decimal
       optional: True
