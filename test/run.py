@@ -5,6 +5,10 @@ from cookielib import CookieJar
 # Credentials
 admin_credentials = {'username': 'ts_admin', 'password': 'ts_admin_pwd'}
 
+# Possible users groups
+users_groups = [ 'administrators', 'users']
+
+
 cj = CookieJar()
 
 opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
@@ -128,6 +132,10 @@ _assert('/update/customer', { '_id' : json_returned['ids'][0], 'name' : 'CUSTOME
 _assert('/get/customer', { '_id' : json_returned['ids'][0] }, { 'error': None, 'records' : [ { 'name' : 'CUSTOMERNEWNAME', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', '_id' : '', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC'   } ] })
 # Delete both user in one request
 _assert('/remove/customer', [ { '_id' : json_returned['ids'][0]} ], { 'error' : None })
+
+# TEST SCHEMA OPTIONS CONSTRAINTS
+_assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'WRONG_GROUP', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : "ValidationError: Value u'WRONG_GROUP' for field 'group' is not in the enumeration: %s" % (str(users_groups)), 'ids' : [ ] })
+
 
 
 

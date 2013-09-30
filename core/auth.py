@@ -77,7 +77,7 @@ def member_of(groupname):
         if user_record:
             user_group = user_record.get('group', None)
             if user_group:
-                return user_group == 'administrator' or user_group == groupname
+                return user_group == 'administrators' or user_group == groupname
     return check
 
 def name_is(reqd_username):
@@ -119,8 +119,6 @@ class AuthController(object):
     def get_loginform(self, username, msg="", from_page="/"):
         return templates.get_template('auth.tpl').render(message=msg)
         
-        #return open(conf_auth['page']).read()
-    
     @cherrypy.expose
     def login(self, username=None, password=None, from_page="/"):
         if username is None or password is None:
