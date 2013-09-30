@@ -7,6 +7,11 @@
     <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
   </head>
   <body>
+  
+	% if message:
+		<div class="alert alert-danger">${message}</div>
+	% endif
+  
 <div class="row">
   <div class="col-lg-4 col-lg-offset-4"><h3>Timesheet login</h3>
 <form class="form-horizontal" method="post" action="/auth/login">

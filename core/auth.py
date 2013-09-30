@@ -5,7 +5,7 @@
 #
 
 import cherrypy
-from core.config import conf_auth, conf_auth_db, conf_auth_ldap
+from core.config import conf_auth, conf_auth_db, conf_auth_ldap, templates
 from core.db import db
 
 SESSION_KEY = '_cp_username'
@@ -116,8 +116,10 @@ class AuthController(object):
     def on_logout(self, username):
         """Called on logout"""
     
-    def get_loginform(self, username, msg="Enter login information", from_page="/"):
-        return open(conf_auth['page']).read()
+    def get_loginform(self, username, msg="", from_page="/"):
+        return templates.get_template('auth.tpl').render(message=msg)
+        
+        #return open(conf_auth['page']).read()
     
     @cherrypy.expose
     def login(self, username=None, password=None, from_page="/"):

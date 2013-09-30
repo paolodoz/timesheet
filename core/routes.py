@@ -1,13 +1,9 @@
 import cherrypy, os, traceback
 from core.auth import AuthController, require, member_of
 from core import db
-from mako.lookup import TemplateLookup
-from config import templates_folder, views_folder
+from config import views_folder, templates
 from glob import glob
 
-    
-# Set template engine
-templates = TemplateLookup(directories=[templates_folder])
 
 # Set available views dictionary
 views = {}

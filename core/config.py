@@ -1,5 +1,6 @@
 import yaml
 import os
+from mako.lookup import TemplateLookup
 
 version = '0.1'
 
@@ -9,6 +10,9 @@ root_folder = os.path.abspath(os.path.join(core_folder,'..'))
 www_folder = os.path.abspath(os.path.join(root_folder,'www'))
 templates_folder = os.path.abspath(os.path.join(www_folder,'templates'))
 views_folder = os.path.abspath(os.path.join(www_folder,'views'))
+
+# Set template engine
+templates = TemplateLookup(directories=[templates_folder])
 
 # Load database schema validation from schema.yaml
 yaml_path = os.path.join(core_folder, 'schema.yaml')
