@@ -6,9 +6,77 @@ $(document).ready( function() {
     weekNumbers:true,
     selectable:true,
     select: function(start, end, allDay) {
+      $('#edithours').modal('show');
     },
   });
+  $("#hours-range").slider({
+    range: "min",
+    min: 1,
+    max: 8,
+    value: 8,
+    slide: function( event, ui ) {
+      $("#cmbhours").val( ui.value );
+    }
+  });
+  $("#cmbhours").val( $("#hours-range").slider("value"));
 });
 </script>
 
 <div id="calendar"></div>
+
+<div class="modal fade" id="edithours">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Add hours</h4>
+      </div>
+      <div class="modal-body">
+	<form class="form-horizontal">
+	  <div class="form-group">
+	    <label for="cmbproject" class="col-lg-3 control-label">Project</label>
+	    <div class="col-lg-9">
+	      <select class="form-control" id="cmbproject">
+              </select>
+	    </div>
+	  </div>
+	  <div class="form-group">
+	    <label for="cmbtask" class="col-lg-3 control-label">Task</label>
+	    <div class="col-lg-9">
+	      <select class="form-control" id="cmbtask">
+	      </select>
+	    </div>
+	  </div>
+	  <div class="form-group">
+	    <label for="cmbhours" class="col-lg-3 control-label">Hours</label>
+	    <div class="col-lg-9">
+		<div id="hours-range"></div>
+	    </div>
+	  </div>
+	  <div class="form-group">
+            <label class="col-lg-3 control-label"></label>
+	      <div class="col-lg-9">
+	        <input type="text" class="form-control" id="cmbhours" placeholder="8">
+	      </div>
+	  </div>
+	  <div class="form-group">
+	    <label for="cmbextrahours" class="col-lg-3 control-label">Is extra hour</label>
+	    <div class="col-lg-9">
+	      <input type="checkbox" value="" id="cmbextrahours">
+	    </div>
+	  </div>
+	  <div class="form-group">
+	    <label for="cmbnotes" class="col-lg-3 control-label">Notes</label>
+	    <div class="col-lg-9">
+	      <textarea class="form-control" rows="3" id="cmbnotes" placeholder="Notes"></textarea>
+	    </div>
+	  </div>
+	</form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="btnsave">Save</button>
+        <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
