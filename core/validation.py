@@ -1,7 +1,14 @@
 import cgi, yaml, random, string, hashlib
-from config import schema, core_folder
+from core.config import schema, core_folder
 from validictory import ValidationError, validate
-from bson import ObjectId
+
+# Dirty hack to avoid the bug 
+# http://stackoverflow.com/questions/10401499/mongokit-importerror-no-module-named-objectid-error
+# Old pymongo versions uses pymongo.objectid.ObjectId while new uses bson.ObjectId
+try:
+    from pymongo.objectid import ObjectId
+except ImportError as e:
+    from bson import ObjectId
 
 def sanitize_json(json_record):
     """Input validation method to prevent XSS"""
@@ -36,8 +43,10 @@ def objectify_json_with_idstring(json_record):
 
 def stringify_json_with_objectid(json_record):
     """Convert ObjectId to string in JSON"""
+
     if '_id' in json_record and isinstance(json_record['_id'], ObjectId):
         json_record['_id'] = str(json_record['_id'])
+        
     return json_record
 
 def stringify_json_list_with_objectid(json_list):
