@@ -51,6 +51,9 @@ db = connection[conf_mongodb['db']]
 for missing_collection in (set(collections) - set(db.collection_names())):
     db[missing_collection]
 
+# Set unique parameters
+db['user'].ensureIndex( { 'username': 1 }, { unique: true } )
+
 print 'OK!\n[+] Adding administrator credential in \'user\' collection with %s:%s.. ' % (conf_auth_db['init.default.admin'], conf_auth_db['init.default.password']),
 
 password_and_salt = calculate_password_and_salt_in_json_user(conf_auth_db['init.default.password'])
