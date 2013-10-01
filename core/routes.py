@@ -16,6 +16,7 @@ class Routes:
     _cp_config = {
         'tools.sessions.on': True,
         'tools.auth.on': True,
+        'tools.sessions.name' : 'name'
     }
     auth = AuthController()
     
