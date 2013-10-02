@@ -8,7 +8,6 @@ import cherrypy
 from core.config import conf_auth, conf_auth_db, conf_auth_ldap, templates
 from core.db import db
 
-SESSION_KEY = '_cp_userdata'
 
 def check_credentials(username, password):
     """Verifies credentials for username and password.
@@ -38,7 +37,7 @@ def check_auth(*args, **kwargs):
     conditions that the user must fulfill"""
     conditions = cherrypy.request.config.get('auth.require', None)
     if conditions is not None:
-        userdata = cherrypy.session.get(SESSION_KEY)
+        userdata = cherrypy.session.get('_ts_user')
         if userdata:
             username = userdata.get('username')
             if username:
@@ -114,7 +113,7 @@ class AuthController(object):
     
     def on_login(self, username):
         """Called on successful login, save user data"""
-        cherrypy.session[SESSION_KEY] = db['user'].find_one({ 'username' : username }, { 'username' : 1, 'group' : 1, '_id' : 0 })
+        cherrypy.session['_ts_user'] = db['user'].find_one({ 'username' : username }, { 'username' : 1, 'group' : 1 })
         cherrypy.request.login = username
         
     def on_logout(self, username):
@@ -138,9 +137,9 @@ class AuthController(object):
     @cherrypy.expose
     def logout(self, from_page="/"):
         sess = cherrypy.session
-        userdata = sess.get(SESSION_KEY, None)
+        userdata = sess.get('_ts_user', None)
         username = userdata.get('username', None)
-        sess[SESSION_KEY] = None
+        sess['_ts_user'] = None
         if username:
             cherrypy.request.login = None
             self.on_logout(username)
