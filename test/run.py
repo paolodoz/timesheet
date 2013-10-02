@@ -143,8 +143,26 @@ def main():
     # TEST SCHEMA OPTIONS CONSTRAINTS
     _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'WRONG_GROUP', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : "ValidationError: Value u'WRONG_GROUP' for field 'group' is not in the enumeration: %s" % (str(users_groups)), 'ids' : [ ] })
 
+    # TEST PERMISSIONS LIMITATIONS
+    # GET admin password
+    _assert('/get/user', [ { 'username' : 'ts_admin' }, { 'password' : 1} ], { 'error' : "ValidationError: get user.password restricted for users in group 'administrators'", 'records' : [ ] })
+    # Add user in group user
+    _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
+    # Check if can login with NEW_USER_WITH_PWD
+    _login({'username' : 'PERM_TEST', 'password' : 'mypassword' })
+    _assert_logged_in()
 
-
+    # GET his own password
+    _assert('/get/user', [ { 'username' : 'PERM_TEST' }, { 'password' : 1} ], { 'error' : "ValidationError: get user.password restricted for users in group 'users'", 'records' : [ ] })
+    # GET other user surname
+    _assert('/get/user', [ { 'username' : admin_credentials['username'] }, { 'surname' : 1 } ], { 'error' : "ValidationError: Value 'username' is restricted to user value", 'records' : [ ] })
+    # REMOVE himself
+    _assert('/remove/user', [ { 'username' : 'PERM_TEST' } ], { 'error' : "ValidationError: remove user restricted for users in group 'users'" })
+    # Add new user 
+    _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST2', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : "ValidationError: add user restricted for users in group 'users'", 'ids' : [ ] })
+    
+    
+    
 if __name__ == "__main__":
     main()
 

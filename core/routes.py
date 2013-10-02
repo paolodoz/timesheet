@@ -80,6 +80,7 @@ class Routes:
         try:
             records = db.get(collection, json_in)
         except Exception as e:
+            #import traceback; traceback.print_exc()
             return {'error' : '%s: %s' % (type(e).__name__, str(e)), 'records' : []}
         else:
             return { 'error' : None, 'records' : records}

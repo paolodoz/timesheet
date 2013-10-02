@@ -15,13 +15,19 @@ views_folder = os.path.abspath(os.path.join(www_folder,'views'))
 templates = TemplateLookup(directories=[templates_folder])
 
 # Load database schema validation from schema.yaml
-yaml_path = os.path.join(core_folder, 'schema.yaml')
-schema = yaml.load(file(yaml_path, 'r'))
+schema_path = os.path.join(core_folder, 'schema.yaml')
+schema = yaml.load(file(schema_path, 'r'))
 collections = schema.keys()
 
+# Load permissions schema from permissions.yaml
+permissions_path = os.path.join(core_folder, 'permissions.yaml')
+permissions_schema = yaml.load(file(permissions_path, 'r'))
+criteria_restrictions = permissions_schema['criteria_restrictions']
+denied_requests = permissions_schema['denied_requests']
+
 # Load configuration from config.yaml
-yaml_path = os.path.join(core_folder, 'config.yaml')
-conf = yaml.load(file(yaml_path, 'r'))
+conf_path = os.path.join(core_folder, 'config.yaml')
+conf = yaml.load(file(conf_path, 'r'))
 
 # Adding static root dir absolute path
 conf['static']['/'] = {}

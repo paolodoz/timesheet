@@ -1,0 +1,33 @@
+
+criteria_restrictions:
+  users:
+    user:
+      _id: '%%_id%%'
+      username: '%%username%%'
+    project:
+      employees:
+        _id:
+          $elemMatch:
+            _id: '%%_id%%'
+      responsible:
+        _id: '%%_id%%'
+      
+      
+denied_requests:
+  users:
+    get:
+      user:
+        password: false
+        salt: false
+    remove: false
+    add: false
+  administrators:
+    get:
+      user:
+        password: false
+        salt: false
+  
+
+
+
+  
