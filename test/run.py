@@ -6,7 +6,7 @@ from cookielib import CookieJar
 admin_credentials = {'username': 'ts_admin', 'password': 'ts_admin_pwd'}
 
 # Possible users groups
-users_groups = [ 'administrators', 'users']
+users_groups = [ 'administrator', 'employee']
 
 
 cj = CookieJar()
@@ -93,7 +93,7 @@ def main():
     # Remove already unexistant user
     _assert('/remove/user', [ { 'name' : 'USERTEST'  } ], { 'error' : None  })
     # Add one customer (return one user)
-    _assert('/add/user', [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : '', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
+    _assert('/add/user', [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
     # Get the inserted customer
     _assert('/get/user', [ { 'name' : 'USERTEST' }, { 'surname' : 1, '_id' : 0 } ], { 'error': None, 'records' : [ { 'surname' : 'SURNAME'  } ] })
     # Delete the one inserted
@@ -101,7 +101,7 @@ def main():
     # Get the empty customers list
     _assert('/get/user', [ { 'name' : 'USERTEST' }, { '_id' : 1 } ], { 'error': None, 'records' : [ ] })
     # Add two elements USERTEST1 and USERTEST2
-    _assert('/add/user', [ { 'name' : 'USERTEST1', 'surname' : 'SURNAME', 'username' : 'USERNAME1' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : '', 'salt' : '' }, { 'name' : 'USERTEST2', 'surname' : 'SURNAME', 'username' : 'USERNAME2' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : '', 'salt' : '' } ], { 'error' : None, 'ids' : [ '', '' ] })
+    _assert('/add/user', [ { 'name' : 'USERTEST1', 'surname' : 'SURNAME', 'username' : 'USERNAME1' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : '' }, { 'name' : 'USERTEST2', 'surname' : 'SURNAME', 'username' : 'USERNAME2' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : '' } ], { 'error' : None, 'ids' : [ '', '' ] })
     # Delete USERTEST1
     _assert('/remove/user', [ { 'name' : 'USERTEST1'  }, { 'name' : 'USERTEST2'  } ], { 'error' : None })
     # Check if USERTEST1 is deleted
@@ -111,9 +111,9 @@ def main():
     ## NEW USER LOGIN
     
     # Add one user with password, should login
-    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
+    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
     # Add user without password, should not login 
-    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT' } ], { 'error' : None, 'ids' : [ '' ] })
+    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT' } ], { 'error' : None, 'ids' : [ '' ] })
     # Check if can't login with NEW_USER_WITH_NO_PWD
     _login({'username' : 'NEW_USER_WITH_NO_PWD', 'password' : '' })
     _assert_logged_in(False)
@@ -145,21 +145,21 @@ def main():
 
     # TEST PERMISSIONS LIMITATIONS
     # GET admin password
-    _assert('/get/user', [ { 'username' : 'ts_admin' }, { 'password' : 1} ], { 'error' : "ValidationError: get user.password restricted for users in group 'administrators'", 'records' : [ ] })
+    _assert('/get/user', [ { 'username' : 'ts_admin' }, { 'password' : 1} ], { 'error' : "ValidationError: get user.password restricted for users in group 'administrator'", 'records' : [ ] })
     # Add user in group user
-    _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
+    _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
     # Check if can login with NEW_USER_WITH_PWD
     _login({'username' : 'PERM_TEST', 'password' : 'mypassword' })
     _assert_logged_in()
 
     # GET his own password
-    _assert('/get/user', [ { 'username' : 'PERM_TEST' }, { 'password' : 1} ], { 'error' : "ValidationError: get user.password restricted for users in group 'users'", 'records' : [ ] })
+    _assert('/get/user', [ { 'username' : 'PERM_TEST' }, { 'password' : 1} ], { 'error' : "ValidationError: get user.password restricted for users in group 'employee'", 'records' : [ ] })
     # GET other user surname
     _assert('/get/user', [ { 'username' : admin_credentials['username'] }, { 'surname' : 1 } ], { 'error' : "ValidationError: Value 'username' is restricted to user value", 'records' : [ ] })
     # REMOVE himself
-    _assert('/remove/user', [ { 'username' : 'PERM_TEST' } ], { 'error' : "ValidationError: remove user restricted for users in group 'users'" })
+    _assert('/remove/user', [ { 'username' : 'PERM_TEST' } ], { 'error' : "ValidationError: remove user restricted for users in group 'employee'" })
     # Add new user 
-    _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST2', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : "ValidationError: add user restricted for users in group 'users'", 'ids' : [ ] })
+    _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST2', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : "ValidationError: add user restricted for users in group 'employee'", 'ids' : [ ] })
     
     
     

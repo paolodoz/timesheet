@@ -21,7 +21,7 @@ class Routes:
     auth = AuthController()
     
     @cherrypy.expose
-    @require(member_of("users"))
+    @require(member_of("employee"))
     def index(self, view = 'index'):
         """
         Serves HTML views stored in 'views/<view>.html' rendered with template 'templates/index.tpl'
@@ -36,7 +36,7 @@ class Routes:
         
 
     @cherrypy.expose
-    @require(member_of("users"))
+    @require(member_of("employee"))
     @cherrypy.tools.allow(methods=['POST'])
     @cherrypy.tools.json_in(on = True)
     @cherrypy.tools.json_out(on = True)
@@ -60,7 +60,7 @@ class Routes:
         
 
     @cherrypy.expose
-    @require(member_of("users"))
+    @require(member_of("employee"))
     @cherrypy.tools.allow(methods=['POST'])
     @cherrypy.tools.json_in(on = True)
     @cherrypy.tools.json_out(on = True)
@@ -86,7 +86,7 @@ class Routes:
             return { 'error' : None, 'records' : records}
      
     @cherrypy.expose
-    @require(member_of("users"))
+    @require(member_of("employee"))
     @cherrypy.tools.allow(methods=['POST'])
     @cherrypy.tools.json_in(on = True)
     @cherrypy.tools.json_out(on = True)
@@ -109,7 +109,7 @@ class Routes:
             return { 'error' : None }
             
     @cherrypy.expose
-    @require(member_of("users"))
+    @require(member_of("employee"))
     @cherrypy.tools.allow(methods=['POST'])
     @cherrypy.tools.json_in(on = True)
     @cherrypy.tools.json_out(on = True)

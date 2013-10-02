@@ -46,7 +46,7 @@ def _migrate_user_to_db(ldap_result_dict, password):
                  'phone' : ldap_result_dict.get('phone',[''])[0],
                  'mobile' : ldap_result_dict.get('mobile',[''])[0],
                  'city' : ldap_result_dict.get('city',[''])[0],
-                 'group' : 'users',
+                 'group' : "employee",
                  'password' : password,
                  'salt' : ''
                  }

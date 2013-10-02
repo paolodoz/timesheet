@@ -99,7 +99,7 @@ def _add_default_admin(db):
     
     password_and_salt = calculate_password_and_salt_in_json_user(conf_auth_db['init.default.password'])
     
-    db['user'].update( { '_id' : 1 }, dict({ '_id' : 1, 'name' : 'Admin', 'surname' : 'Default', 'username': conf_auth_db['init.default.admin'], 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : 'administrators'  }, **password_and_salt), True)
+    db['user'].update( { '_id' : 1 }, dict({ '_id' : 1, 'name' : 'Admin', 'surname' : 'Default', 'username': conf_auth_db['init.default.admin'], 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : 'administrator'  }, **password_and_salt), True)
     
 
 if __name__ == "__main__":

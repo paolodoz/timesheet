@@ -1,6 +1,6 @@
 
 criteria_restrictions:
-  users:
+  employee:
     user:
       _id: '%%_id%%'
       username: '%%username%%'
@@ -14,14 +14,14 @@ criteria_restrictions:
       
       
 denied_requests:
-  users:
+  employee:
     get:
       user:
         password: false
         salt: false
     remove: false
     add: false
-  administrators:
+  administrator:
     get:
       user:
         password: false

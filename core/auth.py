@@ -78,7 +78,7 @@ def member_of(groupname):
         if user_record:
             user_group = user_record.get('group', None)
             if user_group:
-                return user_group == 'administrators' or user_group == groupname
+                return user_group == 'administrator' or user_group == groupname
     return check
 
 def name_is(reqd_username):

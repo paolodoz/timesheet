@@ -48,8 +48,8 @@ user:
     group:
       type: string
       enum:
-        - administrators
-        - users
+        - administrator
+        - employee
     password: 
       type: string
       blank: True
