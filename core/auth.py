@@ -6,6 +6,7 @@
 
 import cherrypy
 from core.config import conf_auth, conf_auth_db, conf_auth_ldap, templates
+from core.permissions import get_formatted_permissions
 from core.db import db
 
 
@@ -112,8 +113,14 @@ def all_of(*conditions):
 class AuthController(object):
     
     def on_login(self, username):
-        """Called on successful login, save user data"""
+        """Called on successful login"""
+        
+        # Save user data
         cherrypy.session['_ts_user'] = db['user'].find_one({ 'username' : username }, { 'username' : 1, 'group' : 1 })
+        
+        # Save formatted permissions schemas to speedup following accesses
+        cherrypy.session['_ts_user'].update(get_formatted_permissions())
+        
         cherrypy.request.login = username
         
     def on_logout(self, username):
