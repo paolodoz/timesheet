@@ -10,6 +10,16 @@ try:
 except ImportError as e:
     from bson import ObjectId
 
+def validate_criteria_projection(criteria_projection):
+    
+    if not isinstance(criteria_projection, list) or not len(criteria_projection) == 2:
+        raise ValidationError('Bad criteria and projection list' )
+         
+    if not criteria_projection[1]:
+        raise ValidationError('Filter projection cannot be empty')
+
+    return criteria_projection
+
 def sanitize_json(json_record):
     """Input validation method to prevent XSS"""
     sanitized_json = {}
@@ -25,7 +35,7 @@ def sanitize_json(json_record):
 def sanitize_json_list(json_list):
     """Input validation of list of JSON"""
     if not isinstance(json_list, list):
-        raise ValidationError("list expected, not '%s'" % json_list.__class__.__name__)
+        raise ValidationError("List expected, not '%s'" % json_list.__class__.__name__)
     
     sanitized_list = []
     for json_record in json_list:
@@ -83,7 +93,7 @@ def validate_transform_json_list(collection, json_list):
     """JSON list validation and transformation method"""
     
     if not isinstance(json_list, list):
-        raise ValidationError("list expected, not '%s'" % json_list.__class__.__name__)
+        raise ValidationError("List expected, not '%s'" % json_list.__class__.__name__)
     
     for json_record in json_list:
         json_record = validate_transform_json(collection, json_record)

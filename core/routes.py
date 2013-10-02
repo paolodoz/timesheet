@@ -70,11 +70,13 @@ class Routes:
         
         GET /get/<collection>/
         
-        Expects a JSON filter { 'fk1' : 'fv1', 'fk2' : 'fv2', .. }
+        Expects a JSON list containing criteria and projection. Projection dict can't be empty. 
+                [ { 'fk1' : 'fv1', .. }, { 'fk2' : 1 } ]
         Returns { 'error' : string, 'records' : [ {}, {}, .. ]  } 
         """
         
         json_in = cherrypy.request.json 
+        
         try:
             records = db.get(collection, json_in)
         except Exception as e:
@@ -93,7 +95,7 @@ class Routes:
         
         POST /remove/<collection>/
         
-        Expects a list of JSON filter [ { 'fk1' : 'fv1' }, { 'fk2' : 'fv2' } ]
+        Expects a list of JSON criteria [ { 'fk1' : 'fv1' }, { 'fk2' : 'fv2' } ]
         Returns { 'error' : string }
         """
 

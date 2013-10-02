@@ -54,89 +54,99 @@ def _assert(uri, json_in, json_expected):
     return json_returned
 
 
-## LOGIN
-_login(admin_credentials)
+def main():
+    
+    ## LOGIN
+    _login(admin_credentials)
+    
+    ## CHECK LOGIN
+    _assert_logged_in()
+    
+    ## TEST BAD REQUESTS
+    # Add directly json without list
+    _assert('/add/wrong', { 'single': 'dict' }, {'error' : "ValidationError: List expected, not 'dict'", 'ids' : [] })
+    # Add unexistant collection
+    _assert('/add/wrong', [ { 'wrong': 'param' } ], {'error' : "KeyError: 'wrong'", 'ids' : [] })
+    # Add user with unsupported param 
+    _assert('/add/user', [ { 'wrong': 'param' } ], {'error' : 'ValidationError: Required field \'username\' is missing', 'ids' : []  })
+    # Get without a valid projection
+    _assert('/get/user', [ { }, { } ], { 'error': 'ValidationError: Filter projection cannot be empty', 'records' : [] })
+    # Get badly formatted
+    _assert('/get/user', [ { } ], { 'error': 'ValidationError: Bad criteria and projection list', 'records' : [] })
+       
+    
+    ## API CUSTOMER
+    # Remove already unexistant customer
+    _assert('/remove/customer', [ { 'name' : 'CUSTOMERTEST' } ], { 'error' : None  })
+    # Add one customer (return one id)
+    json_returned = _assert('/add/customer', [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC' } ], { 'error' : None, 'ids' : [ '' ] })
+    # Get the inserted customer by name
+    _assert('/get/customer', [ { 'name' : 'CUSTOMERTEST' }, { 'name' : 1, 'address' : 1, 'phone' : 1, 'contact_person' : 1, 'vat_number' : 1, '_id' : 1, 'website' : 1, 'city' : 1, 'country' : 1, 'postal_code' : 1, 'email' : 1, 'description' : 1 } ], { 'error': None, 'records' : [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', '_id' : '', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC'   } ] })
+    # Get the inserted customer by id
+    _assert('/get/customer', [ { '_id' : json_returned['ids'][0] }, { 'address' : 1 }], { 'error': None, 'records' : [ { 'address' : 'CUSTOMER STREET', '_id' : '' } ] })
+    # Remove customer by id
+    _assert('/remove/customer', [ { '_id' : json_returned['ids'][0] } ], { 'error' : None  })
+    # Check if collection is empty
+    _assert('/get/customer', [ { '_id' : json_returned['ids'][0] }, { '_id' : 1 } ], { 'error': None, 'records' : [ ] })
+    
+    ## API USER
+    # Remove already unexistant user
+    _assert('/remove/user', [ { 'name' : 'USERTEST'  } ], { 'error' : None  })
+    # Add one customer (return one user)
+    _assert('/add/user', [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : '', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
+    # Get the inserted customer
+    _assert('/get/user', [ { 'name' : 'USERTEST' }, { 'surname' : 1, '_id' : 0 } ], { 'error': None, 'records' : [ { 'surname' : 'SURNAME'  } ] })
+    # Delete the one inserted
+    _assert('/remove/user', [ { 'name' : 'USERTEST'  } ], { 'error' : None })
+    # Get the empty customers list
+    _assert('/get/user', [ { 'name' : 'USERTEST' }, { '_id' : 1 } ], { 'error': None, 'records' : [ ] })
+    # Add two elements USERTEST1 and USERTEST2
+    _assert('/add/user', [ { 'name' : 'USERTEST1', 'surname' : 'SURNAME', 'username' : 'USERNAME1' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : '', 'salt' : '' }, { 'name' : 'USERTEST2', 'surname' : 'SURNAME', 'username' : 'USERNAME2' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : '', 'salt' : '' } ], { 'error' : None, 'ids' : [ '', '' ] })
+    # Delete USERTEST1
+    _assert('/remove/user', [ { 'name' : 'USERTEST1'  }, { 'name' : 'USERTEST2'  } ], { 'error' : None })
+    # Check if USERTEST1 is deleted
+    _assert('/get/user', [ { 'name' : 'USERTEST1' }, { '_id' : 1 } ], { 'error': None, 'records' : [ ] })
+    
+    
+    ## NEW USER LOGIN
+    
+    # Add one user with password, should login
+    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
+    # Add user without password, should not login 
+    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT' } ], { 'error' : None, 'ids' : [ '' ] })
+    # Check if can't login with NEW_USER_WITH_NO_PWD
+    _login({'username' : 'NEW_USER_WITH_NO_PWD', 'password' : '' })
+    _assert_logged_in(False)
+    # Check if can login with NEW_USER_WITH_PWD
+    _login({'username' : 'NEW_USER_WITH_PWD', 'password' : 'mypassword' })
+    _assert_logged_in()
+    # Relogin as admin
+    _login(admin_credentials)
+    # Delete both user in one request
+    _assert('/remove/user', [ { 'name' : 'NAME_USER_LOGIN_TEST' } ], { 'error' : None })
+    # Check presence
+    _assert('/get/user', [ { 'name' : 'NAME_USER_LOGIN_TEST' }, { '_id' : 1 } ], { 'error': None, 'records' : [ ] })
+    
+    # TEST UPDATE
+    
+    # Add one customer (return one id)
+    json_returned = _assert('/add/customer', [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC' } ], { 'error' : None, 'ids' : [ '' ] })
+    # Get the inserted customer by id
+    _assert('/get/customer', [ { '_id' : json_returned['ids'][0] }, { '_id' : 1 } ], { 'error': None, 'records' : [ { '_id' : ''   } ] })
+    # Update name
+    _assert('/update/customer', { '_id' : json_returned['ids'][0], 'name' : 'CUSTOMERNEWNAME', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC' }, { 'error': None })
+    # Check if the inserted customer by id is modified
+    _assert('/get/customer', [ { '_id' : json_returned['ids'][0] }, { '_id' : 1 } ], { 'error': None, 'records' : [ { '_id' : '' } ] })
+    # Delete both user in one request
+    _assert('/remove/customer', [ { '_id' : json_returned['ids'][0]} ], { 'error' : None })
+    
+    # TEST SCHEMA OPTIONS CONSTRAINTS
+    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'WRONG_GROUP', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : "ValidationError: Value u'WRONG_GROUP' for field 'group' is not in the enumeration: %s" % (str(users_groups)), 'ids' : [ ] })
 
-## CHECK LOGIN
-_assert_logged_in()
-
-## TEST BAD REQUESTS
-# Add directly json without list
-_assert('/add/wrong', { 'single': 'dict' }, {'error' : "ValidationError: list expected, not 'dict'", 'ids' : [] })
-# Add unexistant collection
-_assert('/add/wrong', [ { 'wrong': 'param' } ], {'error' : "KeyError: 'wrong'", 'ids' : [] })
-# Add user with unsupported param 
-_assert('/add/user', [ { 'wrong': 'param' } ], {'error' : 'ValidationError: Required field \'username\' is missing', 'ids' : []  })
-
-## API CUSTOMER
-# Remove already unexistant customer
-_assert('/remove/customer', [ { 'name' : 'CUSTOMERTEST' } ], { 'error' : None  })
-# Add one customer (return one id)
-json_returned = _assert('/add/customer', [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC' } ], { 'error' : None, 'ids' : [ '' ] })
-# Get the inserted customer by name
-_assert('/get/customer', { 'name' : 'CUSTOMERTEST' }, { 'error': None, 'records' : [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', '_id' : '', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC'   } ] })
-# Get the inserted customer by id
-_assert('/get/customer', { '_id' : json_returned['ids'][0] }, { 'error': None, 'records' : [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', '_id' : '', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC'   } ] })
-# Remove customer by id
-_assert('/remove/customer', [ { '_id' : json_returned['ids'][0] } ], { 'error' : None  })
-# Check if collection is empty
-_assert('/get/customer', { }, { 'error': None, 'records' : [ ] })
-
-## API USER
-# Remove already unexistant user
-_assert('/remove/user', [ { 'name' : 'USERTEST'  } ], { 'error' : None  })
-# Add one customer (return one user)
-_assert('/add/user', [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : '', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
-# Get the inserted customer
-_assert('/get/user', { 'name' : 'USERTEST' }, { 'error': None, 'records' : [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', '_id' : '' , 'group' : 'users', 'password' : '', 'salt' : '' } ] })
-# Delete the one inserted
-_assert('/remove/user', [ { 'name' : 'USERTEST'  } ], { 'error' : None })
-# Get the empty customers list
-_assert('/get/user', { 'name' : 'USERTEST' }, { 'error': None, 'records' : [ ] })
-# Add two elements USERTEST1 and USERTEST2
-_assert('/add/user', [ { 'name' : 'USERTEST1', 'surname' : 'SURNAME', 'username' : 'USERNAME1' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : '', 'salt' : '' }, { 'name' : 'USERTEST2', 'surname' : 'SURNAME', 'username' : 'USERNAME2' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : '', 'salt' : '' } ], { 'error' : None, 'ids' : [ '', '' ] })
-# Delete USERTEST1
-_assert('/remove/user', [ { 'name' : 'USERTEST1'  }, { 'name' : 'USERTEST2'  } ], { 'error' : None })
-# Check if USERTEST1 is deleted
-_assert('/get/user', { 'name' : 'USERTEST1' }, { 'error': None, 'records' : [ ] })
 
 
-## NEW USER LOGIN
-
-# Add one user with password, should login
-_assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
-# Add user without password, should not login 
-_assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'users', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT' } ], { 'error' : None, 'ids' : [ '' ] })
-# Check if can't login with NEW_USER_WITH_NO_PWD
-_login({'username' : 'NEW_USER_WITH_NO_PWD', 'password' : '' })
-_assert_logged_in(False)
-# Check if can login with NEW_USER_WITH_PWD
-_login({'username' : 'NEW_USER_WITH_PWD', 'password' : 'mypassword' })
-_assert_logged_in()
-# Relogin as admin
-_login(admin_credentials)
-# Delete both user in one request
-_assert('/remove/user', [ { 'name' : 'NAME_USER_LOGIN_TEST' } ], { 'error' : None })
-# Check presence
-_assert('/get/user', { 'name' : 'NAME_USER_LOGIN_TEST' }, { 'error': None, 'records' : [ ] })
-
-# TEST UPDATE
-
-# Add one customer (return one id)
-json_returned = _assert('/add/customer', [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC' } ], { 'error' : None, 'ids' : [ '' ] })
-# Get the inserted customer by id
-_assert('/get/customer', { '_id' : json_returned['ids'][0] }, { 'error': None, 'records' : [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', '_id' : '', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC'   } ] })
-# Update name
-_assert('/update/customer', { '_id' : json_returned['ids'][0], 'name' : 'CUSTOMERNEWNAME', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC' }, { 'error': None })
-# Check if the inserted customer by id is modified
-_assert('/get/customer', { '_id' : json_returned['ids'][0] }, { 'error': None, 'records' : [ { 'name' : 'CUSTOMERNEWNAME', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', '_id' : '', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC'   } ] })
-# Delete both user in one request
-_assert('/remove/customer', [ { '_id' : json_returned['ids'][0]} ], { 'error' : None })
-
-# TEST SCHEMA OPTIONS CONSTRAINTS
-_assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'WRONG_GROUP', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : "ValidationError: Value u'WRONG_GROUP' for field 'group' is not in the enumeration: %s" % (str(users_groups)), 'ids' : [ ] })
-
-
+if __name__ == "__main__":
+    main()
 
 
 
