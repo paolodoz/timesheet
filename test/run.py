@@ -70,9 +70,9 @@ def main():
     # Add user with unsupported param 
     _assert('/add/user', [ { 'wrong': 'param' } ], {'error' : 'ValidationError: Required field \'username\' is missing', 'ids' : []  })
     # Get without a valid projection
-    _assert('/get/user', [ { }, { } ], { 'error': 'ValidationError: Filter projection cannot be empty', 'records' : [] })
+    _assert('/get/user', [ { }, { } ], { 'error': 'ValidationError: Expected list with criteria and not-empty projection', 'records' : [] })
     # Get badly formatted
-    _assert('/get/user', [ { } ], { 'error': 'ValidationError: Bad criteria and projection list', 'records' : [] })
+    _assert('/get/user', [ { } ], { 'error': 'ValidationError: Expected list with criteria and not-empty projection', 'records' : [] })
        
     
     ## API CUSTOMER
@@ -149,7 +149,7 @@ def main():
     # Add user in group employee for following tests
     _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
     # Add project for following tests
-    _assert('/add/project', [ { 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'name' : 'NAME', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : 'start', 'end' : 'end', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : '1', 'name' : 'L\'amministratore'}, 'employees' : [ { '_id' : '1', 'name' : 'L\'amministratore impiegato'} ] } ], { 'error' : None, 'ids' : [ '' ] })
+    _assert('/add/project', [ { 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'name' : 'NAME', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : 'start', 'end' : 'end', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'The administrator'}, 'employees' : [ { '_id' : '1'*24, 'name' : 'The employed administrator'} ] } ], { 'error' : None, 'ids' : [ '' ] })
     
     
     # Check if can login with NEW_USER_WITH_PWD
@@ -167,7 +167,7 @@ def main():
     # Get projects of other users
     _assert('/get/project', [ { 'name' : 'NAME' }, { 'customer' : 1 } ], { 'error' : None, 'records' : [ ] })
     # Get explicitely admin projects 
-    _assert('/get/project', [ { 'responsible' : { '_id' : '1' } }, { 'customer' : 1 } ], { 'error' : "ValidationError: Value 'responsible' is restricted to user value", 'records' : [ ] })
+    _assert('/get/project', [ { 'responsible' : { '_id' : '1'*24 } }, { 'customer' : 1 } ], { 'error' : "ValidationError: Value 'responsible' is restricted to user value", 'records' : [ ] })
     
     
 if __name__ == "__main__":

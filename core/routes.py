@@ -54,6 +54,7 @@ class Routes:
         try:
             ids = db.add(collection, json_in)
         except Exception as e:
+#             import traceback; traceback.print_exc()
             return {'error' : '%s: %s' % (type(e).__name__, str(e)), 'ids' : []}
         else:
             return { 'error' : None, 'ids' : ids }
@@ -80,7 +81,7 @@ class Routes:
         try:
             records = db.get(collection, json_in)
         except Exception as e:
-            #import traceback; traceback.print_exc()
+#             import traceback; traceback.print_exc()
             return {'error' : '%s: %s' % (type(e).__name__, str(e)), 'records' : []}
         else:
             return { 'error' : None, 'records' : records}
@@ -104,6 +105,7 @@ class Routes:
         try:
             ids = db.remove(collection, json_in)
         except Exception as e:
+#             import traceback; traceback.print_exc()
             return {'error' : '%s: %s' % (type(e).__name__, str(e)) }
         else:
             return { 'error' : None }
@@ -128,6 +130,7 @@ class Routes:
         try:
             ids = db.update(collection, json_in)
         except Exception as e:
+#             import traceback; traceback.print_exc()
             return {'error' : '%s: %s' % (type(e).__name__, str(e)) }
         else:
             return { 'error' : None }  

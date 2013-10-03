@@ -1,22 +1,22 @@
 import yaml, cherrypy
 from validictory import ValidationError
-from validation import recursive_dict_replace
+from validation import recursive_replace
 from config import criteria_restrictions_schema, denied_requests_schema
-
 
 def get_formatted_permissions():
     """Format restriction schemas. Saved on auth login to speedup following accesses"""
     
+    # Recursively replace needs a condition_function and replace_function
+    replacements = { '%%username%%' : cherrypy.session['_ts_user']['username'], '%%_id%%' : cherrypy.session['_ts_user']['_id'] }
+    replacements_templates = replacements.keys()
+
+    def _replace_function_permissions_schema(container):
+        if isinstance(container,basestring) and container in replacements_templates:
+            return str(replacements[container])
+
     return {
-            'group_criteria_restrictions' : recursive_dict_replace(
-                                                                criteria_restrictions_schema.get(
-                                                                                                 cherrypy.session['_ts_user']['group'], {}
-                                                                                                 ),
-                                                                {
-                                                                 '%%username%%' : cherrypy.session['_ts_user']['username'],
-                                                                 '%%_id%%' : cherrypy.session['_ts_user']['_id']
-                                                                 }
-                                                                ),
+            'group_criteria_restrictions' : recursive_replace(criteria_restrictions_schema.get(cherrypy.session['_ts_user']['group'], {}),
+                                                              _replace_function_permissions_schema),
             'group_denied_requests' : denied_requests_schema.get(cherrypy.session['_ts_user']['group'], {})
             }
 
@@ -45,7 +45,7 @@ def restrict_criteria(action, collection, criteria):
     
     
 
-def deny_requests(action, collection, projections = {}):    
+def check_request_permissions(action, collection, projections = {}):    
     """Check if group user can access to the resource"""
     
     group_denied_requests = cherrypy.session['_ts_user']['group_denied_requests']

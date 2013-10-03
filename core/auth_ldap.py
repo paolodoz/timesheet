@@ -1,6 +1,6 @@
 import ldap, sys
 from core.config import conf_auth_ldap
-from core.validation import validate_transform_json_list
+from core.validation import validate_json_list, sanitize_objectify_json, update_password_salt_user_list
 from core.db import db
 
 
@@ -51,7 +51,12 @@ def _migrate_user_to_db(ldap_result_dict, password):
                  'salt' : ''
                  }
     
-    return db['user'].insert(validate_transform_json_list('user', [ user_dict ]))
+    validate_json_list('user', user_dict)
+    
+    sanified_documents_list = sanitize_objectify_json(user_dict)
+    update_password_salt_user_list('user', user_dict)
+    
+    return db['user'].insert(sanified_documents_list)
     
 
 

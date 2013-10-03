@@ -1,4 +1,4 @@
-import cgi, yaml, random, string, hashlib
+import cgi, yaml, random, string, hashlib, collections, types
 from core.config import schema, core_folder
 from validictory import ValidationError, validate
 
@@ -10,112 +10,90 @@ try:
 except ImportError as e:
     from bson import ObjectId
 
-def recursive_dict_replace(d, replacements):
-    """Replace and eventually cast types recursively dictionary values"""
+def recursive_replace(container, replace_function):
+    t = container.__class__
     
-    new = {}
+    replaced = replace_function(container)
     
-    for k, v in d.iteritems():
-        if isinstance(v, dict):
-            new[k] = recursive_dict_replace(v, replacements)
-        elif isinstance(v, basestring) and v in replacements:
-            new[k] = str(replacements[v])
-        else:
-            new[k] = v
+    if replaced:
+        return replaced
+    elif isinstance(container, collections.Mapping):
+        return t((x,recursive_replace(container[x], replace_function)) for x in container)
+    elif isinstance(container, collections.Iterable):
+        # Add other non-replicable iterables here. 
+        t = tuple if isinstance(t, (types.GeneratorType,)) else t
+        return t(recursive_replace(x, replace_function) for x in container)
+    elif isinstance(container, (int, long, float, complex)):
+        return container
+    else:
+        raise ValueError("I don't know how to handle container type: %s" % type(container))
 
-    return new
 
-def validate_criteria_projection(criteria_projection):
+def _replace_function_sanitize_objectify_json(container):
     
-    if not isinstance(criteria_projection, list) or not len(criteria_projection) == 2:
-        raise ValidationError('Bad criteria and projection list' )
-         
-    if not criteria_projection[1]:
-        raise ValidationError('Filter projection cannot be empty')
+    if isinstance(container, collections.Mapping) and '_id' in container and isinstance(container['_id'],basestring):
+        # Objectify id string and continue with recursive replace
+        container['_id'] = ObjectId(container['_id'])
+        t = container.__class__
+        return t((x,recursive_replace(container[x], _replace_function_sanitize_objectify_json)) for x in container)
+    elif isinstance(container, ObjectId):
+        # Leave already converted ObjectId as-is
+        return container
+    elif isinstance(container, basestring):
+        # Quote strings
+        return cgi.escape(container, quote=True)
 
-    return criteria_projection
+def sanitize_objectify_json(json_in):
+    """Sanitize string and convert _ids to ObjectId in JSON"""
+    return recursive_replace(json_in, _replace_function_sanitize_objectify_json)
 
-def sanitize_json(json_record):
-    """Input validation method to prevent XSS"""
-    sanitized_json = {}
-    for key, value in json_record.items():
-        if isinstance(value, str):
-            sanitized_json[key] = cgi.escape(value, quote=True)
-        else:
-            sanitized_json[key] = value
-        
-    return sanitized_json
-
-
-def sanitize_json_list(json_list):
-    """Input validation of list of JSON"""
-    if not isinstance(json_list, list):
-        raise ValidationError("List expected, not '%s'" % json_list.__class__.__name__)
+def _replace_function_stringify_objectid_json(container):
     
-    sanitized_list = []
-    for json_record in json_list:
-        sanitized_list.append(sanitize_json(json_record))
+    if isinstance(container, collections.Mapping) and '_id' in container and isinstance(container['_id'],ObjectId):
+        # Objectify id string and continue with recursive replace
+        container['_id'] = str(container['_id'])
+        t = container.__class__
+        return t((x,recursive_replace(container[x], _replace_function_stringify_objectid_json)) for x in container)
+    elif isinstance(container, basestring):
+        return container
 
-    return sanitized_list
-
-
-def objectify_json_with_idstring(json_record):
-    """Convert string to ObjectId in JSON"""
-    if '_id' in json_record and isinstance(json_record['_id'], basestring):
-        json_record['_id'] = ObjectId(json_record['_id'])
-    return json_record
-
-
-def stringify_json_with_objectid(json_record):
+def stringify_objectid_cursor(cursor_in):
     """Convert ObjectId to string in JSON"""
-
-    if '_id' in json_record and isinstance(json_record['_id'], ObjectId):
-        json_record['_id'] = str(json_record['_id'])
-        
-    return json_record
-
-def stringify_json_list_with_objectid(json_list):
-    """Convert ObjectId to string in JSON list"""
+    
     stringified = []
-    if json_list:
-        for json_record in json_list:
-            stringified.append(stringify_json_with_objectid(json_record))
+    for json_in in cursor_in:
+        stringified.append(recursive_replace(json_in, _replace_function_stringify_objectid_json))
     return stringified
 
-def stringify_objectid_list(objectid_list):
+def _replace_function_stringify_objectid_list(container):
+    if isinstance(container, ObjectId):
+        return str(container)
+
+def stringify_objectid_list(list_in):
     """Convert an ObjectId list to string list"""
-    stringified = []
-    if objectid_list:
-        for objid in objectid_list:
-            stringified.append(str(objid))
-    return stringified
-    
-def validate_transform_json(collection, json_record):
+    return recursive_replace(list_in, _replace_function_stringify_objectid_list)
 
-    # Validate json schema
-    validate(json_record, schema[collection])
+def validate_json_list(collection, list_in):
     
-    # Sanitize user input
-    json_record.update(sanitize_json(json_record))
+    for json_in in list_in:    
+        # Validate json schema
+        validate(json_in, schema[collection])
+   
+def update_password_salt_user_list(collection, list_in):
     
-    # If in user collection, calculate password and salt
-    if collection == 'user' and json_record['password']:
-        json_record.update(calculate_password_and_salt_in_json_user(json_record['password']))
-            
-    return json_record
+    if collection != 'user':
+        return list_in
+    
+    for json_in in list_in:    
+        if 'password' in json_in:
+            update_password_salt_user_json(json_in)
+    
+    return list_in
+        
+def update_password_salt_user_json(json_in):
+    json_in.update(get_password_salt(json_in['password']))
 
-def validate_transform_json_list(collection, json_list):
-    """JSON list validation and transformation method"""
-    
-    if not isinstance(json_list, list):
-        raise ValidationError("List expected, not '%s'" % json_list.__class__.__name__)
-    
-    for json_record in json_list:
-        json_record = validate_transform_json(collection, json_record)
-    
-    return json_list
-
-def calculate_password_and_salt_in_json_user(password_in):
+def get_password_salt(password_in):
     """Method to hash password_in and salt, if inserted"""
     
     salt = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(16))
