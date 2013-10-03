@@ -1,27 +1,14 @@
 import yaml, cherrypy
 from validictory import ValidationError
+from validation import recursive_dict_replace
 from config import criteria_restrictions_schema, denied_requests_schema
-
-
-def _change_recurs_dict(d, replacements):
-    new = {}
-    
-    for k, v in d.iteritems():
-        if isinstance(v, dict):
-            new[k] = _change_recurs_dict(v, replacements)
-        elif isinstance(v, basestring) and v in replacements:
-            new[k] = str(replacements[v])
-        else:
-            new[k] = v
-
-    return new
 
 
 def get_formatted_permissions():
     """Format restriction schemas. Saved on auth login to speedup following accesses"""
     
     return {
-            'group_criteria_restrictions' : _change_recurs_dict(
+            'group_criteria_restrictions' : recursive_dict_replace(
                                                                 criteria_restrictions_schema.get(
                                                                                                  cherrypy.session['_ts_user']['group'], {}
                                                                                                  ),

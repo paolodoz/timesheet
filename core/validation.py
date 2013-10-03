@@ -10,6 +10,21 @@ try:
 except ImportError as e:
     from bson import ObjectId
 
+def recursive_dict_replace(d, replacements):
+    """Replace and eventually cast types recursively dictionary values"""
+    
+    new = {}
+    
+    for k, v in d.iteritems():
+        if isinstance(v, dict):
+            new[k] = recursive_dict_replace(v, replacements)
+        elif isinstance(v, basestring) and v in replacements:
+            new[k] = str(replacements[v])
+        else:
+            new[k] = v
+
+    return new
+
 def validate_criteria_projection(criteria_projection):
     
     if not isinstance(criteria_projection, list) or not len(criteria_projection) == 2:
