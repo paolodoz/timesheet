@@ -2,7 +2,7 @@
 
 import sys
 from core.config import conf_auth_db, version, collections, conf_mongodb, conf_auth_ldap
-from core.validation import calculate_password_and_salt_in_json_user
+from core.validation import update_password_salt_user_json
 from core.auth_ldap import check_credentials
 from pymongo import ASCENDING
 
@@ -97,9 +97,10 @@ def _add_default_admin(db):
     
     print 'OK!\n[+] Adding administrator credential in \'user\' collection with %s:%s.. ' % (conf_auth_db['init.default.admin'], conf_auth_db['init.default.password']),
     
-    password_and_salt = calculate_password_and_salt_in_json_user(conf_auth_db['init.default.password'])
+    password_json = { 'password' : conf_auth_db['init.default.password'] }
+    update_password_salt_user_json(password_json)
     
-    db['user'].update( { '_id' : 1 }, dict({ '_id' : 1, 'name' : 'Admin', 'surname' : 'Default', 'username': conf_auth_db['init.default.admin'], 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : 'administrator'  }, **password_and_salt), True)
+    db['user'].update( { '_id' : 1 }, dict({ '_id' : 1, 'name' : 'Admin', 'surname' : 'Default', 'username': conf_auth_db['init.default.admin'], 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : 'administrator'  }, **password_json), True)
     
 
 if __name__ == "__main__":
