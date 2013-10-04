@@ -15,7 +15,7 @@ def recursive_replace(container, replace_function):
     
     replaced = replace_function(container)
     
-    if replaced:
+    if replaced != None:
         return replaced
     elif isinstance(container, collections.Mapping):
         return t((x,recursive_replace(container[x], replace_function)) for x in container)
