@@ -1,120 +1,76 @@
 <script type="text/javascript">
 var isupdate = false;
 $(document).ready(function() {
-	loadCustomers("custList");
-	$("#custForm").submit(function(event) {
-		var customer, _cust, url;		
-		if(isupdate) {
-			_cust = {};
-			customer = _cust;
-			url = "/update/customer";
-		} else {
-			_cust = [{}];
-			customer = _cust[0];
-			url = "/add/customer";
-		}
-		$("#custForm input").each(function (){
-			var property = $(this).attr("id").substr(4);
-			if (property == "_id" && !isupdate)
-				return;
-			customer[property] = $(this).val();
-		});
-		event.preventDefault();
-		$.ajax({
-			type: "POST",
-			url: url,
-			data: JSON.stringify(_cust),
-			success: function(data) {
-				$("#custForm")[0].reset();
-				loadCustomers("custList");
-			},
-			contentType: 'application/json; charset=utf-8',
-			dataType: "json",
-			});
-	});
-	$("#btnreset").click(function() {
-		$("#cust_id").val(0);
-		$("#btnremove").addClass("hidden");
-		$("#custList li").removeClass("active");
-		$("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
-		isupdate = false;
-	});
-	$("#btnremove").click(function() {
-		var id = $("#cust_id").val();
-		if (id == 0)
-			return;
-		var filter = [{}];
-		filter[0]._id = id;
-		$.ajax({
-			type: "POST",
-			url: "/remove/customer",
-			data: JSON.stringify(filter),
-			success: function(data) {
-				alert("ok");
-				$("#custForm")[0].reset();
-				$("#btnremove").addClass("hidden");
-				$("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
-				loadCustomers("custList");
-			},
-			contentType: 'application/json; charset=utf-8',
-			dataType: "json",
-		});
-	});
+  loadCustomersList("custList");
+  $("#custForm").submit(function(event) {
+    event.preventDefault();
+    customer.update(isupdate, "custForm", resetform);
+    loadCustomersList("custList");
+  });
+  $("#btnreset").click(function() {
+    resetform();
+    isupdate = false;
+  });
+  $("#btnremove").click(function() {
+    customer.remove($("#cust_id").val(),resetform);
+    loadCustomersList("custList");
+  });
 });
 
-function loadCustomers(container) {
-	//load complete list of customers
-	var filter = {};
-	$.ajax({
-		type: "POST",
-		url: "/get/customer",
-		data: JSON.stringify(filter),
-		success: function(data) {
-			var i;
-			var htmllist = "";
-			for(i=0;i < data.records.length; i++) {
-				htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data.records[i].name + "</li>";
-			}
-			//add line for new customer
-			htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Customer ...</li>";
-			$("#" + container).html(htmllist);
-			$(".list-group-item").click(function() {
-				$(".list-group-item").removeClass("active");
-				$(this).addClass("active");
-				isupdate = true;
-				loadCustomerDetails(this.id, container);
-			});
-			$(".list-group-item:last").click(function() {
-				$("#custForm")[0].reset();
-				$("#cust_id").val(0);
-				$(".btn-danger").addClass("hidden");
-				isupdate = false;
-			});
-		},
-		contentType: 'application/json; charset=utf-8',
-		dataType: "json",
-		});
+function loadCustomersList(list) {
+  var filter = [{},{name:1}];
+  customer.load(filter, loadCustomers, list);
 }
 
-function loadCustomerDetails(id,container) {
-	var filter = {};
-	if(id == "")
-		return;
-	filter._id = id;	
-	$.ajax({
-		type: "POST",
-		url: "/get/customer",
-		data: JSON.stringify(filter),
-		success: function(data) {
-			for(var key in data.records[0]) {
-				$("#cust" + key).val( data.records[0][key]);
-				$(".btn-danger").removeClass("hidden");
-			}
-			$("#btnsubmit").html("<span class='glyphicon glyphicon-edit'></span> Update");
-		},
-		contentType: 'application/json; charset=utf-8',
-		dataType: "json",
-		});
+function resetform() {
+  $("#cust_id").val(0);
+  $("#custForm")[0].reset();
+  $("#btnremove").addClass("hidden");
+  $("#custList li").removeClass("active");
+  $("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
+}
+function loadCustomers(data, container) {
+  var i;
+  var htmllist = "";
+  for(i=0;i < data.records.length; i++) {
+    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data.records[i].name + "</li>";
+  }
+  //add line for new customer
+  htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Customer ...</li>";
+  $("#" + container).html(htmllist);
+  $(".list-group-item").click(function() {
+    $(".list-group-item").removeClass("active");
+    $(this).addClass("active");
+    isupdate = true;
+    var filter = createFilterForm("custForm");
+    filter[0]._id = this.id;
+    customer.load(filter,loadCustomerDetails, container);
+  });
+  $(".list-group-item:last").click(function() {
+    $("#custForm")[0].reset();
+    $("#cust_id").val(0);
+    $(".btn-danger").addClass("hidden");
+    isupdate = false;
+  });
+}
+
+function createFilterForm(container) {
+  var filter = [{},{}];
+  $("#" + container + " input").each(function (){
+    var property = $(this).attr("id").substr(4);
+    if (property == "_id")
+      return;
+    filter[1][property] = 1;
+  });
+  return filter;
+}
+
+function loadCustomerDetails(data,container) {
+  for(var key in data.records[0]) {
+    $("#cust" + key).val( data.records[0][key]);
+    $(".btn-danger").removeClass("hidden");
+  }
+  $("#btnsubmit").html("<span class='glyphicon glyphicon-edit'></span> Update");
 }
 </script>
 <h2>Customer Management</h2>
