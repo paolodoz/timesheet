@@ -2,7 +2,7 @@
 
 import sys
 from core.config import conf_auth_db, version, collections, conf_mongodb, conf_auth_ldap
-from core.validation import update_password_salt_user_json
+from core.validation import update_password_salt_user_json, sanitize_objectify_json
 from core.auth_ldap import check_credentials
 from pymongo import ASCENDING
 
@@ -96,11 +96,13 @@ def _create_db_collections(connection):
 def _add_default_admin(db):
     
     print 'OK!\n[+] Adding administrator credential in \'user\' collection with %s:%s.. ' % (conf_auth_db['init.default.admin'], conf_auth_db['init.default.password']),
+
+    json_user = { '_id' : '1'*24, 'password' : conf_auth_db['init.default.password'], 'name' : 'Admin', 'surname' : 'Default', 'username': conf_auth_db['init.default.admin'], 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : 'administrator'  }
+
+    sanified_documents_list = sanitize_objectify_json(json_user)
+    update_password_salt_user_json(sanified_documents_list)
     
-    password_json = { 'password' : conf_auth_db['init.default.password'] }
-    update_password_salt_user_json(password_json)
-    
-    db['user'].update( { '_id' : 1 }, dict({ '_id' : 1, 'name' : 'Admin', 'surname' : 'Default', 'username': conf_auth_db['init.default.admin'], 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : 'administrator'  }, **password_json), True)
+    db['user'].update( { '_id' : '1'*24 }, sanified_documents_list, True)
     
 
 if __name__ == "__main__":
