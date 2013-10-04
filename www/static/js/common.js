@@ -1,3 +1,20 @@
+var user = {
+  load : function (filter, callback, target) {
+    $.ajax({
+      type: "POST",
+      url: "/get/user",
+      data: JSON.stringify(filter),
+      success: function(data) {
+        if(!data.error) {
+          callback(data, target);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  }
+}
+
 var project = {
   load : function (filter, callback, target) {
     $.ajax({
@@ -7,6 +24,63 @@ var project = {
       success: function(data) {
         if(!data.error) {
           callback(data, target);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
+  remove : function (id, callback) {
+    if (id == 0)
+      return;
+    var filter = [{}];
+    filter[0]._id = id;
+    $.ajax({
+      type: "POST",
+      url: "/remove/project",
+      data: JSON.stringify(filter),
+      success: function(data) {
+        if(!data.error) {
+          callback(data);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
+  update : function (isupdate, form, callback) {
+    var project, _proj, url;
+    if(isupdate) {
+      _proj = {};
+      project = _proj;
+      url = "/update/project";
+    } else {
+      _proj = [{}];
+      project = _proj[0];
+      url = "/add/project";
+    }
+    $("#" + form + " input, #" + form + " select, #" + form + " textarea").each(function (){
+      var property = $(this).attr("id").substr(7);
+      if (property == "_id" && !isupdate)
+        return;
+      project[property] = $(this).val();
+    });
+    project.responsible = {};
+    project.responsible._id = $("#responsibleid").val();
+    project.responsible.name  = String.trim($("#usersForm h4 span").text());
+    project.employees = new Array();
+    $("#usersList .active").each(function (i) {
+      project.employees[i] = {};
+      project.employees[i]._id = this.id;
+      project.employees[i].name = String.trim($(this).text());
+    });
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: JSON.stringify(_proj),
+      success: function(data) {
+        if(!data.error) {
+          callback(data);
         }
       },
       contentType: 'application/json; charset=utf-8',
