@@ -15,7 +15,10 @@
   </head>
   <body>
 <div class="row">
-<div class="col-lg-12"><h2>Timesheet</h2></div>
+<div class="col-lg-4"><h2>Timesheet</h2></div>
+<div class="col-lg-4">
+<div id="msgbox"></div>
+</div>
 </div>
 <div class="row">
     <div class="col-lg-2">

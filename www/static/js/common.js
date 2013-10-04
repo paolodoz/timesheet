@@ -7,6 +7,8 @@ var user = {
       success: function(data) {
         if(!data.error) {
           callback(data, target);
+        } else {
+          showmessage("error", data.error);
         }
       },
       contentType: 'application/json; charset=utf-8',
@@ -24,6 +26,8 @@ var project = {
       success: function(data) {
         if(!data.error) {
           callback(data, target);
+        } else {
+          showmessage("error", data.error);
         }
       },
       contentType: 'application/json; charset=utf-8',
@@ -42,6 +46,8 @@ var project = {
       success: function(data) {
         if(!data.error) {
           callback(data);
+        } else {
+          showmessage("error", data.error);
         }
       },
       contentType: 'application/json; charset=utf-8',
@@ -81,6 +87,8 @@ var project = {
       success: function(data) {
         if(!data.error) {
           callback(data);
+        } else {
+          showmessage("error", data.error);
         }
       },
       contentType: 'application/json; charset=utf-8',
@@ -98,6 +106,8 @@ var customer = {
       success: function(data) {
         if(!data.error) {
           callback(data, target);
+        } else {
+          showmessage("error", data.error);
         }
       },
       contentType: 'application/json; charset=utf-8',
@@ -116,6 +126,8 @@ var customer = {
       success: function(data) {
         if(!data.error) {
           callback(data);
+        } else {
+          showmessage("error", data.error);
         }
       },
       contentType: 'application/json; charset=utf-8',
@@ -146,6 +158,8 @@ var customer = {
       success: function(data) {
         if(!data.error) {
           callback(data);
+        } else {
+          showmessage("error", data.error);
         }
       },
       contentType: 'application/json; charset=utf-8',
@@ -154,7 +168,18 @@ var customer = {
   },
 }
 
-
+function showmessage(type, msg) {
+  var box = $("#msgbox");
+  box.removeClass();
+  box.hide();
+  if(type == "error") {
+    box.addClass("alert alert-danger");
+  } else {
+    box.addClass("alert alert-success");
+  }
+  box.text(msg);
+  box.fadeIn("slow").delay(5000).fadeOut("slow");
+}
 
 
 
