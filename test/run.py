@@ -62,6 +62,9 @@ def main():
     ## CHECK LOGIN
     _assert_logged_in()
     
+    ## GET CURRENT INFORMATIONS
+    _assert('/me', None, { 'username' : admin_credentials['username'], '_id' : '1'*24 })
+    
     ## TEST BAD REQUESTS
     # Add directly json without list
     _assert('/add/wrong', { 'single': 'dict' }, {'error' : "ValidationError: List expected, not 'dict'", 'ids' : [] })

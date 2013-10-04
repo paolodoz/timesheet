@@ -33,6 +33,18 @@ class Routes:
             return templates.get_template('index.tpl').render(view=open(views[view]).read())
         else:
             raise cherrypy.HTTPError(404)
+
+    @cherrypy.expose
+    @require(member_of("employee"))
+    @cherrypy.tools.json_out(on = True)
+    def me(self):
+        """
+        Serves a JSON with informations about logged user
+        
+        GET /me
+        """
+        
+        return { 'username' : cherrypy.session['_ts_user']['username'], '_id' : str(cherrypy.session['_ts_user']['_id'])}
         
 
     @cherrypy.expose
