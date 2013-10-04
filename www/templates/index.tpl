@@ -11,7 +11,7 @@
     <script src="/static/js/jquery-1.10.2.js"></script>
     <script src="/static/js/json2.js"></script>
     <script src="/static/js/jquery-ui-1.10.3.custom.min.js"></script>
-
+    <script src="/static/js/common.js"></script>
   </head>
   <body>
 <div class="row">
