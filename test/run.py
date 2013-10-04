@@ -70,9 +70,9 @@ def main():
     # Add user with unsupported param 
     _assert('/add/user', [ { 'wrong': 'param' } ], {'error' : 'ValidationError: Required field \'username\' is missing', 'ids' : []  })
     # Get without a valid projection
-    _assert('/get/user', [ { }, { } ], { 'error': 'ValidationError: Expected list with criteria and not-empty projection', 'records' : [] })
+    _assert('/get/user', [ { }, { } ], { 'error': 'ValidationError: Expected list with criteria and nonempty projection', 'records' : [] })
     # Get badly formatted
-    _assert('/get/user', [ { } ], { 'error': 'ValidationError: Expected list with criteria and not-empty projection', 'records' : [] })
+    _assert('/get/user', [ { } ], { 'error': 'ValidationError: Expected list with criteria and nonempty projection', 'records' : [] })
        
     
     ## API CUSTOMER
@@ -93,7 +93,7 @@ def main():
     # Remove already unexistant user
     _assert('/remove/user', [ { 'name' : 'USERTEST'  } ], { 'error' : None  })
     # Add one customer (return one user)
-    _assert('/add/user', [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
+    _assert('/add/user', [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
     # Get the inserted customer
     _assert('/get/user', [ { 'name' : 'USERTEST' }, { 'surname' : 1, '_id' : 0 } ], { 'error': None, 'records' : [ { 'surname' : 'SURNAME'  } ] })
     # Delete the one inserted
@@ -101,7 +101,7 @@ def main():
     # Get the empty customers list
     _assert('/get/user', [ { 'name' : 'USERTEST' }, { '_id' : 1 } ], { 'error': None, 'records' : [ ] })
     # Add two elements USERTEST1 and USERTEST2
-    _assert('/add/user', [ { 'name' : 'USERTEST1', 'surname' : 'SURNAME', 'username' : 'USERNAME1' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : '' }, { 'name' : 'USERTEST2', 'surname' : 'SURNAME', 'username' : 'USERNAME2' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : '' } ], { 'error' : None, 'ids' : [ '', '' ] })
+    _assert('/add/user', [ { 'name' : 'USERTEST1', 'surname' : 'SURNAME', 'username' : 'USERNAME1' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '' }, { 'name' : 'USERTEST2', 'surname' : 'SURNAME', 'username' : 'USERNAME2' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'myotherpassword', 'salt' : '' } ], { 'error' : None, 'ids' : [ '', '' ] })
     # Delete USERTEST1
     _assert('/remove/user', [ { 'name' : 'USERTEST1'  }, { 'name' : 'USERTEST2'  } ], { 'error' : None })
     # Check if USERTEST1 is deleted
@@ -112,8 +112,8 @@ def main():
     
     # Add one user with password, should login
     _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
-    # Add user without password, should not login 
-    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT' } ], { 'error' : None, 'ids' : [ '' ] })
+    # Add user without password, should raise error
+    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT' } ], { 'error' : 'ValidationError: Expected nonempty password', 'ids' : [ ] })
     # Check if can't login with NEW_USER_WITH_NO_PWD
     _login({'username' : 'NEW_USER_WITH_NO_PWD', 'password' : '' })
     _assert_logged_in(False)

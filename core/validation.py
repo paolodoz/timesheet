@@ -81,13 +81,13 @@ def validate_json_list(collection, list_in):
    
 def update_password_salt_user_list(collection, list_in):
     
-    if collection != 'user':
-        return list_in
-    
-    for json_in in list_in:    
-        if 'password' in json_in:
-            update_password_salt_user_json(json_in)
-    
+    if collection == 'user':
+        for json_in in list_in:    
+            if 'password' in json_in and json_in['password']:
+                update_password_salt_user_json(json_in)
+            else:
+                raise ValidationError('Expected nonempty password')
+        
     return list_in
         
 def update_password_salt_user_json(json_in):

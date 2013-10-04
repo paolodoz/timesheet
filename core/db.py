@@ -20,7 +20,7 @@ def get(collection, criteria_projection):
     if (isinstance(criteria_projection, list) and len(criteria_projection) == 2 and criteria_projection[1]):
         criteria, projection = criteria_projection
     else:
-        raise ValidationError('Expected list with criteria and not-empty projection')
+        raise ValidationError('Expected list with criteria and nonempty projection')
         
     check_request_permissions('get', collection, projection)
     restricted_criteria = restrict_criteria('get', collection, criteria)
