@@ -37,7 +37,7 @@ def restrict_criteria(action, collection, criteria):
         # If some of the restrictions are already set in criteria with different values, raise an error 
         for restr_k, restr_v in restrictions.items():
             if restr_k in criteria and criteria[restr_k] != restr_v:
-                raise ValidationError("Value '%s' is restricted to user value" % (restr_k))
+                raise ValidationError("Value '%s' is restricted for current user" % (restr_k))
             
         criteria.update(restrictions)
             

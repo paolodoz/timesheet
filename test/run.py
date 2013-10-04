@@ -162,7 +162,7 @@ def main():
     # GET his own password
     _assert('/get/user', [ { 'username' : 'PERM_TEST' }, { 'password' : 1} ], { 'error' : "ValidationError: get user.password restricted for users in group 'employee'", 'records' : [ ] })
     # GET other employee surname
-    _assert('/get/user', [ { 'username' : admin_credentials['username'] }, { 'surname' : 1 } ], { 'error' : "ValidationError: Value 'username' is restricted to user value", 'records' : [ ] })
+    _assert('/get/user', [ { 'username' : admin_credentials['username'] }, { 'surname' : 1 } ], { 'error' : "ValidationError: Value 'username' is restricted for current user", 'records' : [ ] })
     # REMOVE himself
     _assert('/remove/user', [ { 'username' : 'PERM_TEST' } ], { 'error' : "ValidationError: remove user restricted for users in group 'employee'" })
     # Add new employee 
@@ -170,7 +170,7 @@ def main():
     # Get projects of other users
     _assert('/get/project', [ { 'name' : 'NAME' }, { 'customer' : 1 } ], { 'error' : None, 'records' : [ ] })
     # Get explicitely admin projects 
-    _assert('/get/project', [ { 'responsible' : { '_id' : '1'*24 } }, { 'customer' : 1 } ], { 'error' : "ValidationError: Value 'responsible' is restricted to user value", 'records' : [ ] })
+    _assert('/get/project', [ { 'responsible' : { '_id' : '1'*24 } }, { 'customer' : 1 } ], { 'error' : "ValidationError: Value 'responsible' is restricted for current user", 'records' : [ ] })
     
     
 if __name__ == "__main__":
