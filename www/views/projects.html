@@ -97,15 +97,14 @@ function loadProjects(data, container) {
   htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Project ...</li>";
   $("#" + container).html(htmllist);
   $("#projectsList .list-group-item").click(function() {
-    $("#projectsList .list-group-item").removeClass("active");
+    resetProjectsForm();
     $(this).addClass("active");
+    if(this.id == "")
+      return;
     isupdate = true;
     var filter = createFilterForm("projectForm");
     filter[0]._id = this.id;
     project.load(filter,loadProjectDetails, container);
-  });
-  $("#projectsList .list-group-item:last").click(function() {
-    resetProjectsForm();
   });
 }
 
