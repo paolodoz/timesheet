@@ -101,3 +101,26 @@ project:
         name:
           type: string
 
+day:
+  type: object
+  properties :
+    _id:
+      type : string
+    hours :
+      type: array
+      properties:
+        user:
+          type: string
+        project:
+          type: string
+        amount:
+          type: number
+        isextra:
+          type: boolean
+        note:
+          optional: True
+          type: string
+        task:
+          type: integer
+
+

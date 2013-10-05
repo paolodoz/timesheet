@@ -189,6 +189,62 @@ var customer = {
   },
 }
 
+var day  = {
+  load : function (filter, callback, target) {
+    $.ajax({
+      type: "POST",
+      url: "/get/day",
+      data: JSON.stringify(filter),
+      success: function(data) {
+        if(!data.error) {
+          callback(data, target);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
+  remove : function (id, callback) {
+/*    if (id == 0)
+      return;
+    var filter = [{}];
+    filter[0]._id = id;
+    $.ajax({
+      type: "POST",
+      url: "/remove/customer",
+      data: JSON.stringify(filter),
+      success: function(data) {
+        if(!data.error) {
+          callback(data);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });*/
+  },
+  update : function (isupdate, obj, callback) {
+
+    $.ajax({
+      type: "POST",
+      url: '/add/day',
+      data: JSON.stringify(obj),
+      success: function(data) {
+        if(!data.error) {
+          callback(data);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
+}
+
 function showmessage(type, msg) {
   var box = $("#msgbox");
   box.removeClass();

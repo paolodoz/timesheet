@@ -27,8 +27,8 @@ $(document).ready( function() {
     obj.project = $('#hoursproject').find('option:selected').val();
     obj.projectname = $('#hoursproject').find('option:selected').val();
     obj.amount = $("#hoursamount").val();
-    obj.task = $('#hoursproject').find('option:selected').val();
-    obj.isextra = $("#hoursisextra").val();
+    obj.task = $('#hourstask').find('option:selected').val();
+    obj.isextra = $("#hoursisextra").is(':checked') ? true : false;
     obj.note = $("#hoursnotes").val();
     addCalEvent(datestart, dateend, obj, true);
     $('#edithours').modal('hide');
@@ -68,31 +68,33 @@ function loadprojects(data, target) {
 
 function addCalEvent(start, end, event, allDay) {
   var diffdays = end.getDate() - start.getDate();
-  var day;
+  var cday;
   for(i = 0; i <= diffdays; i++) {
     if ( start.getDay() == 6 || start.getDay() == 0 ) {
       start = new Date(start);
       start.setDate(start.getDate()+1);
       continue;
     }
-    day = start.getDate();
-    if (myhours[day]) {
+    cday = start.getDate();
+    if (myhours[cday]) {
       //search for same event data
     } else {
-      myhours[day] = {};
-      myhours[day]._id = simpleDate(start);
-      myhours[day].hours = new Array();
-      myhours[day].hours[0] = {};
-      myhours[day].hours[0].user = me._id;
-      myhours[day].hours[0].project = event.project;
-      myhours[day].hours[0].amount = event.amount;
-      myhours[day].hours[0].isextra = event.isextra;
-      myhours[day].hours[0].note = event.note;
-      myhours[day].hours[0].task = event.task;
+      myhours[cday] = {};
+      myhours[cday]._id = simpleDate(start);
+      myhours[cday].hours = new Array();
+      myhours[cday].hours[0] = {};
+      myhours[cday].hours[0].user = me._id;
+      myhours[cday].hours[0].project = event.project;
+      myhours[cday].hours[0].amount = event.amount;
+      myhours[cday].hours[0].isextra = event.isextra;
+      myhours[cday].hours[0].note = event.note;
+      myhours[cday].hours[0].task = event.task;
     }
     start = new Date(start);
     start.setDate(start.getDate()+1);
    }
+  //savedata
+  day.update(true, myhours, "");
   loadCalendarHours(myhours);
   calendar.fullCalendar('unselect');
 }
