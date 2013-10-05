@@ -4,6 +4,7 @@
     <title></title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
+    <link rel="icon" href="/static/images/favicon.ico" />
     <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
     <link rel='stylesheet' type='text/css' href='/static/css/redmond/jquery-ui-1.10.3.custom.min.css' />
     <link href="/static/css/timesheet.css" rel="stylesheet" media="screen">
