@@ -1,13 +1,15 @@
 <link rel='stylesheet' type='text/css' href='/static/css/fullcalendar.css' />
 <script type="text/javascript">
-var me, myprj;
+var me, myprj, datestart, dateend, calendar, myhours = new Array();
 var tasks = ["","Office","Away"];
 $(document).ready( function() {
-  $('#calendar').fullCalendar({
+  calendar = $('#calendar').fullCalendar({
     firstDay:1,
     weekNumbers:true,
     selectable:true,
     select: function(start, end, allDay) {
+      datestart = start;
+      dateend = end;
       $('#edithours').modal('show');
     },
   });
@@ -19,6 +21,17 @@ $(document).ready( function() {
     slide: function( event, ui ) {
       $("#hoursamount").val( ui.value );
     }
+  });
+  $("#btnsave").click(function () {
+    var obj = {};
+    obj.project = $('#hoursproject').find('option:selected').val();
+    obj.projectname = $('#hoursproject').find('option:selected').val();
+    obj.amount = $("#hoursamount").val();
+    obj.task = $('#hoursproject').find('option:selected').val();
+    obj.isextra = $("#hoursisextra").val();
+    obj.note = $("#hoursnotes").val();
+    addCalEvent(datestart, dateend, obj, true);
+    $('#edithours').modal('hide');
   });
   $("#hoursamount").val( $("#hours-range").slider("value"));
   user.me(userdata);
@@ -51,6 +64,56 @@ function loadprojects(data, target) {
     }
     $("#hourstask").html(htmlselect);
   });
+}
+
+function addCalEvent(start, end, event, allDay) {
+  var diffdays = end.getDate() - start.getDate();
+  var day;
+  for(i = 0; i <= diffdays; i++) {
+    if ( start.getDay() == 6 || start.getDay() == 0 ) {
+      start = new Date(start);
+      start.setDate(start.getDate()+1);
+      continue;
+    }
+    day = start.getDate();
+    if (myhours[day]) {
+      //search for same event data
+    } else {
+      myhours[day] = {};
+      myhours[day]._id = simpleDate(start);
+      myhours[day].hours = new Array();
+      myhours[day].hours[0] = {};
+      myhours[day].hours[0].user = me._id;
+      myhours[day].hours[0].project = event.project;
+      myhours[day].hours[0].amount = event.amount;
+      myhours[day].hours[0].isextra = event.isextra;
+      myhours[day].hours[0].note = event.note;
+      myhours[day].hours[0].task = event.task;
+    }
+    start = new Date(start);
+    start.setDate(start.getDate()+1);
+   }
+  loadCalendarHours(myhours);
+  calendar.fullCalendar('unselect');
+}
+
+function loadCalendarHours(list) {
+  var i, j;
+  $("#calendar").fullCalendar('removeEvents');
+  for(i = 0; i < list.length; i++) {
+    if(list[i]) {
+      for(j = 0; j < list[i].hours.length; j++) {
+      //add event
+        var event = {};
+        event.id = list[i]._id + "+" + list[i].hours[j].project + "+" + list[i].hours[j].isextra;
+        event.title = project.getname(list[i].hours[j].project) + " " + list[i].hours[j].amount + "h";
+        event.start = list[i]._id;
+        event.end = list[i]._id;
+        event.note = list[i].hours[j].note;
+        $("#calendar").fullCalendar('renderEvent', event , false);
+      }
+    }
+  }
 }
 </script>
 
