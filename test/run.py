@@ -109,7 +109,23 @@ def main():
     _assert('/remove/user', [ { 'name' : 'USERTEST1'  }, { 'name' : 'USERTEST2'  } ], { 'error' : None })
     # Check if USERTEST1 is deleted
     _assert('/get/user', [ { 'name' : 'USERTEST1' }, { '_id' : 1 } ], { 'error': None, 'records' : [ ] })
-    
+
+    ## API PROJECTS
+    # Remove already unexistant project
+    _assert('/remove/project', [ { 'name' : 'PROJECTNAME'  } ], { 'error' : None  })
+    # Add one project
+    _assert('/add/project', [ { 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'name' : 'PROJECTNAME', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : 'start', 'end' : 'end', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Another Admin'}, 'employees' : [ { '_id' : '1'*24, 'name' : 'The employed administrator'} ] } ], { 'error' : None, 'ids' : [ '' ] })
+    # Get the inserted project by NAME
+    _assert('/get/project', [ { 'name' : 'PROJECTNAME' }, { 'contact_person' : 1, '_id' : 0 } ], { 'error': None, 'records' : [ { 'contact_person' : 'contact_person'  } ] })
+    # Get the inserted project by responsible
+    _assert('/get/project', [ { 'responsible._id' : '1'*24  }, { 'contact_person' : 1, '_id' : 0 } ], { 'error': None, 'records' : [ { 'contact_person' : 'contact_person'  } ] })
+    # Get the inserted project by employers
+    _assert('/get/project', [ { 'employees._id' : '1'*24 } , { 'contact_person' : 1, '_id' : 0 } ], { 'error': None, 'records' : [ { 'contact_person' : 'contact_person'  } ] })
+    # Delete the one inserted by employers
+    _assert('/remove/project', [ { 'employees._id' : '1'*24 } ], { 'error' : None })
+    # Get the empty customers list
+    _assert('/get/project', [ { 'employees._id' : '1'*24 }, { '_id' : 1 } ], { 'error': None, 'records' : [ ] })
+      
     
     ## NEW USER LOGIN
     

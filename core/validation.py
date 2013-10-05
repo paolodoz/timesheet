@@ -30,10 +30,15 @@ def recursive_replace(container, replace_function):
 
 
 def _replace_function_sanitize_objectify_json(container):
+    """Callback for sanitize_objectify_json"""
     
-    if isinstance(container, collections.Mapping) and '_id' in container and isinstance(container['_id'],basestring):
-        # Objectify id string and continue with recursive replace
-        container['_id'] = ObjectId(container['_id'])
+    if isinstance(container, collections.Mapping):
+        
+        # Objectify '_id' and dot-notation 'object._id' strings. Assume there is only one per dictionary.
+        id_key = next((k for k in container.keys() if isinstance(container[k],basestring) and (k == '_id' or k.endswith('._id'))), None)
+        if id_key:
+            container[id_key] = ObjectId(container[id_key])
+        
         t = container.__class__
         return t((x,recursive_replace(container[x], _replace_function_sanitize_objectify_json)) for x in container)
     elif isinstance(container, ObjectId):
@@ -48,6 +53,7 @@ def sanitize_objectify_json(json_in):
     return recursive_replace(json_in, _replace_function_sanitize_objectify_json)
 
 def _replace_function_stringify_objectid_json(container):
+    """Callback for stringify_objectid_cursor"""
     
     if isinstance(container, collections.Mapping) and '_id' in container and isinstance(container['_id'],ObjectId):
         # Objectify id string and continue with recursive replace
@@ -66,6 +72,7 @@ def stringify_objectid_cursor(cursor_in):
     return stringified
 
 def _replace_function_stringify_objectid_list(container):
+    """Callback for stringify_objectid_list"""
     if isinstance(container, ObjectId):
         return str(container)
 
