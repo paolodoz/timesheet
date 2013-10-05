@@ -15,7 +15,6 @@ $(document).ready(function() {
     }
     filterlist($('#' + list + 'List li'), currenttext);
   });
-
   $("#btnreset").click(function() {
     resetProjectsForm();
   });
@@ -39,17 +38,21 @@ function loadCustomersList(list) {
   customer.load(filter, loadCustomers, list);
 }
 function loadUsersList(list) {
-  var filter = [{},{name:1}];
+  var filter = [{},{name:1,surname:1}];
   user.load(filter, loadUsers, list);
 }
 
 function createFilterForm(container) {
+  var filter = [{},{}];
   $("#" + container + " input, #" + container + " select, #" + container + " textarea").each(function (){
     var property = $(this).attr("id").substr(7);
     if (property == "_id")
       return;
-    project[property] = 1;
+    filter[1][property] = 1;
   });
+  filter[1].responsible = 1;
+  filter[1].employees = 1;
+  return filter;
 }
 function resetProjectsForm()
 {
@@ -94,38 +97,26 @@ function loadProjects(data, container) {
   htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Project ...</li>";
   $("#" + container).html(htmllist);
   $("#projectsList .list-group-item").click(function() {
-    $("#projectsList .list-group-item").removeClass("active");
-    $(this).addClass("active");
-    isupdate = true;
-    loadProjectDetails(this.id, "projectForm");
-  });
-  $("#projectsList .list-group-item:last").click(function() {
     resetProjectsForm();
+    $(this).addClass("active");
+    if(this.id == "")
+      return;
+    isupdate = true;
+    var filter = createFilterForm("projectForm");
+    filter[0]._id = this.id;
+    project.load(filter,loadProjectDetails, container);
   });
 }
 
-function loadProjectDetails(id,container) {
-	var filter = {};
-	if(id == "")
-		return;
-	filter._id = id;
-	$.ajax({
-		type: "POST",
-		url: "/get/project",
-		data: JSON.stringify(filter),
-		success: function(data) {
-			for(var key in data.records[0]) {
-				$("#project" + key).val(data.records[0][key]);
-			}
-			$("#usersForm h4 span").text(data.records[0].responsible.name);
-		        $("#responsibleid").val(data.records[0].responsible._id);
-			setActiveUsers(data.records[0].employees);
-			$(".btn-danger").removeClass("hidden");
-			$("#btnsubmit").html("<span class='glyphicon glyphicon-edit'></span> Update");
-		},
-		contentType: 'application/json; charset=utf-8',
-		dataType: "json",
-		});
+function loadProjectDetails(data,container) {
+  for(var key in data.records[0]) {
+    $("#project" + key).val(data.records[0][key]);
+  }
+  $("#usersForm h4 span").text(data.records[0].responsible.name);
+  $("#responsibleid").val(data.records[0].responsible._id);
+  setActiveUsers(data.records[0].employees);
+  $(".btn-danger").removeClass("hidden");
+  $("#btnsubmit").html("<span class='glyphicon glyphicon-edit'></span> Update");
 }
 
 function setActiveUsers(employees) {
@@ -146,19 +137,19 @@ function loadCustomers(data, container) {
 
 //restore visibility for each element in list
 function resetvisibility(elem) {
-    $(elem).each(function () {
-        $(this).removeClass("hidden");
-    });
+  $(elem).each(function () {
+    $(this).removeClass("hidden");
+  });
 }
 
 function filterlist(list, currenttext) {
-    $(list).each(function () {
-        var elemname = $(this).text().toLowerCase();
-        if (elemname.indexOf(currenttext) != -1)
-            $(this).removeClass("hidden");
-        else
-            $(this).addClass("hidden");
-    });
+  $(list).each(function () {
+    var elemname = $(this).text().toLowerCase();
+    if (elemname.indexOf(currenttext) != -1)
+      $(this).removeClass("hidden");
+    else
+      $(this).addClass("hidden");
+  });
 }
 </script>
 <h2>Projects Management</h2>
