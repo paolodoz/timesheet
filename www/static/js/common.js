@@ -29,6 +29,7 @@ var user = {
 }
 
 var project = {
+  _prj: new Array(),
   load : function (filter, callback, target) {
     $.ajax({
       type: "POST",
@@ -36,6 +37,7 @@ var project = {
       data: JSON.stringify(filter),
       success: function(data) {
         if(!data.error) {
+          _prj = data.records;
           callback(data, target);
         } else {
           showmessage("error", data.error);
@@ -105,6 +107,14 @@ var project = {
       contentType: 'application/json; charset=utf-8',
       dataType: "json",
     });
+  },
+  getname : function(id) {
+    var i;
+    for(i = 0; i < _prj.length; i++) {
+      if(_prj[i]._id == id)
+        return _prj[i].name;
+    }
+    return "error";
   }
 }
 
@@ -192,8 +202,14 @@ function showmessage(type, msg) {
   box.fadeIn("slow").delay(5000).fadeOut("slow");
 }
 
-
-
+function simpleDate(date) {
+  var day,month;
+  day = date.getDate();
+  month = date.getMonth() + 1;
+  day = (day < 10 ) ? "0" + day : day;
+  month = (month < 10 ) ? "0" + month : month;
+  return date.getFullYear() + "-" + month + "-" + day;
+}
 
 
 
