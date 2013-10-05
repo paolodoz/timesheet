@@ -1,5 +1,7 @@
 <link rel='stylesheet' type='text/css' href='/static/css/fullcalendar.css' />
 <script type="text/javascript">
+var me, myprj;
+var tasks = ["","Office","Away"];
 $(document).ready( function() {
   $('#calendar').fullCalendar({
     firstDay:1,
@@ -15,11 +17,41 @@ $(document).ready( function() {
     max: 8,
     value: 8,
     slide: function( event, ui ) {
-      $("#cmbhours").val( ui.value );
+      $("#hoursamount").val( ui.value );
     }
   });
-  $("#cmbhours").val( $("#hours-range").slider("value"));
+  $("#hoursamount").val( $("#hours-range").slider("value"));
+  user.me(userdata);
 });
+
+function userdata(data){
+  me = data;
+  var filter = [ { 'employees._id' : me._id }, { name: 1, tasks : 1 } ];
+  project.load(filter,loadprojects,"");
+  //loadthismonthhours(today);
+}
+
+function loadprojects(data, target) {
+  var i, j, index, htmlselect = "<option value=''></option>";
+  myprj = data.records;
+  for(i = 0; i < myprj.length; i++) {
+    htmlselect += "<option value='" + myprj[i]._id + "'>" + myprj[i].name + "</option>";
+  }
+  $("#hoursproject").html(htmlselect);
+  $("#hoursproject").change(function() {
+    var htmlselect = "<option value=''></option>";
+    for(i = 0; i < myprj.length; i++) {
+      if (myprj[i]._id == $(this).val())  {
+        for(j = 0; j < myprj[i].tasks.length; j++) {
+          index = myprj[i].tasks[j];
+          htmlselect += "<option value='" + index + "'>" + tasks[index] + "</option>";
+        }
+        break;
+      }
+    }
+    $("#hourstask").html(htmlselect);
+  });
+}
 </script>
 
 <div id="calendar"></div>
@@ -34,21 +66,21 @@ $(document).ready( function() {
       <div class="modal-body">
 	<form class="form-horizontal">
 	  <div class="form-group">
-	    <label for="cmbproject" class="col-lg-3 control-label">Project</label>
+	    <label for="hoursproject" class="col-lg-3 control-label">Project</label>
 	    <div class="col-lg-9">
-	      <select class="form-control" id="cmbproject">
+	      <select class="form-control" id="hoursproject">
               </select>
 	    </div>
 	  </div>
 	  <div class="form-group">
-	    <label for="cmbtask" class="col-lg-3 control-label">Task</label>
+	    <label for="hourstask" class="col-lg-3 control-label">Task</label>
 	    <div class="col-lg-9">
-	      <select class="form-control" id="cmbtask">
+	      <select class="form-control" id="hourstask">
 	      </select>
 	    </div>
 	  </div>
 	  <div class="form-group">
-	    <label for="cmbhours" class="col-lg-3 control-label">Hours</label>
+	    <label for="hoursamount" class="col-lg-3 control-label">Hours</label>
 	    <div class="col-lg-9">
 		<div id="hours-range"></div>
 	    </div>
@@ -56,19 +88,19 @@ $(document).ready( function() {
 	  <div class="form-group">
             <label class="col-lg-3 control-label"></label>
 	      <div class="col-lg-9">
-	        <input type="text" class="form-control" id="cmbhours" placeholder="8">
+	        <input type="text" class="form-control" id="hoursamount">
 	      </div>
 	  </div>
 	  <div class="form-group">
-	    <label for="cmbextrahours" class="col-lg-3 control-label">Is extra hour</label>
+	    <label for="hoursisextra" class="col-lg-3 control-label">Is extra hour</label>
 	    <div class="col-lg-9">
-	      <input type="checkbox" value="" id="cmbextrahours">
+	      <input type="checkbox" value="" id="hoursisextra">
 	    </div>
 	  </div>
 	  <div class="form-group">
-	    <label for="cmbnotes" class="col-lg-3 control-label">Notes</label>
+	    <label for="hoursnotes" class="col-lg-3 control-label">Notes</label>
 	    <div class="col-lg-9">
-	      <textarea class="form-control" rows="3" id="cmbnotes" placeholder="Notes"></textarea>
+	      <textarea class="form-control" rows="3" id="hoursnotes" placeholder="Notes"></textarea>
 	    </div>
 	  </div>
 	</form>

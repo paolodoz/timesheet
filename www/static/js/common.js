@@ -14,6 +14,17 @@ var user = {
       contentType: 'application/json; charset=utf-8',
       dataType: "json",
     });
+  },
+  me : function (callback) {
+    $.ajax({
+      type: "GET",
+      url: "/me",
+      data : "",
+      success: function(data) {
+	callback(data);
+      },
+      dataType: "json",
+    });
   }
 }
 
