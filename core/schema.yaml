@@ -103,10 +103,10 @@ project:
 
 day:
   type: object
-  properties :
+  properties:
     _id:
-      type : string
-    hours :
+      type: string
+    hours:
       type: array
       properties:
         user:
@@ -123,4 +123,24 @@ day:
         task:
           type: integer
 
+offer:
+  type: object
+  properties:
+    project:
+      type: string
+    name:
+      type: string
+    description:
+      type: string
+    amount:
+      type: number
+    expences:
+      type: boolean
+    paydelay:
+      type: integer
+    customerref:
+      type: string
+    pdf:
+      optional: True
+      type: string
 
