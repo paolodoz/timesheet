@@ -66,8 +66,8 @@ class Routes:
         try:
             ids = db.add(collection, json_in)
         except Exception as e:
-#             import traceback; traceback.print_exc()
-            print '[TS_DEBUG] %s %s: %s' % (cherrypy.request.path_info, type(e).__name__, str(e))
+            import traceback
+            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
             return {'error' : '%s: %s' % (type(e).__name__, str(e)), 'ids' : []}
         else:
             return { 'error' : None, 'ids' : ids }
@@ -94,8 +94,8 @@ class Routes:
         try:
             records = db.get(collection, json_in)
         except Exception as e:
-#             import traceback; traceback.print_exc()
-            print '[TS_DEBUG] %s %s: %s' % (cherrypy.request.path_info, type(e).__name__, str(e))
+            import traceback
+            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
             return {'error' : '%s: %s' % (type(e).__name__, str(e)), 'records' : []}
         else:
             return { 'error' : None, 'records' : records}
@@ -119,8 +119,8 @@ class Routes:
         try:
             ids = db.remove(collection, json_in)
         except Exception as e:
-#             import traceback; traceback.print_exc()
-            print '[TS_DEBUG] %s %s: %s' % (cherrypy.request.path_info, type(e).__name__, str(e))
+            import traceback
+            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
             return {'error' : '%s: %s' % (type(e).__name__, str(e)) }
         else:
             return { 'error' : None }
@@ -145,8 +145,9 @@ class Routes:
         try:
             ids = db.update(collection, json_in)
         except Exception as e:
-#             import traceback; traceback.print_exc()
-            print '[TS_DEBUG] %s %s: %s' % (cherrypy.request.path_info, type(e).__name__, str(e))
+            import traceback
+            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
             return {'error' : '%s: %s' % (type(e).__name__, str(e)) }
         else:
             return { 'error' : None }  
+        
