@@ -1,6 +1,7 @@
 <script type="text/javascript">
 var isupdate = false;
 $(document).ready(function() {
+  loadOffersList("offersList");
   loadProjectsList("offerproject");
   $('.rapidsearch').keyup(function () {
     var list = this.id.substr(3);
@@ -15,11 +16,20 @@ $(document).ready(function() {
     resetOfferForm();
   });
   $("#btnremove").click(function() {
+    offer.remove($("offer_id").val(),resetOfferForm);
+    loadOffersList("offersList");
   });
   $("#offerForm").submit(function(event) {
     event.preventDefault();
+    offer.update(isupdate, "offerForm", resetOfferForm);
+    loadOffersList("offersList");
   });
 });
+
+function loadOffersList(list) {
+  var filter = [{},{name:1}];
+  offer.load(filter, loadOffers, list);
+}
 
 function loadProjectsList(list) {
   var filter = [{},{name:1}];
@@ -29,13 +39,11 @@ function loadProjectsList(list) {
 function createFilterForm(container) {
   var filter = [{},{}];
   $("#" + container + " input, #" + container + " select, #" + container + " textarea").each(function (){
-    var property = $(this).attr("id").substr(7);
+    var property = $(this).attr("id").substr(5);
     if (property == "_id")
       return;
     filter[1][property] = 1;
   });
-  filter[1].responsible = 1;
-  filter[1].employees = 1;
   return filter;
 }
 function resetOfferForm()
@@ -55,6 +63,35 @@ function loadProjects(data, container) {
     htmlselect += "<option value='" + data.records[i]._id + "'>" + data.records[i].name + "</option>";
   }
   $("#" + container).html(htmlselect);
+}
+
+function loadOffers(data, container) {
+  var i;
+  var htmllist = "";
+  for(i=0;i < data.records.length; i++) {
+    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data.records[i].name + "</li>";
+  }
+  //add line for new project
+  htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Project ...</li>";
+  $("#" + container).html(htmllist);
+  $("#" + container + " .list-group-item").click(function() {
+    resetOfferForm();
+    $(this).addClass("active");
+    if(this.id == "")
+      return;
+    isupdate = true;
+    var filter = createFilterForm("offerForm");
+    filter[0]._id = this.id;
+    offer.load(filter,loadOfferDetails, container);
+  });
+}
+
+function loadOfferDetails(data,container) {
+  for(var key in data.records[0]) {
+    $("#offer" + key).val(data.records[0][key]);
+  }
+  $(".btn-danger").removeClass("hidden");
+  $("#btnsubmit").html("<span class='glyphicon glyphicon-edit'></span> Update");
 }
 
 //restore visibility for each element in list

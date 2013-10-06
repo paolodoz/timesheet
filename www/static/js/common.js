@@ -245,6 +245,81 @@ var day  = {
   },
 }
 
+var offer = {
+  load : function (filter, callback, target) {
+    $.ajax({
+      type: "POST",
+      url: "/get/offer",
+      data: JSON.stringify(filter),
+      success: function(data) {
+        if(!data.error) {
+          callback(data, target);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
+  remove : function (id, callback) {
+    if (id == 0)
+      return;
+    var filter = [{}];
+    filter[0]._id = id;
+    $.ajax({
+      type: "POST",
+      url: "/remove/offer",
+      data: JSON.stringify(filter),
+      success: function(data) {
+        if(!data.error) {
+          callback(data);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
+  update : function (isupdate, form, callback) {
+    var offer, _off, url;
+    if(isupdate) {
+      _off = {};
+      offer = _off;
+      url = "/update/offer";
+    } else {
+      _off = [{}];
+      offer = _off[0];
+      url = "/add/offer";
+    }
+    $("#" + form + " input, #" + form + " select, #" + form + " textarea").each(function (){
+      var property = $(this).attr("id").substr(5);
+      if (property == "_id" && !isupdate)
+        return;
+      if($(this).is(':checkbox')) {
+        offer[property] = $(this).is(':checked') ? true : false;
+      } else {
+        offer[property] = $(this).val();
+      }
+    });
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: JSON.stringify(_off),
+      success: function(data) {
+        if(!data.error) {
+          callback(data);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
+}
+
 function showmessage(type, msg) {
   var box = $("#msgbox");
   box.removeClass();
