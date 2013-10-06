@@ -96,7 +96,7 @@ function loadProjects(data, container) {
   //add line for new project
   htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Project ...</li>";
   $("#" + container).html(htmllist);
-  $("#projectsList .list-group-item").click(function() {
+  $("#" + container + " .list-group-item").click(function() {
     resetProjectsForm();
     $(this).addClass("active");
     if(this.id == "")
