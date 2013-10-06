@@ -1,0 +1,153 @@
+<script type="text/javascript">
+var isupdate = false;
+$(document).ready(function() {
+  loadProjectsList("offerproject");
+  $('.rapidsearch').keyup(function () {
+    var list = this.id.substr(3);
+    var currenttext = $(this).val().toLowerCase();
+    if (currenttext == "") {
+      resetvisibility($('#' + list + 'List li'));
+      return;
+    }
+    filterlist($('#' + list + 'List li'), currenttext);
+  });
+  $("#btnreset").click(function() {
+    resetOfferForm();
+  });
+  $("#btnremove").click(function() {
+  });
+  $("#offerForm").submit(function(event) {
+    event.preventDefault();
+  });
+});
+
+function loadProjectsList(list) {
+  var filter = [{},{name:1}];
+  project.load(filter, loadProjects, list);
+}
+
+function createFilterForm(container) {
+  var filter = [{},{}];
+  $("#" + container + " input, #" + container + " select, #" + container + " textarea").each(function (){
+    var property = $(this).attr("id").substr(7);
+    if (property == "_id")
+      return;
+    filter[1][property] = 1;
+  });
+  filter[1].responsible = 1;
+  filter[1].employees = 1;
+  return filter;
+}
+function resetOfferForm()
+{
+  isupdate = false;
+  $("#offerForm")[0].reset();
+  $("#offer_id").val(0);
+  $("#btnremove").addClass("hidden");
+  $("#offersList li").removeClass("active");
+  $("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
+}
+
+function loadProjects(data, container) {
+  var i;
+  var htmlselect = "<option value=''></option>";
+  for(i=0;i < data.records.length; i++) {
+    htmlselect += "<option value='" + data.records[i]._id + "'>" + data.records[i].name + "</option>";
+  }
+  $("#" + container).html(htmlselect);
+}
+
+//restore visibility for each element in list
+function resetvisibility(elem) {
+  $(elem).each(function () {
+    $(this).removeClass("hidden");
+  });
+}
+
+function filterlist(list, currenttext) {
+  $(list).each(function () {
+    var elemname = $(this).text().toLowerCase();
+    if (elemname.indexOf(currenttext) != -1)
+      $(this).removeClass("hidden");
+    else
+      $(this).addClass("hidden");
+  });
+}
+</script>
+<h2>Offers Management</h2>
+<div class="row">
+  <div class="col-lg-3">
+    <h3>Current offers list</h3>
+    <div class="input-group">
+      <span class="input-group-addon glyphicon glyphicon-search"></span>
+      <input type="text" class="form-control rapidsearch" placeholder="Rapid Search" id="txtoffers">
+    </div>
+    <p></p>
+    <ul class="list-group" id="offersList">
+  </div>
+  <div class="col-lg-5">
+    <h3>Offer Details</h3>
+    <form class="form-horizontal" role="form" id="offerForm" method="post" action="/index/offers">
+<input type="hidden" id="offer_id" value="0">
+<div class="form-group">
+    <label for="offerproject" class="col-lg-4 control-label">Project</label>
+    <div class="col-lg-6">
+      <select class="form-control" id="offerproject">
+      </select>
+    </div>
+  </div>
+<div class="form-group">
+    <label for="offername" class="col-lg-4 control-label">Name</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control" id="offername" placeholder="Name">
+    </div>
+  </div>
+<div class="form-group">
+    <label for="offerdescription" class="col-lg-4 control-label">Description</label>
+    <div class="col-lg-6">
+      <textarea class="form-control" id="offerdescription" rows="3" placeholder="Description"></textarea>
+    </div>
+  </div>
+<div class="form-group">
+    <label for="offeramount" class="col-lg-4 control-label">Amount</label>
+    <div class="col-lg-6">
+      <div class="input-group">
+        <input type="text" class="form-control" id="offeramount" placeholder="10.000">
+        <span class="input-group-addon">&euro;</span>
+      </div>
+    </div>
+</div>
+<div class="form-group">
+    <label for="offerexpences" class="col-lg-4 control-label">Expences included</label>
+    <div class="col-lg-6">
+      <input type="checkbox" id="offerexpences">
+    </div>
+  </div>
+<div class="form-group">
+    <label for="offerpaydelay" class="col-lg-4 control-label">Payment Delay</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control" id="offerpaydelay" placeholder="60">
+    </div>
+  </div>
+<div class="form-group">
+    <label for="offercustomerref" class="col-lg-4 control-label">Customer reference</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control" id="offercustomerref" placeholder="Reference">
+    </div>
+  </div>
+<div class="form-group">
+    <label for="offerpdf" class="col-lg-4 control-label">Upload pdf file</label>
+    <div class="col-lg-6">
+      <input type="file" id="offerpdf">
+    </div>
+  </div>
+<div class="form-group">
+    <div class="col-lg-offset-4 col-lg-7">
+      <button type="submit" class="btn btn-primary" id="btnsubmit"><span class="glyphicon glyphicon-plus"></span> Add</button>
+      <button type="reset" class="btn" id="btnreset"> Reset</button>
+      <button type="button" class="btn btn-danger hidden" id="btnremove"><span class="glyphicon glyphicon-trash"></span> Remove</button>
+    </div>
+</div>
+    </form>
+  </div>
+</div>
