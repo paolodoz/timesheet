@@ -64,18 +64,20 @@
         </ul>
   </li>
   <li class="dropdown">
-    <a href="#" data-toggle="dropdown" role="button">Clienti<b class="caret"></b></a>
+    <a href="#" data-toggle="dropdown" role="button">Customers<b class="caret"></b></a>
 	<ul aria-labelledby="drop4" role="menu" class="dropdown-menu" id="menucust">
             <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Aggiungi</a></li>
             <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Elimina</a></li>
             <li class="divider" role="presentation"></li>
-            <li role="presentation"><a href="/index/customers" tabindex="-1" role="menuitem">Elenco</a></li>
+            <li role="presentation"><a href="/index/customers" tabindex="-1" role="menuitem">List</a></li>
         </ul>
   </li>
-<li>
-    <a href="/index/projects">
-      Projects
-    </a>
+<li class="dropdown">
+    <a href="#" data-toggle="dropdown" role="button">Projects<b class="caret"></b></a>
+	<ul aria-labelledby="drop4" role="menu" class="dropdown-menu" id="menucust">
+            <li role="presentation"><a href="/index/projects" tabindex="-1" role="menuitem">List</a></li>
+            <li role="presentation"><a href="/index/offers" tabindex="-1" role="menuitem">Offers</a></li>
+        </ul>
   </li>
 <li>
     <a href="/index/users">
