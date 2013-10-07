@@ -294,13 +294,17 @@ var offer = {
       url = "/add/offer";
     }
     $("#" + form + " input, #" + form + " select, #" + form + " textarea").each(function (){
-      var property = $(this).attr("id").substr(5);
+      var value, property = $(this).attr("id").substr(5);
       if (property == "_id" && !isupdate)
         return;
       if($(this).is(':checkbox')) {
         offer[property] = $(this).is(':checked') ? true : false;
       } else {
-        offer[property] = $(this).val();
+        value = Number($(this).val());
+        if(isNaN(value))
+          offer[property] = $(this).val();
+        else
+          offer[property] = value;
       }
     });
     $.ajax({
