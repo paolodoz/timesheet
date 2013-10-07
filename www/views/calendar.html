@@ -42,7 +42,7 @@ function userdata(data){
   me = data;
   var filter = [ { 'employees._id' : me._id }, { name: 1, tasks : 1 } ];
   project.load(filter,loadprojects,"");
-  filter = [{'hours.user' : me._id, 'date': {$gte:firstday, $lte:"2013-10-31"} },{date:1, hours:1}];
+  filter = [{'hours.user' : me._id, 'date': {$gte:firstday, $lte:lastday} },{date:1, hours:1}];
   day.load(filter,loadDays);
   //loadthismonthhours(today);
 }
