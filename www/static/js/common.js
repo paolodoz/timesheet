@@ -86,12 +86,12 @@ var project = {
     });
     project.responsible = {};
     project.responsible._id = $("#responsibleid").val();
-    project.responsible.name  = String.trim($("#usersForm h4 span").text());
+    project.responsible.name  = $("#usersForm h4 span").text().trim();
     project.employees = new Array();
     $("#usersList .active").each(function (i) {
       project.employees[i] = {};
       project.employees[i]._id = this.id;
-      project.employees[i].name = String.trim($(this).text());
+      project.employees[i].name = $(this).text().trim();
     });
     $.ajax({
       type: "POST",
