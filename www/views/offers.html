@@ -51,6 +51,8 @@ function resetOfferForm()
   isupdate = false;
   $("#offerForm")[0].reset();
   $("#offer_id").val(0);
+  $("#offerpdf").removeClass("hidden");
+  $("#offerpdftxt").text("");
   $("#btnremove").addClass("hidden");
   $("#offersList li").removeClass("active");
   $("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
@@ -88,7 +90,16 @@ function loadOffers(data, container) {
 
 function loadOfferDetails(data,container) {
   for(var key in data.records[0]) {
-    $("#offer" + key).val(data.records[0][key]);
+    if(data.records[0][key] == true || data.records[0][key] == false) {
+      $("#offer" + key).prop('checked',data.records[0][key]);
+    } else {
+      if(key != "pdf") {
+        $("#offer" + key).val(data.records[0][key]);
+      } else {
+        $("#offer" + key).addClass("hidden");
+        $("#offer" + key + "txt").html("<a href='#'>" +data.records[0][key] + "</a>");
+      }
+    }
   }
   $(".btn-danger").removeClass("hidden");
   $("#btnsubmit").html("<span class='glyphicon glyphicon-edit'></span> Update");
@@ -176,6 +187,7 @@ function filterlist(list, currenttext) {
     <label for="offerpdf" class="col-lg-4 control-label">Upload pdf file</label>
     <div class="col-lg-6">
       <input type="file" id="offerpdf">
+<p id="offerpdftxt" class="form-control-static"></p>
     </div>
   </div>
 <div class="form-group">
