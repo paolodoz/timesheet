@@ -4,7 +4,7 @@ $(document).ready(function() {
   loadCustomersList("custList");
   $("#custForm").submit(function(event) {
     event.preventDefault();
-    customer.update(isupdate, "custForm", resetform);
+    customer.update(isupdate, "custForm", resetCustomerForm);
     loadCustomersList("custList");
   });
   $("#btnreset").click(function() {
