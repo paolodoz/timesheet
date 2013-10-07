@@ -26,8 +26,8 @@ $(document).ready( function() {
     var obj = {};
     obj.project = $('#hoursproject').find('option:selected').val();
     obj.projectname = $('#hoursproject').find('option:selected').val();
-    obj.amount = $("#hoursamount").val();
-    obj.task = $('#hourstask').find('option:selected').val();
+    obj.amount = Number($("#hoursamount").val());
+    obj.task = Number($('#hourstask').find('option:selected').val());
     obj.isextra = $("#hoursisextra").is(':checked') ? true : false;
     obj.note = $("#hoursnotes").val();
     addCalEvent(datestart, dateend, obj, true);
@@ -85,10 +85,10 @@ function addCalEvent(start, end, event, allDay) {
       myhours[cday].hours[0] = {};
       myhours[cday].hours[0].user = me._id;
       myhours[cday].hours[0].project = event.project;
-      myhours[cday].hours[0].amount = event.amount;
+      myhours[cday].hours[0].amount = Number(event.amount);
       myhours[cday].hours[0].isextra = event.isextra;
       myhours[cday].hours[0].note = event.note;
-      myhours[cday].hours[0].task = event.task;
+      myhours[cday].hours[0].task = Number(event.task);
     }
     start = new Date(start);
     start.setDate(start.getDate()+1);
