@@ -190,14 +190,14 @@ var customer = {
 }
 
 var day  = {
-  load : function (filter, callback, target) {
+  load : function (filter, callback) {
     $.ajax({
       type: "POST",
       url: "/get/day",
       data: JSON.stringify(filter),
       success: function(data) {
         if(!data.error) {
-          callback(data, target);
+          callback(data);
         } else {
           showmessage("error", data.error);
         }
@@ -345,12 +345,6 @@ function simpleDate(date) {
   month = (month < 10 ) ? "0" + month : month;
   return date.getFullYear() + "-" + month + "-" + day;
 }
-
-
-
-
-
-
 
 
 
