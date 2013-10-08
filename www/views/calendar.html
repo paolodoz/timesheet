@@ -1,6 +1,6 @@
 <link rel='stylesheet' type='text/css' href='/static/css/fullcalendar.css' />
 <script type="text/javascript">
-var me, myprj, datestart, dateend, calendar, myhours = new Array();
+var me, myprj, datestart, dateend, calendar, firstday, lastday, myhours = new Array();
 var tasks = ["","Office","Away"];
 $(document).ready( function() {
   calendar = $('#calendar').fullCalendar({
@@ -34,6 +34,7 @@ $(document).ready( function() {
     $('#edithours').modal('hide');
   });
   $("#hoursamount").val( $("#hours-range").slider("value"));
+  currentVis();
   user.me(userdata);
 });
 
@@ -41,7 +42,33 @@ function userdata(data){
   me = data;
   var filter = [ { 'employees._id' : me._id }, { name: 1, tasks : 1 } ];
   project.load(filter,loadprojects,"");
+  filter = [{'hours.user' : me._id, 'date': {$gte:firstday, $lte:lastday} },{date:1, hours:1}];
+  day.load(filter,loadDays);
   //loadthismonthhours(today);
+}
+
+function currentVis() {
+  firstday = simpleDate(calendar.fullCalendar('getView').start);
+  lastday = new Date(calendar.fullCalendar('getView').end);
+  lastday.setDate(lastday.getDate()-1);
+  lastday = simpleDate(lastday);
+}
+
+function loadDays(data) {
+  var i, index;
+  var aday = firstday;
+  var last = Number(lastday.substr(8));
+  for(i=0; i < last; i++) {
+    aday = new Date(aday);
+    myhours[i] = {};
+    myhours[i].date = simpleDate(aday);
+    aday.setDate(aday.getDate() + 1);
+  }
+  for(i=0; i< data.records.length; i++) {
+    index = Number(data.records[i].date.substr(8));
+    myhours[index-1].hours = data.records[i].hours;
+  }
+  loadCalendarHours(myhours);
 }
 
 function loadprojects(data, target) {
@@ -75,12 +102,12 @@ function addCalEvent(start, end, event, allDay) {
       start.setDate(start.getDate()+1);
       continue;
     }
-    cday = start.getDate();
-    if (myhours[cday]) {
+    cday = start.getDate()-1;
+    if (myhours[cday].hours) {
       //search for same event data
     } else {
       myhours[cday] = {};
-      myhours[cday]._id = simpleDate(start);
+      myhours[cday].date = simpleDate(start);
       myhours[cday].hours = new Array();
       myhours[cday].hours[0] = {};
       myhours[cday].hours[0].user = me._id;
@@ -94,23 +121,27 @@ function addCalEvent(start, end, event, allDay) {
     start.setDate(start.getDate()+1);
    }
   //savedata
-  day.update(true, myhours, "");
+  day.update(true, myhours, nothing);
   loadCalendarHours(myhours);
   calendar.fullCalendar('unselect');
+}
+
+function nothing(){
+
 }
 
 function loadCalendarHours(list) {
   var i, j;
   $("#calendar").fullCalendar('removeEvents');
   for(i = 0; i < list.length; i++) {
-    if(list[i]) {
+    if(list[i].hours) {
       for(j = 0; j < list[i].hours.length; j++) {
       //add event
         var event = {};
-        event.id = list[i]._id + "+" + list[i].hours[j].project + "+" + list[i].hours[j].isextra;
+        event.id = list[i].date + "+" + list[i].hours[j].project + "+" + list[i].hours[j].isextra;
         event.title = project.getname(list[i].hours[j].project) + " " + list[i].hours[j].amount + "h";
-        event.start = list[i]._id;
-        event.end = list[i]._id;
+        event.start = list[i].date;
+        event.end = list[i].date;
         event.note = list[i].hours[j].note;
         $("#calendar").fullCalendar('renderEvent', event , false);
       }

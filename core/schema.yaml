@@ -128,9 +128,10 @@ trip:
 day:
   type: object
   properties:
-    _id:
+    date:
       type: string
     hours:
+      optional: True
       type: array
       properties:
         user:

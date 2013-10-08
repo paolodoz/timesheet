@@ -86,12 +86,12 @@ var project = {
     });
     project.responsible = {};
     project.responsible._id = $("#responsibleid").val();
-    project.responsible.name  = String.trim($("#usersForm h4 span").text());
+    project.responsible.name  = $("#usersForm h4 span").text().trim();
     project.employees = new Array();
     $("#usersList .active").each(function (i) {
       project.employees[i] = {};
       project.employees[i]._id = this.id;
-      project.employees[i].name = String.trim($(this).text());
+      project.employees[i].name = $(this).text().trim();
     });
     $.ajax({
       type: "POST",
@@ -272,14 +272,14 @@ var customer = {
 }
 
 var day  = {
-  load : function (filter, callback, target) {
+  load : function (filter, callback) {
     $.ajax({
       type: "POST",
       url: "/get/day",
       data: JSON.stringify(filter),
       success: function(data) {
         if(!data.error) {
-          callback(data, target);
+          callback(data);
         } else {
           showmessage("error", data.error);
         }
@@ -427,15 +427,4 @@ function simpleDate(date) {
   month = (month < 10 ) ? "0" + month : month;
   return date.getFullYear() + "-" + month + "-" + day;
 }
-
-
-
-
-
-
-
-
-
-
-
 
