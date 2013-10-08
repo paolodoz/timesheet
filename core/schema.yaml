@@ -101,6 +101,30 @@ project:
         name:
           type: string
 
+trip:
+  type: object
+  properties:
+    project:
+      type: string
+    description:
+      type: string
+    status: 
+      type: string   
+    start:
+      type: string
+    end:
+      type: string
+    country:
+      type: string
+    city:
+      type: string
+    car:
+      type: string
+    hotel:
+      type: string
+    airplane:
+      type: string
+
 day:
   type: object
   properties:

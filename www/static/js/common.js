@@ -118,6 +118,88 @@ var project = {
   }
 }
 
+var trip = {
+  _trip: new Array(),
+  load : function (filter, callback, target) {
+    $.ajax({
+      type: "POST",
+      url: "/get/trip",
+      data: JSON.stringify(filter),
+      success: function(data) {
+        if(!data.error) {
+          _trip = data.records;
+          callback(data, target);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
+  remove : function (id, callback) {
+    if (id == 0)
+      return;
+    var filter = [{}];
+    filter[0]._id = id;
+    $.ajax({
+      type: "POST",
+      url: "/remove/trip",
+      data: JSON.stringify(filter),
+      success: function(data) {
+        if(!data.error) {
+          callback(data);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
+  update : function (isupdate, form, callback) {
+    var trip, _trip, url;
+    if(isupdate) {
+      _trip = {};
+      trip = _trip;
+      url = "/update/trip";
+    } else {
+      _trip = [{}];
+      trip = _trip[0];
+      url = "/add/trip";
+    }
+    $("#" + form + " input, #" + form + " select, #" + form + " checkbox, #" + form + " textarea").each(function (){
+      var property = $(this).attr("id").substr(4);
+      if (property == "_id" && !isupdate)
+        return;
+      trip[property] = $(this).val();
+    });
+    trip["description"] ="pippo";
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: JSON.stringify(_trip),
+      success: function(data) {
+        if(!data.error) {
+          callback(data);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
+  getname : function(id) {
+    var i;
+    for(i = 0; i < _trip.length; i++) {
+      if(_trip[i]._id == id)
+        return _trip[i].name;
+    }
+    return "error";
+  }
+}
+
 var customer = {
   load : function (filter, callback, target) {
     $.ajax({
@@ -345,9 +427,6 @@ function simpleDate(date) {
   month = (month < 10 ) ? "0" + month : month;
   return date.getFullYear() + "-" + month + "-" + day;
 }
-
-
-
 
 
 

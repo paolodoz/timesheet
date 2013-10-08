@@ -1,9 +1,12 @@
 <script type="text/javascript">
+var isupdate = false;
 $(document).ready(function() {
-  loadProjects("projectsList");
-  loadCustomers("projectcustomer");
-  loadUsers("usersList");
+  loadTripsList("tripsList");
+  loadProjectsList("tripproject");
+  loadCustomersList("projectcustomer");
+  loadUsersList("usersList");
   $(".datepicker").datepicker();
+  $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
   $('.rapidsearch').keyup(function () {
     var list = this.id.substr(3);
     var currenttext = $(this).val().toLowerCase();
@@ -13,110 +16,167 @@ $(document).ready(function() {
     }
     filterlist($('#' + list + 'List li'), currenttext);
   });
-});
-function loadUsers(container) {
-//load complete list of customers
-  var filter = {};
-  $.ajax({
-    type: "POST",
-    url: "/get/users",
-    data: JSON.stringify(filter),
-    success: function(data) {
-      var i;
-      var htmllist = "";
-      for(i=0;i < data.records.length; i++) {
-        htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-user'></span> " + data.records[i].name + " " + data.records[i].surname + "</li>";
-      }
-      $("#" + container).html(htmllist);
-      $("#" + container + " .list-group-item").click(function() {
-        $(this).toggleClass("active");
-        var selectusers = $("#usersList .active").length;
-        if(selectusers == 1) {
-          $("#usersForm h4 span").text($(this).text());
-        }
-        else if(selectusers == 0) {
-          $("#usersForm h4 span").text("");
-      }
+  $("#btnreset").click(function() {
+    resetTripForm();
   });
-    },
-    contentType: 'application/json; charset=utf-8',
-    dataType: "json",
-    });
+  $("#btnremove").click(function() {
+    trip.remove($("#project_id").val(),resetTripForm);
+    loadProjectsList("tripproject");
+  });
+  $("#tripForm").submit(function(event) {
+    event.preventDefault();
+    trip.update(isupdate, "tripForm", resetTripForm);
+    loadProjectsList("tripproject");
+  });
+});
+
+function loadProjectsList(list) {
+  var filter = [{},{name:1}];
+  project.load(filter, loadProjects, list);
 }
-function loadtrips(container) {
-//load complete list of trips
-	var filter = {};
-	$.ajax({
-		type: "POST",
-		url: "/get/trips",
-		data: JSON.stringify(filter),
-		success: function(data) {
-			var i;
-			var htmllist = "";
-			for(i=0;i < data.records.length; i++) {
-				htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data.records[i].name + "</li>";
-			}
-			//add line for new trip
-			htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New trip ...</li>";
-			$("#" + container).html(htmllist);
-			$("#tripsList .list-group-item").click(function() {
-				$("#tripsList .list-group-item").removeClass("active");
-				$(this).addClass("active");
-			});
-			$("#tripsList .list-group-item:last").click(function() {
-				$("#tripForm")[0].reset();
-				$("#prject_id").val(0);
-				$(".btn-danger").addClass("hidden");
-			});
-		},
-		contentType: 'application/json; charset=utf-8',
-		dataType: "json",
-		});
+function loadCustomersList(list) {
+  var filter = [{},{name:1}];
+  customer.load(filter, loadCustomers, list);
+}
+function loadUsersList(list) {
+  var filter = [{},{name:1,surname:1}];
+  user.load(filter, loadUsers, list);
 }
 
-function loadCustomers(container) {
-	//load complete list of customers
-	var filter = {};
-	$.ajax({
-		type: "POST",
-		url: "/get/customer",
-		data: JSON.stringify(filter),
-		success: function(data) {
-			var i;
-			var htmlselect = "<option value=''></option>";
-			for(i=0;i < data.records.length; i++) {
-				htmlselect += "<option value='" + data.records[i]._id + "'>" + data.records[i].name + "</option>";
-			}
-			$("#" + container).html(htmlselect);
-		},
-		contentType: 'application/json; charset=utf-8',
-		dataType: "json",
-		});
+function loadTripsList(list) {
+  var filter = [{},{start:1}];
+  trip.load(filter, loadTrips, list);
 }
 
+
+
+function createFilterForm(form) {
+  var filter = [{},{}];
+  
+  $("#" + form + " input, #" + form + " select, #" + form + " textarea, #" + form + " checkbox" ).each(function (){
+    var property = $(this).attr("id").substr(4);
+    if (property == "_id")
+      return;
+    filter[1][property] = 1;
+    
+  });
+
+  return filter;
+}
+function resetTripForm()
+{
+  isupdate = false;
+  $("#tripForm")[0].reset();
+  $("#trip_id").val(0);
+  $("#btnremove").addClass("hidden");
+  $("#tripsList li").removeClass("active");
+  $("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
+  $("#usersList li").removeClass("active");
+  $("#responsibleid").val(0);
+  $("#usersForm h4 span").text("");
+}
+function loadUsers(data, container) {
+  var i;
+  var htmllist = "";
+  for(i=0;i < data.records.length; i++) {
+    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-user'></span> " + data.records[i].name + " " + data.records[i].surname + "</li>";
+  }
+  $("#" + container).html(htmllist);
+  $("#" + container + " .list-group-item").click(function() {
+    var beforeusers = $("#usersList .active").length;
+    $(this).toggleClass("active");
+    var afterusers = $("#usersList .active").length;
+    if(afterusers == 1 && (beforeusers-afterusers) < 0) {
+      $("#usersForm h4 span").text($(this).text());
+      $("#responsibleid").val(this.id);
+    } else if(afterusers == 0) {
+      $("#usersForm h4 span").text("");
+      $("#responsibleid").val(0);
+    }
+  });
+}
+
+function loadProjects(data, container) {
+  var i;
+  var htmlselect = "<option value=''></option>";
+  for(i=0;i < data.records.length; i++) {
+    htmlselect += "<option value='" + data.records[i]._id + "'>" + data.records[i].name + "</option>";
+  }
+  $("#" + container).html(htmlselect);
+}
+
+function loadTrips(data, container) {
+  var i;
+  var htmllist = "";
+  for(i=0;i < data.records.length; i++) {
+    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data.records[i].start + "</li>";
+  }
+  //add line for new trip
+  htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Trip ...</li>";
+  $("#" + container).html(htmllist);
+  $("#" + container + " .list-group-item").click(function() {
+    resetTripForm();
+    $(this).addClass("active");
+    if(this.id == "")
+      return;
+    isupdate = true;
+    var filter = createFilterForm("tripForm");
+    filter[0]._id = this.id;
+    trip.load(filter,loadTripDetails, container);
+  });
+}
+
+
+function loadTripDetails(data,container) {
+  for(var key in data.records[0]) {
+    $("#trip" + key).val(data.records[0][key]);
+    if ( key == "airplane" ) {
+       if ( data.records[0][key] == "on" )
+          $("#trip" + "tripcarbtn").val("on");
+    }
+  }
+  
+  $(".btn-danger").removeClass("hidden");
+  $("#btnsubmit").html("<span class='glyphicon glyphicon-edit'></span> Update");
+}
+
+function setActiveUsers(employees) {
+  var i;
+  for (i = 0; i < employees.length; i++) {
+    $("#" + employees[i]._id).addClass("active");
+  }
+}
+
+function loadCustomers(data, container) {
+  var i;
+  var htmlselect = "<option value=''></option>";
+  for(i=0;i < data.records.length; i++) {
+    htmlselect += "<option value='" + data.records[i]._id + "'>" + data.records[i].name + "</option>";
+  }
+  $("#" + container).html(htmlselect);
+}
 
 //restore visibility for each element in list
 function resetvisibility(elem) {
-    $(elem).each(function () {
-        $(this).removeClass("hidden");
-    });
+  $(elem).each(function () {
+    $(this).removeClass("hidden");
+  });
 }
 
 function filterlist(list, currenttext) {
-    $(list).each(function () {
-        var elemname = $(this).text().toLowerCase();
-        if (elemname.indexOf(currenttext) != -1)
-            $(this).removeClass("hidden");
-        else
-            $(this).addClass("hidden");
-    });
+  $(list).each(function () {
+    var elemname = $(this).text().toLowerCase();
+    if (elemname.indexOf(currenttext) != -1)
+      $(this).removeClass("hidden");
+    else
+      $(this).addClass("hidden");
+  });
 }
-
 </script>
 <h2>Trips Management</h2>
 <div class="row">
   <div class="col-lg-3">
-    <h3>trips list</h3>
+    <h3>Old trips</h3>
     <div class="input-group">
       <span class="input-group-addon glyphicon glyphicon-search"></span>
       <input type="text" class="form-control rapidsearch" placeholder="Rapid Search" id="txttrips">
@@ -124,72 +184,91 @@ function filterlist(list, currenttext) {
     <p></p>
     <ul class="list-group" id="tripsList">
   </div>
-  <div class="col-lg-4">
-    <h3>trip Details</h3>
+  
+<h3>Trip details</h3>
     <form class="form-horizontal" role="form" id="tripForm" method="post" action="/index/trips">
-<input type="hidden" id="project_id" value="0">
-<div class="form-group">
-    <label for="tripproject" class="col-lg-4 control-label">Project</label>
-    <div class="col-lg-6">
-      <select class="form-control" id="tripproject">
-      </select>
-    </div>
-  </div>
+    <input type="hidden" id="trip_id" value="0">
+  <div class="col-lg-4">
+    
 
-<div class="form-group">
-    <label for="tripdescription" class="col-lg-4 control-label">Description</label>
-    <div class="col-lg-6">
-      <input type="text" class="form-control" id="tripdescription" placeholder="Name">
-    </div>
-  </div>
+       
+       <div class="form-group">
+          <label for="tripproject" class="col-lg-4 control-label">Project</label>
+          <div class="col-lg-6">
+             <select class="form-control" id="tripproject"></select>
+          </div>
+       </div>
 
-<div class="form-group">
-    <label for="tripstart" class="col-lg-4 control-label">Date start</label>
-    <div class="col-lg-6">
-      <input type="text" class="form-control datepicker" id="tripstart" placeholder="1/1/2013">
-    </div>
-  </div>
-<div class="form-group">
-    <label for="tripend" class="col-lg-4 control-label">Date end</label>
-    <div class="col-lg-6">
-      <input type="text" class="form-control datepicker" id="tripend" placeholder="31/12/2020">
-    </div>
-  </div>
+       <div class="form-group">
+          <label for="tripdescription" class="col-lg-4 control-label">Description</label>
+          <div class="col-lg-6">
+	     <textarea class="form-control" id="tripdescription" rows="3" placeholder="Description"></textarea>
+          </div>
+       </div>
 
-<div class="form-group">
-    <div class="btn-group" data-toggle="buttons">	
-    <label class="btn btn-primary">
-       <input type="checkbox"><span class='icon-car'></span>
-    </label>
-    <label class="btn btn-primary">
-       <input type="checkbox"><span class='icon-airplane'></span>
-    </label>
-    <label class="btn btn-primary">
-       <input type="checkbox"><span class='icon-hotel'></span>
-    </label>
-    </div>
-</div>
+       <div class="form-group">
+          <label for="tripstatus" class="col-lg-4 control-label">Status</label>
+          <div class="col-lg-6">
+             <select class="form-control" id="tripstatus" disabled="disabled"><option value='pending'>pending</option></select>
 
-<div class="form-group">
-    <div class="col-lg-offset-4 col-lg-7">
-      <button type="submit" class="btn btn-primary" id="btnsubmit"><span class="glyphicon glyphicon-plus"></span> Add</button>
-      <button type="reset" class="btn" id="btnreset"> Reset</button>
-      <button type="button" class="btn btn-danger hidden" id="btnremove"><span class="glyphicon glyphicon-trash"></span> Remove</button>
-    </div>
-</div>
-    </form>
+          </div>
+       </div>
+
+
   </div>
   <div class="col-lg-4">
-    <h3>trip State</h3>
-    <form class="form-horizontal" role="form" id="usersForm" method="post" action="/index/projects">
-    <p>Select responsible and then people involved in the project.</p>
-    <h4>Responsible: <span></span></h4>
-<div class="input-group">
-      <span class="input-group-addon glyphicon glyphicon-search"></span>
-      <input type="text" class="form-control rapidsearch" placeholder="Rapid Search" id="txtusers">
+    <h3> </h3>
+
+    <div class="form-group">
+       <label for="tripstart" class="col-lg-4 control-label">Date start</label>
+          <div class="col-lg-6">
+             <input type="text" class="form-control datepicker" id="tripstart" placeholder="1/1/2013">
+          </div>
     </div>
-<p></p>
-    <ul class="list-group" id="usersList"></ul>
-  </form>
+
+    <div class="form-group">
+       <label for="tripend" class="col-lg-4 control-label">Date end</label>
+       <div class="col-lg-6">
+          <input type="text" class="form-control datepicker" id="tripend" placeholder="31/12/2020">
+       </div>
+    </div>
+
+    <div class="form-group">
+       <div class="btn-group" data-toggle="buttons">	
+          <label class="btn btn-primary" id="tripcarbtn">
+          <input type="checkbox" id="tripcar" ><span class='icon-car'></span>
+          </label>
+          <label class="btn btn-primary">
+          <input type="checkbox" id="tripairplane" ><span class='icon-airplane'></span>
+          </label>
+          <label class="btn btn-primary">
+          <input type="checkbox" id="triphotel" ><span class='icon-hotel'></span>
+          </label>
+       </div>
+    </div>
+
+    <div class="form-group">
+       <label for="trippcountry" class="col-lg-4 control-label">Country</label>
+       <div class="col-lg-6">
+          <select class="form-control" id="tripcountry"><option value='italy'>Italy</option></select>
+       </div>
+    </div>
+
+    <div class="form-group">
+       <label for="trippcity" class="col-lg-4 control-label">City</label>
+       <div class="col-lg-6">
+          <select class="form-control" id="tripcity"><option value='turin'>Turin</option></select>
+       </div>
+    </div>
+
+    <div class="form-group">
+      <div class="col-lg-offset-4 col-lg-7">
+         <button type="submit" class="btn btn-primary" id="btnsubmit"><span class="glyphicon glyphicon-plus"></span> Add</button>
+         <button type="reset" class="btn" id="btnreset"> Reset</button>
+         <button type="button" class="btn btn-danger hidden" id="btnremove"><span class="glyphicon glyphicon-trash"></span> Remove</button>
+      </div>
+    </div>
+
+</form>
   </div>
 </div>
