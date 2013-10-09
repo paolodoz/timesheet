@@ -168,11 +168,21 @@ var trip = {
       trip = _trip[0];
       url = "/add/trip";
     }
+
+    trip.accommodation = new Array();
+    i = 0;
     $("#" + form + " input, #" + form + " select, #" + form + " checkbox, #" + form + " textarea").each(function (){
       var property = $(this).attr("id").substr(4);
       if (property == "_id" && !isupdate)
         return;
-      trip[property] = $(this).val();
+      if($(this).is(':checkbox')) 
+      {
+        trip.accommodation[i] = {};
+        trip.accommodation[i] = $(this).is(':checked') ? true : false;
+	i++;
+      }
+      else
+        trip[property] = $(this).val();
     });
     trip["description"] ="pippo";
     $.ajax({

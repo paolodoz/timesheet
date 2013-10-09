@@ -57,10 +57,10 @@ function createFilterForm(form) {
     var property = $(this).attr("id").substr(4);
     if (property == "_id")
       return;
-    filter[1][property] = 1;
-    
+    filter[1][property] = 1;  
   });
 
+  filter[1].accommodation = 1;
   return filter;
 }
 function resetTripForm()
@@ -130,11 +130,13 @@ function loadTrips(data, container) {
 function loadTripDetails(data,container) {
   for(var key in data.records[0]) {
     $("#trip" + key).val(data.records[0][key]);
-    if ( key == "airplane" ) {
-       if ( data.records[0][key] == "on" )
-          $("#trip" + "tripcarbtn").val("on");
-    }
   }
+  for(var key in data.records[0].accommodation) {
+    if(data.records[0].accommodation[key] == true || data.records[0].accommodation[key] == false) {
+      $("#trip" + key).prop('checked',data.records[0].accommodation[key]);
+    } 
+  }
+
   
   $(".btn-danger").removeClass("hidden");
   $("#btnsubmit").html("<span class='glyphicon glyphicon-edit'></span> Update");

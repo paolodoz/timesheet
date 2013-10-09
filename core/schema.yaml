@@ -118,12 +118,15 @@ trip:
       type: string
     city:
       type: string
-    car:
-      type: string
-    hotel:
-      type: string
-    airplane:
-      type: string
+    accommodation:
+      type: array
+      properties:
+         car:
+         type: boolean
+         hotel:
+         type: boolean
+         airplane:
+         type: boolean
 
 day:
   type: object
