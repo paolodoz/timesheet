@@ -1,0 +1,158 @@
+<script type="text/javascript">
+$(document).ready(function() {
+  loadUsersList("usersList");
+  $(".datepicker").datepicker();
+  $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
+  $('.rapidsearch').keyup(function () {
+    var list = this.id.substr(3);
+    var currenttext = $(this).val().toLowerCase();
+    if (currenttext == "") {
+      resetvisibility($('#' + list + 'List li'));
+      return;
+    }
+    filterlist($('#' + list + 'List li'), currenttext);
+  });
+  $("#btnreset").click(function() {
+    resetProjectsForm();
+  });
+  $("#btnremove").click(function() {
+    loadUsersList("usersList");
+  });
+  $("#userForm").submit(function(event) {
+    event.preventDefault();
+  });
+});
+
+function loadUsersList(list) {
+  var filter = [{},{name:1,surname:1}];
+  user.load(filter, loadUsers, list);
+}
+
+function createFilterForm(container) {
+  var filter = [{},{}];
+  $("#" + container + " input, #" + container + " select, #" + container + " textarea").each(function (){
+    var property = $(this).attr("id").substr(7);
+    if (property == "_id")
+      return;
+    filter[1][property] = 1;
+  });
+  filter[1].responsible = 1;
+  filter[1].employees = 1;
+  return filter;
+}
+
+function resetUserssForm()
+{
+  $("#userForm")[0].reset();
+  $("#user_id").val(0);
+}
+
+function loadUsers(data, container) {
+  var i;
+  var htmllist = "";
+  for(i=0;i < data.records.length; i++) {
+    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-user'></span> " + data.records[i].name + " " + data.records[i].surname + "</li>";
+  }
+  $("#" + container).html(htmllist);
+  $("#" + container + " .list-group-item").click(function() {
+    var filter = [{},{name:1, surname:1, salary:1, group:1}];
+    filter[0]._id = this.id;
+    user.load(filter,loadUserDetails, container);
+  });
+}
+
+function loadUserDetails(data,container) {
+  var i, temp, htmllist = "";
+  $("#username").text(data.records[0].name + " " + data.records[0].surname);
+  $("#usergroup").val(data.records[0].group);
+  for(i = 0; i < data.records[0].salary.length; i ++) {
+    temp = data.records[0].salary[i];
+    htmllist += "<li class='list-group-item' id='entry" + i + "'><b>" + temp.cost + " &euro;/h </b>  <span>" + temp.from + "</span> -- <span>";
+    if(temp.to == "2099-12-31")
+      htmllist += "Now";
+    else
+      htmllist += temp.to;
+    htmllist += "</span></li>"
+  }
+  $("#userhistory").html(htmllist);
+}
+
+//restore visibility for each element in list
+function resetvisibility(elem) {
+  $(elem).each(function () {
+    $(this).removeClass("hidden");
+  });
+}
+
+function filterlist(list, currenttext) {
+  $(list).each(function () {
+    var elemname = $(this).text().toLowerCase();
+    if (elemname.indexOf(currenttext) != -1)
+      $(this).removeClass("hidden");
+    else
+      $(this).addClass("hidden");
+  });
+}
+</script>
+<h2>Users Management</h2>
+<div class="row">
+  <div class="col-lg-3">
+    <h3>Users list</h3>
+    <div class="input-group">
+      <span class="input-group-addon glyphicon glyphicon-search"></span>
+      <input type="text" class="form-control rapidsearch" placeholder="Rapid Search" id="txtusers">
+    </div>
+    <p></p>
+    <ul class="list-group" id="usersList">
+  </div>
+  <div class="col-lg-5">
+    <h3>User Details</h3>
+    <form class="form-horizontal" role="form" id="userForm" method="post" action="/index/users">
+<input type="hidden" id="user_id" value="0">
+<div class="form-group">
+  <label for="username" class="col-lg-4 control-label">Name</label>
+  <div class="col-lg-6">
+    <p id="username" class="form-control-static"></p>
+  </div>
+</div>
+<div class="form-group">
+  <label for="usergroup" class="col-lg-4 control-label">Type</label>
+  <div class="col-lg-6">
+    <select class="form-control" id="usergroup">
+      <option value="employee">Employee</option>
+      <option value="administrator">Administrator</option>
+    </select>
+  </div>
+</div>
+<div class="form-group">
+  <label for="userhistory" class="col-lg-4 control-label">History</label>
+  <div class="col-lg-6">
+<ul class="list-group" id="userhistory">
+</ul>
+  </div>
+</div>
+<div class="form-group">
+  <label for="usernewsalary" class="col-lg-4 control-label">New hour cost</label>
+  <div class="col-lg-6">
+    <div class="input-group">
+      <input type="text" class="form-control" id="usernewsalary" placeholder="20">
+      <span class="input-group-addon">&euro;/h</span>
+    </div>
+  </div>
+</div>
+<div class="form-group">
+  <label for="userstart" class="col-lg-4 control-label">From date</label>
+  <div class="col-lg-6">
+    <input type="text" class="form-control datepicker" id="userstart" placeholder="2012-03-01">
+  </div>
+</div>
+<div class="form-group">
+    <div class="col-lg-offset-4 col-lg-7">
+      <button type="submit" class="btn btn-primary" id="btnsubmit"><span class="glyphicon glyphicon-plus"></span> Add</button>
+      <button type="reset" class="btn" id="btnreset"> Reset</button>
+      <button type="button" class="btn btn-danger hidden" id="btnremove"><span class="glyphicon glyphicon-trash"></span> Remove</button>
+    </div>
+</div>
+    </form>
+  </div>
+</div>

@@ -56,6 +56,16 @@ user:
     salt: 
       type: string
       blank: True
+    salary:
+      type: array
+      blank: True
+      properties:
+        cost:
+          type: number
+        from:
+          type: string
+        to:
+          type: string
 
 project:
   type: object
