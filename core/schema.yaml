@@ -119,14 +119,14 @@ trip:
     city:
       type: string
     accommodation:
-      type: array
+      type: object
       properties:
-         car:
-         type: boolean
-         hotel:
-         type: boolean
-         airplane:
-         type: boolean
+        car:
+           type: boolean
+        hotel:
+           type: boolean
+        airplane:
+           type: boolean
 
 day:
   type: object

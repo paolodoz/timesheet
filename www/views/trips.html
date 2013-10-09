@@ -20,13 +20,13 @@ $(document).ready(function() {
     resetTripForm();
   });
   $("#btnremove").click(function() {
-    trip.remove($("#project_id").val(),resetTripForm);
-    loadProjectsList("tripproject");
+    trip.remove($("#trip_id").val(),resetTripForm);
+    loadTripsList("tripsList");
   });
   $("#tripForm").submit(function(event) {
     event.preventDefault();
     trip.update(isupdate, "tripForm", resetTripForm);
-    loadProjectsList("tripproject");
+    loadTripsList("tripsList");
   });
 });
 
@@ -48,8 +48,6 @@ function loadTripsList(list) {
   trip.load(filter, loadTrips, list);
 }
 
-
-
 function createFilterForm(form) {
   var filter = [{},{}];
   
@@ -59,7 +57,6 @@ function createFilterForm(form) {
       return;
     filter[1][property] = 1;  
   });
-
   filter[1].accommodation = 1;
   return filter;
 }
@@ -68,6 +65,9 @@ function resetTripForm()
   isupdate = false;
   $("#tripForm")[0].reset();
   $("#trip_id").val(0);
+  $("#tripcar").removeClass("active");
+  $("#tripairplane").removeClass("active");
+  $("#triphotel").removeClass("active");  
   $("#btnremove").addClass("hidden");
   $("#tripsList li").removeClass("active");
   $("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
@@ -126,17 +126,16 @@ function loadTrips(data, container) {
   });
 }
 
-
 function loadTripDetails(data,container) {
   for(var key in data.records[0]) {
     $("#trip" + key).val(data.records[0][key]);
   }
   for(var key in data.records[0].accommodation) {
-    if(data.records[0].accommodation[key] == true || data.records[0].accommodation[key] == false) {
-      $("#trip" + key).prop('checked',data.records[0].accommodation[key]);
-    } 
+    if(data.records[0].accommodation[key] == true )  
+      $("#trip" + key).addClass("active");
+   if ( data.records[0].accommodation[key] == false) 
+      $("#trip" + key).removeClass("active");
   }
-
   
   $(".btn-danger").removeClass("hidden");
   $("#btnsubmit").html("<span class='glyphicon glyphicon-edit'></span> Update");
@@ -237,13 +236,13 @@ function filterlist(list, currenttext) {
 
     <div class="form-group">
        <div class="btn-group" data-toggle="buttons">	
-          <label class="btn btn-primary" id="tripcarbtn">
+          <label class="btn btn-primary" id="tripcar">
           <input type="checkbox" id="tripcar" ><span class='icon-car'></span>
           </label>
-          <label class="btn btn-primary">
+          <label id="tripairplane" class="btn btn-primary">
           <input type="checkbox" id="tripairplane" ><span class='icon-airplane'></span>
           </label>
-          <label class="btn btn-primary">
+          <label class="btn btn-primary" id="triphotel">
           <input type="checkbox" id="triphotel" ><span class='icon-hotel'></span>
           </label>
        </div>
