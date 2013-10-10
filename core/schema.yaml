@@ -114,6 +114,8 @@ project:
 trip:
   type: object
   properties:
+    user:
+      type: string
     project:
       type: string
     description:

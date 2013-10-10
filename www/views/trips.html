@@ -1,10 +1,10 @@
 <script type="text/javascript">
+var me = new Array();
 var isupdate = false;
+
 $(document).ready(function() {
   loadTripsList("tripsList");
   loadProjectsList("tripproject");
-  loadCustomersList("projectcustomer");
-  loadUsersList("usersList");
   $(".datepicker").datepicker();
   $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
   $('.rapidsearch').keyup(function () {
@@ -25,26 +25,24 @@ $(document).ready(function() {
   });
   $("#tripForm").submit(function(event) {
     event.preventDefault();
-    trip.update(isupdate, "tripForm", resetTripForm);
+    $("#tripuserid").val(me._id);
+    trip.update(isupdate, "tripForm", resetTripForm);    
     loadTripsList("tripsList");
   });
+  user.me(userdata);
 });
+
+function userdata(data){
+  me = data;
+}
 
 function loadProjectsList(list) {
   var filter = [{},{name:1}];
   project.load(filter, loadProjects, list);
 }
-function loadCustomersList(list) {
-  var filter = [{},{name:1}];
-  customer.load(filter, loadCustomers, list);
-}
-function loadUsersList(list) {
-  var filter = [{},{name:1,surname:1}];
-  user.load(filter, loadUsers, list);
-}
 
 function loadTripsList(list) {
-  var filter = [{},{start:1}];
+  var filter = [{userid:me._id},{start:1}];
   trip.load(filter, loadTrips, list);
 }
 
@@ -60,6 +58,7 @@ function createFilterForm(form) {
   filter[1].accommodation = 1;
   return filter;
 }
+
 function resetTripForm()
 {
   isupdate = false;
@@ -71,29 +70,7 @@ function resetTripForm()
   $("#btnremove").addClass("hidden");
   $("#tripsList li").removeClass("active");
   $("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
-  $("#usersList li").removeClass("active");
-  $("#responsibleid").val(0);
   $("#usersForm h4 span").text("");
-}
-function loadUsers(data, container) {
-  var i;
-  var htmllist = "";
-  for(i=0;i < data.records.length; i++) {
-    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-user'></span> " + data.records[i].name + " " + data.records[i].surname + "</li>";
-  }
-  $("#" + container).html(htmllist);
-  $("#" + container + " .list-group-item").click(function() {
-    var beforeusers = $("#usersList .active").length;
-    $(this).toggleClass("active");
-    var afterusers = $("#usersList .active").length;
-    if(afterusers == 1 && (beforeusers-afterusers) < 0) {
-      $("#usersForm h4 span").text($(this).text());
-      $("#responsibleid").val(this.id);
-    } else if(afterusers == 0) {
-      $("#usersForm h4 span").text("");
-      $("#responsibleid").val(0);
-    }
-  });
 }
 
 function loadProjects(data, container) {
@@ -141,29 +118,6 @@ function loadTripDetails(data,container) {
   $("#btnsubmit").html("<span class='glyphicon glyphicon-edit'></span> Update");
 }
 
-function setActiveUsers(employees) {
-  var i;
-  for (i = 0; i < employees.length; i++) {
-    $("#" + employees[i]._id).addClass("active");
-  }
-}
-
-function loadCustomers(data, container) {
-  var i;
-  var htmlselect = "<option value=''></option>";
-  for(i=0;i < data.records.length; i++) {
-    htmlselect += "<option value='" + data.records[i]._id + "'>" + data.records[i].name + "</option>";
-  }
-  $("#" + container).html(htmlselect);
-}
-
-//restore visibility for each element in list
-function resetvisibility(elem) {
-  $(elem).each(function () {
-    $(this).removeClass("hidden");
-  });
-}
-
 function filterlist(list, currenttext) {
   $(list).each(function () {
     var elemname = $(this).text().toLowerCase();
@@ -189,6 +143,7 @@ function filterlist(list, currenttext) {
 <h3>Trip details</h3>
     <form class="form-horizontal" role="form" id="tripForm" method="post" action="/index/trips">
     <input type="hidden" id="trip_id" value="0">
+    <input type="hidden" id="tripuserid" value="0">
   <div class="col-lg-4">
     
 
