@@ -1,4 +1,5 @@
 <script type="text/javascript">
+var cur_user;
 $(document).ready(function() {
   loadUsersList("usersList");
   $(".datepicker").datepicker();
@@ -13,13 +14,14 @@ $(document).ready(function() {
     filterlist($('#' + list + 'List li'), currenttext);
   });
   $("#btnreset").click(function() {
-    resetProjectsForm();
+    resetUsersForm();
   });
   $("#btnremove").click(function() {
     loadUsersList("usersList");
   });
   $("#userForm").submit(function(event) {
     event.preventDefault();
+    user.update(cur_user, "userForm",resetUsersForm);
   });
 });
 
@@ -41,10 +43,13 @@ function createFilterForm(container) {
   return filter;
 }
 
-function resetUserssForm()
+function resetUsersForm()
 {
   $("#userForm")[0].reset();
   $("#user_id").val(0);
+  $("#username").text("");
+  $("#userhistory").html("");
+  $("#btnsubmit, #btnreset").addClass("hidden");
 }
 
 function loadUsers(data, container) {
@@ -63,18 +68,22 @@ function loadUsers(data, container) {
 
 function loadUserDetails(data,container) {
   var i, temp, htmllist = "";
+  cur_user = data.records[0];
   $("#username").text(data.records[0].name + " " + data.records[0].surname);
   $("#usergroup").val(data.records[0].group);
-  for(i = 0; i < data.records[0].salary.length; i ++) {
-    temp = data.records[0].salary[i];
-    htmllist += "<li class='list-group-item' id='entry" + i + "'><b>" + temp.cost + " &euro;/h </b>  <span>" + temp.from + "</span> -- <span>";
-    if(temp.to == "2099-12-31")
-      htmllist += "Now";
-    else
-      htmllist += temp.to;
-    htmllist += "</span></li>"
+  if(data.records[0].salary) {
+    for(i = 0; i < data.records[0].salary.length; i ++) {
+      temp = data.records[0].salary[i];
+      htmllist += "<li class='list-group-item' id='entry" + i + "'><b>" + temp.cost + " &euro;/h </b>  <span>" + temp.from + "</span> -- <span>";
+      if(temp.to == "2099-12-31")
+        htmllist += "Now";
+      else
+        htmllist += temp.to;
+      htmllist += "</span></li>"
+    }
   }
   $("#userhistory").html(htmllist);
+  $("#btnsubmit, #btnreset").removeClass("hidden");
 }
 
 //restore visibility for each element in list
@@ -119,6 +128,7 @@ function filterlist(list, currenttext) {
   <label for="usergroup" class="col-lg-4 control-label">Type</label>
   <div class="col-lg-6">
     <select class="form-control" id="usergroup">
+      <option value=""></option>
       <option value="employee">Employee</option>
       <option value="administrator">Administrator</option>
     </select>
@@ -148,9 +158,9 @@ function filterlist(list, currenttext) {
 </div>
 <div class="form-group">
     <div class="col-lg-offset-4 col-lg-7">
-      <button type="submit" class="btn btn-primary" id="btnsubmit"><span class="glyphicon glyphicon-plus"></span> Add</button>
-      <button type="reset" class="btn" id="btnreset"> Reset</button>
-      <button type="button" class="btn btn-danger hidden" id="btnremove"><span class="glyphicon glyphicon-trash"></span> Remove</button>
+      <button type="submit" class="btn btn-primary hidden" id="btnsubmit"><span class="glyphicon glyphicon-edit"></span> Update</button>
+      <button type="reset" class="btn hidden" id="btnreset"> Reset</button>
+<!--      <button type="button" class="btn btn-danger hidden" id="btnremove"><span class="glyphicon glyphicon-trash"></span> Remove</button>-->
     </div>
 </div>
     </form>

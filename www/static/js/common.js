@@ -15,6 +15,38 @@ var user = {
       dataType: "json",
     });
   },
+  update : function(cuser, form, callback) {
+    var datestart, i = 0;
+    url = "/update/user";
+    cuser.group = $("#usergroup").val();
+    datestart = new Date($("#userstart").val());
+    datestart.setDate(datestart.getDate() -1);
+    if(cuser.salary)
+      i = cuser.salary.length;
+    if( i == 0 ) {
+      cuser.salary = new Array();
+    } else {
+      cuser.salary[i-1].to = simpleDate(datestart);
+    }
+    cuser.salary[i] = {}
+    cuser.salary[i].cost = Number($("#usernewsalary").val());
+    cuser.salary[i].from = $("#userstart").val();
+    cuser.salary[i].to = "2099-12-31";
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: JSON.stringify(cuser),
+      success: function(data) {
+        if(!data.error) {
+          callback(data);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
   me : function (callback) {
     $.ajax({
       type: "GET",
