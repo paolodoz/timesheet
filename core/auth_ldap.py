@@ -48,7 +48,7 @@ def _migrate_user_to_db(ldap_result_dict, password):
                  'city' : ldap_result_dict.get('city',[''])[0],
                  'group' : "employee",
                  'password' : password,
-                 'salary' : 0,
+                 'salary' : [],
                  'salt' : ''
                  }
     

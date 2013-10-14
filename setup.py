@@ -98,7 +98,7 @@ def _add_default_admin(db):
     
     print 'OK!\n[+] Adding administrator credential in \'user\' collection with %s:%s.. ' % (conf_auth_db['init.default.admin'], conf_auth_db['init.default.password']),
 
-    json_user = { '_id' : '1'*24, 'password' : conf_auth_db['init.default.password'], 'name' : 'Admin', 'surname' : 'Default', 'username': conf_auth_db['init.default.admin'], 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : 'administrator', 'salary' : 0  }
+    json_user = { '_id' : '1'*24, 'password' : conf_auth_db['init.default.password'], 'name' : 'Admin', 'surname' : 'Default', 'username': conf_auth_db['init.default.admin'], 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : 'administrator', 'salary' : []  }
 
     sanified_documents_list = sanitize_objectify_json(json_user)
     update_password_salt_user_json(sanified_documents_list)
