@@ -47,7 +47,7 @@ def _assert(uri, json_in, json_expected):
     else:
         records = [ json_returned_noid ]
     
-    print '\nPOST ', uri , json_in, '\nRETURNED ', json_returned_noid, '\nEXPECTED ', json_expected
+    print '\nPOST ', uri , json_in, '\nRET ', json_returned_noid, '\nEXP ', json_expected
     assert(json_returned_noid == json_expected)
     print 'OK!'
     
@@ -95,16 +95,18 @@ def main():
     ## API USER
     # Remove already unexistant user
     _assert('/remove/user', [ { 'name' : 'USERTEST'  } ], { 'error' : None  })
-    # Add one customer (return one user)
-    _assert('/add/user', [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
-    # Get the inserted customer
+    # Add one customer (return one id)
+    _assert('/add/user', [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ], { 'error' : None, 'ids' : [ '' ] })
+    # Add a double customer (UNIQ test)
+    _assert('/add/user', [ { 'name' : 'USERTEST', 'surname' : 'SURNAME2', 'username' : 'USERNAME', 'email' : 'EMAIL2', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
+    # Get the inserted customer (is only one because UNIQ)
     _assert('/get/user', [ { 'name' : 'USERTEST' }, { 'surname' : 1, '_id' : 0 } ], { 'error': None, 'records' : [ { 'surname' : 'SURNAME'  } ] })
     # Delete the one inserted
     _assert('/remove/user', [ { 'name' : 'USERTEST'  } ], { 'error' : None })
     # Get the empty customers list
     _assert('/get/user', [ { 'name' : 'USERTEST' }, { '_id' : 1 } ], { 'error': None, 'records' : [ ] })
     # Add two elements USERTEST1 and USERTEST2
-    _assert('/add/user', [ { 'name' : 'USERTEST1', 'surname' : 'SURNAME', 'username' : 'USERNAME1' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '' }, { 'name' : 'USERTEST2', 'surname' : 'SURNAME', 'username' : 'USERNAME2' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'myotherpassword', 'salt' : '' } ], { 'error' : None, 'ids' : [ '', '' ] })
+    _assert('/add/user', [ { 'name' : 'USERTEST1', 'surname' : 'SURNAME', 'username' : 'USERNAME1' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  }, { 'name' : 'USERTEST2', 'surname' : 'SURNAME', 'username' : 'USERNAME2' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'myotherpassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '', '' ] })
     # Delete USERTEST1
     _assert('/remove/user', [ { 'name' : 'USERTEST1'  }, { 'name' : 'USERTEST2'  } ], { 'error' : None })
     # Check if USERTEST1 is deleted
@@ -125,14 +127,13 @@ def main():
     _assert('/remove/project', [ { 'employees._id' : '1'*24 } ], { 'error' : None })
     # Get the empty customers list
     _assert('/get/project', [ { 'employees._id' : '1'*24 }, { '_id' : 1 } ], { 'error': None, 'records' : [ ] })
-      
-    
+
     ## NEW USER LOGIN
     
     # Add one user with password, should login
-    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
+    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
     # Add user without password, should raise error
-    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT' } ], { 'error' : 'ValidationError: Expected nonempty password', 'ids' : [ ] })
+    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT', 'salary' : []  } ], { 'error' : 'ValidationError: Expected nonempty password', 'ids' : [ ] })
     # Check if can't login with NEW_USER_WITH_NO_PWD
     _login({'username' : 'NEW_USER_WITH_NO_PWD', 'password' : '' })
     _assert_logged_in(False)
@@ -160,13 +161,14 @@ def main():
     _assert('/remove/customer', [ { '_id' : json_returned['ids'][0]} ], { 'error' : None })
     
     # TEST SCHEMA OPTIONS CONSTRAINTS
-    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'WRONG_GROUP', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : "ValidationError: Value u'WRONG_GROUP' for field 'group' is not in the enumeration: %s" % (str(users_groups)), 'ids' : [ ] })
+    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'WRONG_GROUP', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : "ValidationError: Value u'WRONG_GROUP' for field 'group' is not in the enumeration: %s" % (str(users_groups)), 'ids' : [ ] })
+
 
     # TEST PERMISSIONS LIMITATIONS
     # GET admin password
     _assert('/get/user', [ { 'username' : 'ts_admin' }, { 'password' : 1} ], { 'error' : "ValidationError: get user.password restricted for users in group 'administrator'", 'records' : [ ] })
     # Add user in group employee for following tests
-    _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : None, 'ids' : [ '' ] })
+    _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
     # Add project for following tests
     _assert('/add/project', [ { 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'name' : 'NAME', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : 'start', 'end' : 'end', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'The administrator'}, 'employees' : [ { '_id' : '1'*24, 'name' : 'The employed administrator'} ] } ], { 'error' : None, 'ids' : [ '' ] })
     
@@ -187,6 +189,20 @@ def main():
     _assert('/get/project', [ { 'name' : 'NAME' }, { 'customer' : 1 } ], { 'error' : None, 'records' : [ ] })
     # Get explicitely admin projects 
     _assert('/get/project', [ { 'responsible' : { '_id' : '1'*24 } }, { 'customer' : 1 } ], { 'error' : "ValidationError: Value 'responsible' is restricted for current user", 'records' : [ ] })
+    
+    # Relogin as admin
+    _login(admin_credentials)    
+    
+    ## API DAYS
+    # Insert a day 
+    _assert('/data/push_days', [ {u'users_hours': { u'111111111111111111111111' : [{u'note': u'', u'task': u'', u'isextra': False, u'project': u'524efeef2c066a1bc6000001', u'amount': u'8'}] }, u'date': u'2013-10-17'} ], { u'error': None})    
+    # Insert another day for same user, with two hours blocks
+    _assert('/data/push_days', [ {u'users_hours': { u'111111111111111111111111' : [{u'note': u'FIRST 4 HOURS', u'task': u'', u'isextra': False, u'project': u'524efeef2c066a1bc6000001', u'amount': u'4'}, {u'note': u'SECOND 4 HOURS', u'task': u'', u'isextra': False, u'project': u'524efeef2c066a1bc6000001', u'amount': u'4'}] }, u'date': u'2000-10-17'} ], { u'error': None})    
+    
+    # Search first days
+    _assert('/data/search_days',  [ { 'date_from' : '2013-10-17', 'date_to' : '2013-10-17', 'user_id' : '111111111111111111111111' }, { 'project' : 1 } ], { u'error': None, u'records': [{u'_id': '',  u'date': u'2013-10-17', u'users_hours': {u'111111111111111111111111': [{ u'project': u'524efeef2c066a1bc6000001' }]}}]} )    
+    # Check both days with larger time span
+    _assert('/data/search_days',  [ { 'date_from' : '1999-10-17', 'date_to' : '2013-10-17', 'user_id' : '111111111111111111111111' }, { 'project' : 1 } ], { u'error': None, u'records': [  {u'date': u'2000-10-17', u'_id': '', u'users_hours': {u'111111111111111111111111': [{u'project': u'524efeef2c066a1bc6000001'}, {u'project': u'524efeef2c066a1bc6000001'}]}}, {u'_id': '',  u'date': u'2013-10-17', u'users_hours': {u'111111111111111111111111': [{ u'project': u'524efeef2c066a1bc6000001' }]}}]} )    
     
     
 if __name__ == "__main__":

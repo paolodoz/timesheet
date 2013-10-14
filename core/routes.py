@@ -3,6 +3,7 @@ from core.auth import AuthController, require, member_of
 from core import db
 from config import views_folder, templates
 from glob import glob
+from core import datamine
 
 
 # Set available views dictionary
@@ -143,11 +144,37 @@ class Routes:
 
         json_in = cherrypy.request.json 
         try:
-            ids = db.update(collection, json_in)
+            db.update(collection, json_in)
         except Exception as e:
             import traceback
             print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
             return {'error' : '%s: %s' % (type(e).__name__, str(e)) }
         else:
             return { 'error' : None }  
+
+    @cherrypy.expose
+    @require(member_of("employee"))
+    @cherrypy.tools.allow(methods=['POST'])
+    @cherrypy.tools.json_in(on = True)
+    @cherrypy.tools.json_out(on = True)
+    def data(self, action):
+        """
+        Datamine collections. 
+        
+        POST /data/<action>/
+        
+        Expects the JSON format as requested by the called function.
+        Returns { 'error' : string, ... }
+        """
+
+        json_in = cherrypy.request.json 
+        
+        try:
+            returned_dict = getattr(datamine, action)(json_in)
+        except Exception as e:
+            import traceback
+            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            return {'error' : '%s: %s' % (type(e).__name__, str(e)) }
+        else:
+            return dict({ 'error' : None }, **returned_dict)
         
