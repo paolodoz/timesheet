@@ -89,7 +89,8 @@ def _create_db_collections(connection):
         db[missing_collection]
 
     # Set unique parameters
-    db['user'].ensure_index( 'username', **{ 'unique': True } )
+    db['user'].ensure_index( 'username', unique = True )
+    db['day'].ensure_index( 'date', unique = True )
     
     return db
 
