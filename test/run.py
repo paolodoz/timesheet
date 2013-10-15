@@ -194,15 +194,64 @@ def main():
     _login(admin_credentials)    
     
     ## API DAYS
-    # Insert a day 
-    _assert('/data/push_days', [ {u'users_hours': { u'111111111111111111111111' : [{u'note': u'', u'task': u'', u'isextra': False, u'project': u'524efeef2c066a1bc6000001', u'amount': u'8'}] }, u'date': u'2013-10-17'} ], { u'error': None})    
-    # Insert another day for same user, with two hours blocks
-    _assert('/data/push_days', [ {u'users_hours': { u'111111111111111111111111' : [{u'note': u'FIRST 4 HOURS', u'task': u'', u'isextra': False, u'project': u'524efeef2c066a1bc6000001', u'amount': u'4'}, {u'note': u'SECOND 4 HOURS', u'task': u'', u'isextra': False, u'project': u'524efeef2c066a1bc6000001', u'amount': u'4'}] }, u'date': u'2000-10-17'} ], { u'error': None})    
+    # Insert wrongly a day with multiple users
+    _assert('/data/push_days', [ {'date': '2000-01-01', 
+                                  'users': [ 
+                                            { 'user_id' : '111111111111111111111111', 
+                                             'hours': []
+                                             },
+                                             { 'user_id' : '0', 
+                                             'hours': []
+                                             } 
+                                            ]
+                                  }
+                                ], { 'error' : 'ValidationError: Push only one user per day' })
+      
+    # Insert the day 17 for user  '111111111111111111111111'                                      
+    _assert('/data/push_days', [ {'date': '2000-10-17', 
+                                  'users': [ 
+                                            { 'user_id' : '111111111111111111111111', 
+                                             'hours': [
+                                                       {u'note': u'FIRST 4 HOURS', u'task': u'', u'isextra': False, u'project': u'524efeef2c066a1bc6000001', u'amount': u'4'}, 
+                                                       {u'note': u'SECOND 4 HOURS', u'task': u'', u'isextra': False, u'project': u'524efeef2c066a1bc6000001', u'amount': u'4'}
+                                                       ]
+                                             }
+                                            ]
+                                  }
+                                ], { 'error' : None })   
     
-    # Search first days
-    _assert('/data/search_days',  [ { 'date_from' : '2013-10-17', 'date_to' : '2013-10-17', 'user_id' : '111111111111111111111111' }, { 'project' : 1 } ], { u'error': None, u'records': [{u'_id': '',  u'date': u'2013-10-17', u'users_hours': {u'111111111111111111111111': [{ u'project': u'524efeef2c066a1bc6000001' }]}}]} )    
-    # Check both days with larger time span
-    _assert('/data/search_days',  [ { 'date_from' : '1999-10-17', 'date_to' : '2013-10-17', 'user_id' : '111111111111111111111111' }, { 'project' : 1 } ], { u'error': None, u'records': [  {u'date': u'2000-10-17', u'_id': '', u'users_hours': {u'111111111111111111111111': [{u'project': u'524efeef2c066a1bc6000001'}, {u'project': u'524efeef2c066a1bc6000001'}]}}, {u'_id': '',  u'date': u'2013-10-17', u'users_hours': {u'111111111111111111111111': [{ u'project': u'524efeef2c066a1bc6000001' }]}}]} )    
+    # Push in the day 17 also user  '0'                                      
+    _assert('/data/push_days', [ {'date': '2000-10-17', 
+                                  'users': [ 
+                                            { 'user_id' : '0', 
+                                             'hours': []
+                                             }
+                                            ]
+                                  }
+                                ], { 'error' : None })                                            
+
+    # Push also the year after the user  '0'                                      
+    _assert('/data/push_days', [ {'date': '2001-02-02', 
+                                  'users': [ 
+                                            { 'user_id' : '0', 
+                                             'hours': []
+                                             }
+                                            ]
+                                  }
+                                ], { 'error' : None })   
+     
+    # Get the day 2000-10-17 for user 0                                        
+    _assert('/data/search_days', { 'date_from' : '2000-10-17', 'date_to' : '2000-10-17', 'user_id' : '0' }, {u'records': [{u'date': u'2000-10-17', u'_id': '', u'users': [{u'hours': [], u'user_id': u'0'}]}], u'error': None})
+     
+    # Get the years 2000-01-01 2003-01-01 for user 0
+    _assert('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2003-01-01', 'user_id' : '0' }, {u'records': [{u'date': u'2000-10-17', u'_id': '', u'users': [{u'hours': [], u'user_id': u'0'}]}, {u'date': u'2001-02-02', u'_id': '', u'users': [{u'hours': [], u'user_id': u'0'}]}], u'error': None} )
+    
+    # Get unexistant user 2
+    _assert('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2003-01-01', 'user_id' : '2' }, {u'records': [ ], u'error': None} )
+    
+    # Get empty span 
+    _assert('/data/search_days', { 'date_from' : '2010-01-01', 'date_to' : '2011-01-01', 'user_id' : '0' }, {u'records': [ ], u'error': None} )
+    
     
     
 if __name__ == "__main__":

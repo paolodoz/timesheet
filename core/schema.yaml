@@ -145,12 +145,15 @@ day:
   properties:
     date:
       type: string
-    users_hours:
-      type: object
-      patternProperties:
-        '^[0-9]{11}$':
-          type: array
+    users:
+      optional: True
+      type: array
+      properties:
+        user_id:
+          type: string
+        hours:
           optional: True
+          type: object
           properties:
             project:
               type: string
@@ -163,7 +166,7 @@ day:
               type: string
             task:
               type: integer
-
+              
 offer:
   type: object
   properties:
