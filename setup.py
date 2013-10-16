@@ -1,10 +1,13 @@
 #!/usr/bin/env python
 
 import sys
-from core.config import conf_auth_db, version, collections, conf_mongodb, conf_auth_ldap
 from core.validation import update_password_salt_user_json, sanitize_objectify_json
-from core.auth_ldap import check_credentials
-from pymongo import ASCENDING
+try:
+    from core.config import conf_auth_db, version, collections, conf_mongodb, conf_auth_ldap
+    from core.auth_ldap import check_credentials
+    from pymongo import ASCENDING
+except ImportError as e:
+    sys.exit('Error please install missing python library: %s' % (e))
 
 def _check_libs():
     
@@ -22,7 +25,7 @@ def _check_libs():
         try: 
             __import__(lib)
         except ImportError as e:
-            sys.exit(message)
+            sys.exit('Error please install missing python library: %s' % (e))
         
 
 def _check_ldap():
