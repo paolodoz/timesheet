@@ -195,9 +195,7 @@ def main():
     
     ## API DAYS
     # Insert a day with no user
-    _assert('/data/push_days', [ {'date': '2000-01-01', 
-                                  'users': [ ]
-                                  }
+    _assert('/data/push_days', [ {'date': '2000-01-01' }
                                 ], { 'error' : None })   
     
     
