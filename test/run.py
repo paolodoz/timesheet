@@ -168,6 +168,15 @@ def main(admin_credentials):
     _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
     # Add project for following tests
     _assert('/add/project', [ { 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'name' : 'NAME', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : 'start', 'end' : 'end', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'The administrator'}, 'employees' : [ { '_id' : '1'*24, 'name' : 'The employed administrator'} ] } ], { 'error' : None, 'ids' : [ '' ] })
+    # Add days for following tests
+    _assert('/data/push_days', [ {'date': '2000-01-01', 
+                                  'users': [ 
+                                            { 'user_id' : '111111111111111111111111', 
+                                             'hours': []
+                                             }
+                                            ]
+                                  }
+                                ], { 'error' : None })    
     
     # Check if can login with NEW_USER_WITH_PWD
     _login({'username' : 'PERM_TEST', 'password' : 'mypassword' })
@@ -187,6 +196,10 @@ def main(admin_credentials):
     _assert('/get/project', [ { 'responsible' : { '_id' : '1'*24 } }, { 'customer' : 1 } ], { 'error' : "ValidationError: Field 'responsible' is restricted for current user", 'records' : [ ] })
     # Wrongly delete added project
     _assert('/remove/project', [ { 'employees._id' : '1'*24 } ], { 'error' : "ValidationError: Action 'remove' in 'project' is restricted for current user" })
+    # Wrongly get day from another users, returns empty
+    _assert('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2000-01-01', 'user_id' : '111111111111111111111111' }, {u'records': [ ], u'error': None})
+    
+   
    
 
     # Check if normal user can see user management in admin menu

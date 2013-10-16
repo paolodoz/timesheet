@@ -67,7 +67,7 @@ def check_request_permissions(action, collection, projections = {}):
     try:
         # Check if request restrictions are set for the collection.user
         restrictions = cherrypy.session['_ts_user']['restrictions'][collection]['action_restrictions'][group]
-        print 'AAAAAAAAAAAAaa'
+
         if restrictions == True or restrictions[action] == True:
             raise ValidationError("Action '%s' in '%s' is restricted for current user" % (action, collection))
         

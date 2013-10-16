@@ -58,17 +58,19 @@ def search_days(criteria):
     if not (sorted(criteria.keys()) == sorted(('date_from', 'date_to', 'user_id'))):
         raise ValidationError("Expected list with 'date_from', 'date_to', 'user_id' keys")
     
-    # TODO: restrict user_id search with permissions  
-        
+    check_request_permissions('get', 'day')
     sanified_criteria = sanitize_objectify_json(criteria)
 
     user_id = sanified_criteria['user_id']
 
     # Prepare the criteria with date range && user_id
-    criteria_range_user = { "date" :  {"$gte": sanified_criteria['date_from'], "$lte": sanified_criteria['date_to']}, "users.user_id" : user_id }
+    prepared_criteria = { "date" :  {"$gte": sanified_criteria['date_from'], "$lte": sanified_criteria['date_to']}, "users.user_id" : user_id }
+    
+    # Restrict already prepared criteria
+    restricted_prepared_criteria = restrict_criteria('get', 'day', prepared_criteria)
     
     # Prepare the projection to return only date and users.date where user id is correct
     projection = { 'date' : 1, 'users' : { '$elemMatch' : { 'user_id' : user_id }}}
 
-    return { 'records' : stringify_objectid_cursor(db.day.find(criteria_range_user, projection)) }
+    return { 'records' : stringify_objectid_cursor(db.day.find(restricted_prepared_criteria, projection)) }
     
