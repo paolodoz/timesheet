@@ -22,8 +22,7 @@ collections = schema.keys()
 # Load permissions schema from permissions.yaml
 permissions_path = os.path.join(core_folder, 'permissions.yaml')
 permissions_schema = yaml.load(file(permissions_path, 'r'))
-criteria_restrictions_schema = permissions_schema['criteria_restrictions']
-denied_requests_schema = permissions_schema['denied_requests']
+restrictions_schema = permissions_schema['restrictions']
 
 # Load configuration from config.yaml
 conf_path = os.path.join(core_folder, 'config.yaml')

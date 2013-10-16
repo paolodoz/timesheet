@@ -1,33 +1,34 @@
 
-criteria_restrictions:
-  employee:
-    user:
-      _id: '%%_id%%'
-      username: '%%username%%'
-    project:
-      employees:
-        _id:
-          $elemMatch:
-            _id: '%%_id%%'
-      responsible:
+restrictions:
+  user:
+    criteria_restrictions:
+      employee:
         _id: '%%_id%%'
-      
-      
-denied_requests:
-  employee:
-    get:
-      user:
-        password: false
-        salt: false
-    remove: false
-    add: false
-  administrator:
-    get:
-      user:
-        password: false
-        salt: false
-  
+        username: '%%username%%'
+    field_restrictions:
+      employee:
+        user: true
+        password: true
+      administrator:
+        user: true
+        password: true
+    action_restrictions:
+      employee:
+        remove: true
+        add: true
+        
+  project:
+    criteria_restrictions:
+      employee:
+        employees:
+          _id:
+            $elemMatch:
+              _id: '%%_id%%'
+        responsible:
+          _id: '%%_id%%'     
+    
+    action_restrictions:
+      employee:
+        remove: true
+        add: true
 
-
-
-  

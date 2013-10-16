@@ -163,7 +163,7 @@ def main(admin_credentials):
 
     # TEST PERMISSIONS LIMITATIONS
     # GET admin password
-    _assert('/get/user', [ { 'username' : 'ts_admin' }, { 'password' : 1} ], { 'error' : "ValidationError: get user.password restricted for users in group 'administrator'", 'records' : [ ] })
+    _assert('/get/user', [ { 'username' : 'ts_admin' }, { 'password' : 1} ], { 'error' : "ValidationError: Field 'password' is restricted for current user", 'records' : [ ] })
     # Add user in group employee for following tests
     _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
     # Add project for following tests
@@ -174,19 +174,19 @@ def main(admin_credentials):
     _assert_page_contains('Timesheet login', False)
 
     # GET his own password
-    _assert('/get/user', [ { 'username' : 'PERM_TEST' }, { 'password' : 1} ], { 'error' : "ValidationError: get user.password restricted for users in group 'employee'", 'records' : [ ] })
+    _assert('/get/user', [ { 'username' : 'PERM_TEST' }, { 'password' : 1} ], { 'error' : "ValidationError: Field 'password' is restricted for current user", 'records' : [ ] })
     # GET other employee surname
-    _assert('/get/user', [ { 'username' : admin_credentials['username'] }, { 'surname' : 1 } ], { 'error' : "ValidationError: Value 'username' is restricted for current user", 'records' : [ ] })
+    _assert('/get/user', [ { 'username' : admin_credentials['username'] }, { 'surname' : 1 } ], { 'error' : "ValidationError: Field 'username' is restricted for current user", 'records' : [ ] })
     # REMOVE himself
-    _assert('/remove/user', [ { 'username' : 'PERM_TEST' } ], { 'error' : "ValidationError: remove user restricted for users in group 'employee'" })
+    _assert('/remove/user', [ { 'username' : 'PERM_TEST' } ], { 'error' : "ValidationError: Action 'remove' in 'user' is restricted for current user" })
     # Add new employee 
-    _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST2', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '' } ], { 'error' : "ValidationError: add user restricted for users in group 'employee'", 'ids' : [ ] })
+    _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST2', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ], { 'error' : "ValidationError: Action 'add' in 'user' is restricted for current user", 'ids' : [ ] })
     # Get projects of other users
     _assert('/get/project', [ { 'name' : 'NAME' }, { 'customer' : 1 } ], { 'error' : None, 'records' : [ ] })
     # Get explicitely admin projects 
-    _assert('/get/project', [ { 'responsible' : { '_id' : '1'*24 } }, { 'customer' : 1 } ], { 'error' : "ValidationError: Value 'responsible' is restricted for current user", 'records' : [ ] })
+    _assert('/get/project', [ { 'responsible' : { '_id' : '1'*24 } }, { 'customer' : 1 } ], { 'error' : "ValidationError: Field 'responsible' is restricted for current user", 'records' : [ ] })
     # Wrongly delete added project
-    _assert('/remove/project', [ { 'employees._id' : '1'*24 } ], { 'error' : "ValidationError: remove project restricted for users in group 'employee'" })
+    _assert('/remove/project', [ { 'employees._id' : '1'*24 } ], { 'error' : "ValidationError: Action 'remove' in 'project' is restricted for current user" })
    
 
     # Check if normal user can see user management in admin menu

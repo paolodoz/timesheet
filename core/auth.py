@@ -6,7 +6,7 @@
 
 import cherrypy
 from core.config import conf_auth, conf_auth_db, conf_auth_ldap, templates
-from core.permissions import get_formatted_permissions
+from core.permissions import get_formatted_restrictions
 from core.db import db
 
 
@@ -119,7 +119,7 @@ class AuthController(object):
         cherrypy.session['_ts_user'] = db['user'].find_one({ 'username' : username }, { 'username' : 1, 'group' : 1 })
         
         # Save formatted permissions schemas to speedup following accesses
-        cherrypy.session['_ts_user'].update(get_formatted_permissions())
+        cherrypy.session['_ts_user']['restrictions'] = get_formatted_restrictions()
         
         cherrypy.request.login = username
         
