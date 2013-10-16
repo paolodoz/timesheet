@@ -138,7 +138,7 @@ function loadCalendarHours(list) {
       for(j = 0; j < list[i].users[0].hours.length; j++) {
       //add event
         var event = {};
-	singleentry = list[i].users[0];
+	singleentry = list[i].users[0].hours[0];
         event.id = list[i].date + "+" + singleentry.project + "+" + singleentry.isextra;
         event.title = project.getname(singleentry.project) + " " + singleentry.amount + "h";
         event.start = list[i].date;
