@@ -103,7 +103,7 @@ def update_password_salt_user_json(json_in):
 def get_password_salt(password_in):
     """Method to hash password_in and salt, if inserted"""
     
-    salt = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(16))
+    salt = ''.join(random.choice(string.ascii_letters + string.digits) for x in range(16))
     password_out = hashlib.sha256( salt + password_in ).hexdigest()
     
     return { 'password': password_out, 'salt' : salt }
