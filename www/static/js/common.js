@@ -314,7 +314,7 @@ var day  = {
   load : function (filter, callback) {
     $.ajax({
       type: "POST",
-      url: "/get/day",
+      url: "/data/search_days",
       data: JSON.stringify(filter),
       success: function(data) {
         if(!data.error) {
@@ -351,7 +351,7 @@ var day  = {
 
     $.ajax({
       type: "POST",
-      url: '/add/day',
+      url: '/data/push_days',
       data: JSON.stringify(obj),
       success: function(data) {
         if(!data.error) {

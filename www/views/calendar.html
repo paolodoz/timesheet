@@ -25,7 +25,7 @@ $(document).ready( function() {
   $("#btnsave").click(function () {
     var obj = {};
     obj.project = $('#hoursproject').find('option:selected').val();
-    obj.projectname = $('#hoursproject').find('option:selected').val();
+    obj.projectname = $('#hoursproject').find('option:selected').text();
     obj.amount = Number($("#hoursamount").val());
     obj.task = Number($('#hourstask').find('option:selected').val());
     obj.isextra = $("#hoursisextra").is(':checked') ? true : false;
@@ -42,7 +42,7 @@ function userdata(data){
   me = data;
   var filter = [ { 'employees._id' : me._id }, { name: 1, tasks : 1 } ];
   project.load(filter,loadprojects,"");
-  filter = [{'hours.user' : me._id, 'date': {$gte:firstday, $lte:lastday} },{date:1, hours:1}];
+  filter = { 'date_from' : firstday, 'date_to' : lastday, 'user_id' : me._id };
   day.load(filter,loadDays);
   //loadthismonthhours(today);
 }
@@ -66,7 +66,7 @@ function loadDays(data) {
   }
   for(i=0; i< data.records.length; i++) {
     index = Number(data.records[i].date.substr(8));
-    myhours[index-1].hours = data.records[i].hours;
+    myhours[index-1].users = data.records[i].users;
   }
   loadCalendarHours(myhours);
 }
@@ -103,19 +103,19 @@ function addCalEvent(start, end, event, allDay) {
       continue;
     }
     cday = start.getDate()-1;
-    if (myhours[cday].hours) {
+    if (myhours[cday].users) {
       //search for same event data
     } else {
-      myhours[cday] = {};
-      myhours[cday].date = simpleDate(start);
-      myhours[cday].hours = new Array();
-      myhours[cday].hours[0] = {};
-      myhours[cday].hours[0].user = me._id;
-      myhours[cday].hours[0].project = event.project;
-      myhours[cday].hours[0].amount = Number(event.amount);
-      myhours[cday].hours[0].isextra = event.isextra;
-      myhours[cday].hours[0].note = event.note;
-      myhours[cday].hours[0].task = Number(event.task);
+      myhours[cday].users = new Array();
+      myhours[cday].users[0] = {}
+      myhours[cday].users[0].user_id = me._id;
+      myhours[cday].users[0].hours = new Array();
+      myhours[cday].users[0].hours[0] = {};
+      myhours[cday].users[0].hours[0].project = event.project;
+      myhours[cday].users[0].hours[0].amount = Number(event.amount);
+      myhours[cday].users[0].hours[0].isextra = event.isextra;
+      myhours[cday].users[0].hours[0].note = event.note;
+      myhours[cday].users[0].hours[0].task = Number(event.task);
     }
     start = new Date(start);
     start.setDate(start.getDate()+1);
@@ -131,18 +131,19 @@ function nothing(){
 }
 
 function loadCalendarHours(list) {
-  var i, j;
+  var i, j, singleentry;
   $("#calendar").fullCalendar('removeEvents');
   for(i = 0; i < list.length; i++) {
-    if(list[i].hours) {
-      for(j = 0; j < list[i].hours.length; j++) {
+    if(list[i].users) {
+      for(j = 0; j < list[i].users[0].hours.length; j++) {
       //add event
         var event = {};
-        event.id = list[i].date + "+" + list[i].hours[j].project + "+" + list[i].hours[j].isextra;
-        event.title = project.getname(list[i].hours[j].project) + " " + list[i].hours[j].amount + "h";
+	singleentry = list[i].users[0];
+        event.id = list[i].date + "+" + singleentry.project + "+" + singleentry.isextra;
+        event.title = project.getname(singleentry.project) + " " + singleentry.amount + "h";
         event.start = list[i].date;
         event.end = list[i].date;
-        event.note = list[i].hours[j].note;
+        event.note = singleentry.note;
         $("#calendar").fullCalendar('renderEvent', event , false);
       }
     }
