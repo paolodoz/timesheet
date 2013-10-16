@@ -26,7 +26,7 @@ def push_days(documents_list):
         
         found = db.day.find({ 'date' : date }).limit(1).count()
 
-        if found and sanified_document['users'] and 'user_id' in sanified_document['users'][0]:
+        if found and sanified_document.get('users') and 'user_id' in sanified_document['users'][0]:
                          
             # Validate one user per day insertion
             if len(sanified_document['users']) > 1:
