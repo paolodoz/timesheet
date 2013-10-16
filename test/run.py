@@ -17,15 +17,6 @@ def _login(values):
     data = urllib.urlencode(values)
     opener.open("https://localhost:9090/auth/login", data)
     
-def _assert_page_contains(check_logged = True):
-    """Dirty way to assert if the user is logged in"""
-    
-    print '\nCHECK if user %s' % ('can log' if check_logged else 'can not log')
-    request = urllib2.Request('https://localhost:9090/')
-    page_returned = opener.open(request).read()
-    
-    assert (not check_logged and 'Timesheet login' in page_returned) or (check_logged and not 'Timesheet login' in page_returned)
-    print 'OK!'
 
 def _assert_page_contains(needle, check_contains=True):
     """Search needle in main page"""
@@ -36,9 +27,9 @@ def _assert_page_contains(needle, check_contains=True):
     assert (check_contains and needle in page_returned) or (not check_contains and not needle in page_returned)
     print 'OK!'    
     
-
-# Assert procedure
 def _assert(uri, json_in, json_expected):
+    """Assert API request deleting cleaning out random parameter as _id"""
+    
     request = urllib2.Request('https://localhost:9090/%s' % uri.lstrip('/'), data=json.dumps(json_in), headers={'Content-Type': 'application/json'})
     json_returned = json.loads(opener.open(request).read())
     json_returned_noid = json_returned.copy()
@@ -134,9 +125,8 @@ def main(admin_credentials):
     _assert('/remove/project', [ { 'employees._id' : '1'*24 } ], { 'error' : None })
     # Get the empty customers list
     _assert('/get/project', [ { 'employees._id' : '1'*24 }, { '_id' : 1 } ], { 'error': None, 'records' : [ ] })
-
+        
     ## NEW USER LOGIN
-    
     # Add one user with password, should login
     _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
     # Add user without password, should raise error
@@ -179,7 +169,6 @@ def main(admin_credentials):
     # Add project for following tests
     _assert('/add/project', [ { 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'name' : 'NAME', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : 'start', 'end' : 'end', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'The administrator'}, 'employees' : [ { '_id' : '1'*24, 'name' : 'The employed administrator'} ] } ], { 'error' : None, 'ids' : [ '' ] })
     
-    
     # Check if can login with NEW_USER_WITH_PWD
     _login({'username' : 'PERM_TEST', 'password' : 'mypassword' })
     _assert_page_contains('Timesheet login', False)
@@ -196,19 +185,25 @@ def main(admin_credentials):
     _assert('/get/project', [ { 'name' : 'NAME' }, { 'customer' : 1 } ], { 'error' : None, 'records' : [ ] })
     # Get explicitely admin projects 
     _assert('/get/project', [ { 'responsible' : { '_id' : '1'*24 } }, { 'customer' : 1 } ], { 'error' : "ValidationError: Value 'responsible' is restricted for current user", 'records' : [ ] })
+    # Wrongly delete added project
+    _assert('/remove/project', [ { 'employees._id' : '1'*24 } ], { 'error' : "ValidationError: remove project restricted for users in group 'employee'" })
+   
 
     # Check if normal user can see user management in admin menu
     _assert_page_contains('/index/users', False)
     # Relogin as admin
     _login(admin_credentials)
     _assert_page_contains('/index/users', True)    
+    # Delete previously added test user
+    _assert('/remove/user', [ { 'username' : 'PERM_TEST' } ], { 'error' : None })
+    # Delete previously added project
+    _assert('/remove/project', [ { 'employees._id' : '1'*24 } ], { 'error' : None })
+    
     
     ## API DAYS
     # Insert a day with no user
     _assert('/data/push_days', [ {'date': '2000-01-01' }
                                 ], { 'error' : None })   
-    
-    
     # Insert wrongly a day with multiple users
     _assert('/data/push_days', [ {'date': '2000-01-01', 
                                   'users': [ 
@@ -221,7 +216,6 @@ def main(admin_credentials):
                                             ]
                                   }
                                 ], { 'error' : 'ValidationError: Push only one user per day' })
-      
     # Insert the day 17 for user  '111111111111111111111111'                                      
     _assert('/data/push_days', [ {'date': '2000-10-17', 
                                   'users': [ 
@@ -234,7 +228,6 @@ def main(admin_credentials):
                                             ]
                                   }
                                 ], { 'error' : None })   
-    
     # Push in the day 17 also user  '0'                                      
     _assert('/data/push_days', [ {'date': '2000-10-17', 
                                   'users': [ 
@@ -244,7 +237,6 @@ def main(admin_credentials):
                                             ]
                                   }
                                 ], { 'error' : None })                                            
-
     # Push also the year after the user  '0'                                      
     _assert('/data/push_days', [ {'date': '2001-02-02', 
                                   'users': [ 
@@ -254,19 +246,16 @@ def main(admin_credentials):
                                             ]
                                   }
                                 ], { 'error' : None })   
-     
     # Get the day 2000-10-17 for user 0                                        
     _assert('/data/search_days', { 'date_from' : '2000-10-17', 'date_to' : '2000-10-17', 'user_id' : '0' }, {u'records': [{u'date': u'2000-10-17', u'_id': '', u'users': [{u'hours': [], u'user_id': u'0'}]}], u'error': None})
-     
     # Get the years 2000-01-01 2003-01-01 for user 0
     _assert('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2003-01-01', 'user_id' : '0' }, {u'records': [{u'date': u'2000-10-17', u'_id': '', u'users': [{u'hours': [], u'user_id': u'0'}]}, {u'date': u'2001-02-02', u'_id': '', u'users': [{u'hours': [], u'user_id': u'0'}]}], u'error': None} )
-    
     # Get unexistant user 2
     _assert('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2003-01-01', 'user_id' : '2' }, {u'records': [ ], u'error': None} )
-    
     # Get empty span 
     _assert('/data/search_days', { 'date_from' : '2010-01-01', 'date_to' : '2011-01-01', 'user_id' : '0' }, {u'records': [ ], u'error': None} )
-    
+    # Delete all inserted days
+    _assert('/remove/day', [ { "date" :  "2000-10-17" },  { "date" :  "2000-01-01" },  { "date" :  "2001-02-02" } ] , { 'error' : None })
     
     
 if __name__ == "__main__":
