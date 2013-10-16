@@ -1,3 +1,4 @@
+# TODO: fix the ambiguity of project manager that can't select only project.responsible or only project.employees._id 
 
 restrictions:
   user:
@@ -5,7 +6,7 @@ restrictions:
       employee:
         _id: '%%_id%%'
         username: '%%username%%'
-    field_restrictions:
+    projection_restrictions:
       employee:
         user: true
         password: true
@@ -20,19 +21,26 @@ restrictions:
   day:
     criteria_restrictions:
       employee:
-        users:
-          user_id: '%%_id%%'
-        
+        users.user_id: '%%_id%%'
+      project manager:
+         $or:
+           - users.user_id: '%%_id%%'
+           - hours.project:
+                 $in: '%%managed_projects%%'
 
   project:
     criteria_restrictions:
       employee:
-        employees:
-          _id:
+        employees._id:
             $elemMatch:
               _id: '%%_id%%'
-        responsible:
-          _id: '%%_id%%'      
+              
+      project manager:
+        $or:
+          - responsible._id: '%%_id%%'
+          - employees._id:
+              $elemMatch:
+                _id: '%%_id%%'  
     
     action_restrictions:
       employee:

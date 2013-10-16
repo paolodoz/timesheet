@@ -50,7 +50,6 @@ def search_days(criteria):
     POST /data/search_days/
     
     Expects a  { 'date_from' : 'date1', 'date_to' : 'date2', 'user_id' : 'user_id' } 
-    
     Returns { 'error' : string, 'records' : [ { }, { }, .. ]  } 
     """
     

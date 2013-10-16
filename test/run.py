@@ -13,6 +13,7 @@ opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(cj))
 
 def _login(values):
     """Login procedure using admin_credentials"""
+    print '\nLogin as \'%s\'' % (values['username'])
     cj.clear()
     data = urllib.urlencode(values)
     opener.open("https://localhost:9090/auth/login", data)
@@ -20,7 +21,7 @@ def _login(values):
 
 def _assert_page_contains(needle, check_contains=True):
     """Search needle in main page"""
-    print '\nCHECK if user get \'%s\'' % (needle)
+    print 'CHECK if user GET %s return \'%s\'' % ('' if check_contains else 'does not', needle)
     request = urllib2.Request('https://localhost:9090/')
     page_returned = opener.open(request).read()
     
@@ -165,18 +166,16 @@ def main(admin_credentials):
     # GET admin password
     _assert('/get/user', [ { 'username' : 'ts_admin' }, { 'password' : 1} ], { 'error' : "ValidationError: Field 'password' is restricted for current user", 'records' : [ ] })
     # Add user in group employee for following tests
-    _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
-    # Add project for following tests
-    _assert('/add/project', [ { 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'name' : 'NAME', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : 'start', 'end' : 'end', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'The administrator'}, 'employees' : [ { '_id' : '1'*24, 'name' : 'The employed administrator'} ] } ], { 'error' : None, 'ids' : [ '' ] })
+    employee_json = _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
+    # Add project manager for following tests
+    manager_json = _assert('/add/user', [ { 'name' : 'MANAGER', 'surname' : 'MANAGERSURNAME', 'username' : 'MANAGER', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'project manager', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
+    # Add project managed by MANAGER for following tests
+    _assert('/add/project', [ { 'name' : 'MANAGEDPROJECT', 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : 'start', 'end' : 'end', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : manager_json['ids'][0], 'name' : 'The manager'}, 'employees' : [ { '_id' : employee_json['ids'][0], 'name' : 'The employed administrator'} ] } ], { 'error' : None, 'ids' : [ '' ] })
+    # Add project managed by admin
+    _assert('/add/project', [ { 'name' : 'ADMINPROJECT', 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : 'start', 'end' : 'end', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'The admin'}, 'employees' : [ { '_id' : employee_json['ids'][0], 'name' : 'The employed administrator'} ] } ], { 'error' : None, 'ids' : [ '' ] })
+    
     # Add days for following tests
-    _assert('/data/push_days', [ {'date': '2000-01-01', 
-                                  'users': [ 
-                                            { 'user_id' : '111111111111111111111111', 
-                                             'hours': []
-                                             }
-                                            ]
-                                  }
-                                ], { 'error' : None })    
+    _assert('/data/push_days', [ {'date': '2000-01-01', 'users': [ { 'user_id' : '111111111111111111111111', 'hours': [] } ] } ], { 'error' : None })    
     
     # Check if can login with NEW_USER_WITH_PWD
     _login({'username' : 'PERM_TEST', 'password' : 'mypassword' })
@@ -193,14 +192,20 @@ def main(admin_credentials):
     # Get projects of other users
     _assert('/get/project', [ { 'name' : 'NAME' }, { 'customer' : 1 } ], { 'error' : None, 'records' : [ ] })
     # Get explicitely admin projects 
-    _assert('/get/project', [ { 'responsible' : { '_id' : '1'*24 } }, { 'customer' : 1 } ], { 'error' : "ValidationError: Field 'responsible' is restricted for current user", 'records' : [ ] })
+    _assert('/get/project', [ { 'responsible' : { '_id' : '1'*24 } }, { 'customer' : 1 } ], { 'error' : None, 'records' : [ ] })
     # Wrongly delete added project
     _assert('/remove/project', [ { 'employees._id' : '1'*24 } ], { 'error' : "ValidationError: Action 'remove' in 'project' is restricted for current user" })
-    # Wrongly get day from another users, returns empty
-    _assert('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2000-01-01', 'user_id' : '111111111111111111111111' }, {u'records': [ ], u'error': None})
+    # Wrongly get day from another users, returns error
+    _assert('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2000-01-01', 'user_id' : '111111111111111111111111' }, { 'error': 'ValidationError: Field \'users.user_id\' is restricted for current user'})
     
-   
-   
+    # Relogin as manager
+    _login({'username' : 'MANAGER', 'password' : 'mypassword' })
+    _assert_page_contains('Timesheet login', False)   
+    # Get all the projects of MANAGER
+    _assert('/get/project', [ {  }, { 'customer' : 1 } ], {u'records': [{u'customer': u'CUSTOMER', u'_id': ''}], u'error': None})
+    # Get project that MANAGER does not manage
+    _assert('/get/project', [ { 'name' : 'ADMINPROJECT' }, { 'customer' : 1 } ], {u'records': [ ], u'error': None})
+
 
     # Check if normal user can see user management in admin menu
     _assert_page_contains('/index/users', False)

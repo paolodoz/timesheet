@@ -26,6 +26,7 @@ def get(collection, criteria_projection):
     restricted_criteria = restrict_criteria('get', collection, criteria)
     
     sanified_criteria = sanitize_objectify_json(criteria)
+    print '[TS_DEBUG_CRITERIA] %s' % (sanified_criteria)
     return stringify_objectid_cursor(db[collection].find(sanified_criteria, projection))
 
 

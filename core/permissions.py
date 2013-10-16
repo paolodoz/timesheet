@@ -7,7 +7,11 @@ def get_formatted_restrictions():
     """Format restriction schemas. Saved on auth login to speedup following accesses"""
     
     # Recursively replace needs a condition_function and replace_function
-    replacements = { '%%username%%' : cherrypy.session['_ts_user']['username'], '%%_id%%' : cherrypy.session['_ts_user']['_id'] }
+    replacements = { 
+                    '%%username%%' : cherrypy.session['_ts_user']['username'], 
+                    '%%_id%%' : cherrypy.session['_ts_user']['_id'],
+                    '%%managed_projects%%' : cherrypy.session['_ts_user']['managed_projects'] 
+                    }
     replacements_templates = replacements.keys()
 
     def _replace_function_permissions_schema(container):
@@ -48,7 +52,7 @@ def check_request_permissions(action, collection, projections = {}):
     
     try:
         # Check if request restrictions are set for the collection.user
-        restrictions = cherrypy.session['_ts_user']['restrictions'][collection]['field_restrictions'][group]
+        restrictions = cherrypy.session['_ts_user']['restrictions'][collection]['projection_restrictions'][group]
             
         if restrictions == True:
             raise ValidationError("Collection '%s' is restricted for current user" % (collection))
@@ -57,7 +61,6 @@ def check_request_permissions(action, collection, projections = {}):
         # If not, skip procedure
         pass
     else:
-            
         # If some of the restrictions are already set in criteria with different values, raise an error 
         for restr_k, restr_v in restrictions.items():
             if restr_k in projections and restr_v == True:
