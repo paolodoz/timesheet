@@ -22,15 +22,17 @@ def push_days(documents_list):
     
     for sanified_document in sanified_documents_list:
          
+        # Validate one user per day insertion
         if len(sanified_document['users']) > 1:
             raise ValidationError("Push only one user per day")
          
         date = sanified_document['date']
-        user_id = sanified_document['users'][0]['user_id']
         
         found = db.day.find({ 'date' : date }).limit(1).count()
 
-        if found:
+        if found and sanified_document['users'] and 'user_id' in sanified_document['users'][0]:
+            user_id = sanified_document['users'][0]['user_id']
+            
             db.day.update({'date': date }, {'$pull': {'users': {'user_id': user_id }}})
             db.day.update({'date': date }, {'$push': {'users': {'user_id': user_id, 'hours' : sanified_document['users'][0]['hours'] }}})
         else:

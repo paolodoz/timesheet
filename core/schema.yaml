@@ -150,6 +150,7 @@ day:
       type: array
       properties:
         user_id:
+          optional: True
           type: string
         hours:
           optional: True
