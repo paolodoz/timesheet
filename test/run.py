@@ -1,9 +1,7 @@
 #!/usr/bin/env python
-import urllib2, urllib, json, os
+import urllib2, urllib, json, os, sys
 from cookielib import CookieJar
 
-# Credentials
-admin_credentials = {'username': 'ts_admin', 'password': 'ts_admin_pwd'}
 
 # Possible users groups
 users_groups = [ 'administrator', 'employee']
@@ -19,7 +17,7 @@ def _login(values):
     data = urllib.urlencode(values)
     opener.open("https://localhost:9090/auth/login", data)
     
-def _assert_logged_in(check_logged = True):
+def _assert_page_contains(check_logged = True):
     """Dirty way to assert if the user is logged in"""
     
     print '\nCHECK if user %s' % ('can log' if check_logged else 'can not log')
@@ -29,6 +27,15 @@ def _assert_logged_in(check_logged = True):
     assert (not check_logged and 'Timesheet login' in page_returned) or (check_logged and not 'Timesheet login' in page_returned)
     print 'OK!'
 
+def _assert_page_contains(needle, check_contains=True):
+    """Search needle in main page"""
+    print '\nCHECK if user get \'%s\'' % (needle)
+    request = urllib2.Request('https://localhost:9090/')
+    page_returned = opener.open(request).read()
+    
+    assert (check_contains and needle in page_returned) or (not check_contains and not needle in page_returned)
+    print 'OK!'    
+    
 
 # Assert procedure
 def _assert(uri, json_in, json_expected):
@@ -54,13 +61,13 @@ def _assert(uri, json_in, json_expected):
     return json_returned
 
 
-def main():
+def main(admin_credentials):
     
     ## LOGIN
     _login(admin_credentials)
     
     ## CHECK LOGIN
-    _assert_logged_in()
+    _assert_page_contains('Timesheet login', False)
     
     ## GET CURRENT INFORMATIONS
     _assert('/me', None, { 'username' : admin_credentials['username'], '_id' : '1'*24 })
@@ -136,10 +143,10 @@ def main():
     _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT', 'salary' : []  } ], { 'error' : 'ValidationError: Expected nonempty password', 'ids' : [ ] })
     # Check if can't login with NEW_USER_WITH_NO_PWD
     _login({'username' : 'NEW_USER_WITH_NO_PWD', 'password' : '' })
-    _assert_logged_in(False)
+    _assert_page_contains('Timesheet login', True)
     # Check if can login with NEW_USER_WITH_PWD
     _login({'username' : 'NEW_USER_WITH_PWD', 'password' : 'mypassword' })
-    _assert_logged_in()
+    _assert_page_contains('Timesheet login', False)
     # Relogin as admin
     _login(admin_credentials)
     # Delete both user in one request
@@ -175,7 +182,7 @@ def main():
     
     # Check if can login with NEW_USER_WITH_PWD
     _login({'username' : 'PERM_TEST', 'password' : 'mypassword' })
-    _assert_logged_in()
+    _assert_page_contains('Timesheet login', False)
 
     # GET his own password
     _assert('/get/user', [ { 'username' : 'PERM_TEST' }, { 'password' : 1} ], { 'error' : "ValidationError: get user.password restricted for users in group 'employee'", 'records' : [ ] })
@@ -189,9 +196,12 @@ def main():
     _assert('/get/project', [ { 'name' : 'NAME' }, { 'customer' : 1 } ], { 'error' : None, 'records' : [ ] })
     # Get explicitely admin projects 
     _assert('/get/project', [ { 'responsible' : { '_id' : '1'*24 } }, { 'customer' : 1 } ], { 'error' : "ValidationError: Value 'responsible' is restricted for current user", 'records' : [ ] })
-    
+
+    # Check if normal user can see user management in admin menu
+    _assert_page_contains('/index/users', False)
     # Relogin as admin
-    _login(admin_credentials)    
+    _login(admin_credentials)
+    _assert_page_contains('/index/users', True)    
     
     ## API DAYS
     # Insert a day with no user
@@ -260,7 +270,13 @@ def main():
     
     
 if __name__ == "__main__":
-    main()
+    
+    if len(sys.argv) >= 3:
+        # Credentials
+        admin_credentials = {'username': sys.argv[1], 'password': sys.argv[2]}
+        main(admin_credentials)
+    else:
+        print 'Error, run with:\n%s <username> <password>' % (sys.argv[0])
 
 
 
