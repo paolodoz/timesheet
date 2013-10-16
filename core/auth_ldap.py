@@ -36,7 +36,7 @@ def _user_exists_in_db(username):
     return cursor.count() > 0
 
 def _migrate_user_to_db(ldap_result_dict, password, group):
-    """Migrate LDAP user informations to database"""
+    """Migrate LDAP user informations to database. Password is not inserted"""
     
     user_dict = {
                  'name' : ldap_result_dict.get('givenName', [''])[0], 
@@ -47,7 +47,7 @@ def _migrate_user_to_db(ldap_result_dict, password, group):
                  'mobile' : ldap_result_dict.get('mobile',[''])[0],
                  'city' : ldap_result_dict.get('city',[''])[0],
                  'group' : group,
-                 'password' : password,
+                 'password' : '',
                  'salary' : [],
                  'salt' : ''
                  }
@@ -55,9 +55,8 @@ def _migrate_user_to_db(ldap_result_dict, password, group):
     validate_json_list('user', [ user_dict ])
     
     sanified_user_dict = sanitize_objectify_json(user_dict)
-    update_password_salt_user_json(sanified_user_dict)
     
-    return db['user'].insert(sanified_user_dict)
+    return db['user'].insert(user_dict)
     
 
 

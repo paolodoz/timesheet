@@ -100,7 +100,7 @@ def _add_default_admin(db):
         arg_index = sys.argv.index('--ldap')
         username = sys.argv[arg_index+1]
         password = sys.argv[arg_index+2]
-        print 'OK!\n[+] Adding administrator credentials ' + username + ':' + password,
+        print 'OK!\n[+] Adding administrator credentials ' + username + ' for LDAP auth',
         
         auth_err = None
         try:
@@ -121,7 +121,7 @@ def _add_default_admin(db):
         
         db['user'].update( { '_id' : '1'*24 }, sanified_documents_list, True)
     else:
-        print 'OK!\n[-] Skipping admin insert, use \'--add-admin <usr> <pwd>\', \'--ldap <usr> <pwd> --add-admin-ldap\''
+        print 'OK!\n[-] Skipping admin insert, use \'--add-admin <usr> <pwd>\' or \'--ldap <usr> <pwd> --add-admin-ldap\''
 
 if __name__ == "__main__":
     
