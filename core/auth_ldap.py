@@ -4,7 +4,7 @@ from core.validation import validate_json_list, sanitize_objectify_json, update_
 from core.db import db
 
 
-def check_credentials(username, password, migrate=True):
+def check_credentials(username, password, migrate=True, group_on_migration = 'employee'):
     """User authentication based on LDAP"""
     
     bind_search_string = conf_auth_ldap['bind_search_string'].format(username=username)
@@ -22,7 +22,7 @@ def check_credentials(username, password, migrate=True):
     if ldap_results and ldap_results[0] and ldap_results[0][0] == bind_search_string:
         ldap_result_dict = ldap_results[0][1]
         if migrate and not _user_exists_in_db(username):
-            id = _migrate_user_to_db(ldap_result_dict, password)
+            id = _migrate_user_to_db(ldap_result_dict, password, group_on_migration)
             if not id:
                 print 'Some error occurred migrating user from LDAP to database, please check.'
         
@@ -35,7 +35,7 @@ def _user_exists_in_db(username):
     cursor = db['user'].find({"username": username}).limit(1)
     return cursor.count() > 0
 
-def _migrate_user_to_db(ldap_result_dict, password):
+def _migrate_user_to_db(ldap_result_dict, password, group):
     """Migrate LDAP user informations to database"""
     
     user_dict = {
@@ -46,7 +46,7 @@ def _migrate_user_to_db(ldap_result_dict, password):
                  'phone' : ldap_result_dict.get('phone',[''])[0],
                  'mobile' : ldap_result_dict.get('mobile',[''])[0],
                  'city' : ldap_result_dict.get('city',[''])[0],
-                 'group' : "employee",
+                 'group' : group,
                  'password' : password,
                  'salary' : [],
                  'salt' : ''
@@ -54,10 +54,10 @@ def _migrate_user_to_db(ldap_result_dict, password):
     
     validate_json_list('user', [ user_dict ])
     
-    sanified_documents_list = sanitize_objectify_json(user_dict)
-    update_password_salt_user_json(user_dict)
+    sanified_user_dict = sanitize_objectify_json(user_dict)
+    update_password_salt_user_json(sanified_user_dict)
     
-    return db['user'].insert(sanified_documents_list)
+    return db['user'].insert(sanified_user_dict)
     
 
 

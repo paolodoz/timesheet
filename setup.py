@@ -25,16 +25,14 @@ def _check_libs():
             sys.exit(message)
         
 
-def _check_ldap(db):
+def _check_ldap():
     
     if '--ldap' in sys.argv and len(sys.argv) > sys.argv.index('--ldap') + 2:
-        
+        print 'OK!\n[+] Testing LDAP username authentication..',
         arg_index = sys.argv.index('--ldap')
         username = sys.argv[arg_index+1]
         password = sys.argv[arg_index+2]
         
-        print 'OK!\n[+] Testing and adding LDAP user ' + username + ':' + password + ' as administrator..',
-
         print '\nHost: %s\nBind and search string: %s\nFiter: %s\nPassword: %s' % (
                                                                conf_auth_ldap['hostname'],
                                                                conf_auth_ldap['bind_search_string'].format(username=username),
@@ -44,17 +42,16 @@ def _check_ldap(db):
         
         auth_err = None
         try:
-            auth_err = check_credentials(username, password)
-            db.user.update({ 'username' : username}, { 'group' : 'administrator'})
+            auth_err = check_credentials(username, password, migrate=False)
         except Exception as e:
             auth_err = str(e)
 
         if auth_err:
-           sys.exit('LDAP check credential error: %s, administrator not added' % (auth_err)) 
-            
+           sys.exit('LDAP check credential error: %s' % (auth_err)) 
+        
         
     else:
-        print 'OK!\n[-] Skipping LDAP test, run with --ldap <username> <password> to check LDAP and add username as admin',
+        print 'OK!\n[-] Skipping LDAP test, run with --ldap <username> <password> to check LDAP username authentication',
 
         
 def _check_mongodb():
@@ -99,21 +96,32 @@ def _create_db_collections(connection):
 
 def _add_default_admin(db):
     
-    if not '--ldap' in sys.argv:
+    if '--add-admin-ldap' in sys.argv and '--ldap' in sys.argv and len(sys.argv) > sys.argv.index('--ldap') + 2:
+        arg_index = sys.argv.index('--ldap')
+        username = sys.argv[arg_index+1]
+        password = sys.argv[arg_index+2]
+        print 'OK!\n[+] Adding administrator credentials ' + username + ':' + password,
         
-        print 'OK!\n[+] Adding administrator credential in \'user\' collection with %s:%s.. ' % (conf_auth_db['init.default.admin'], conf_auth_db['init.default.password']),
+        auth_err = None
+        try:
+            auth_err = check_credentials(username, password, migrate=True, group_on_migration='administrator')
+        except Exception as e:
+            auth_err = str(e)
+        
+    elif '--add-admin' in sys.argv and len(sys.argv) > sys.argv.index('--add-admin') + 2:
+        arg_index = sys.argv.index('--add-admin')
+        username = sys.argv[arg_index+1]
+        password = sys.argv[arg_index+2]
+        print 'OK!\n[+] Adding administrator credentials ' + username + ':' + password,
     
-        json_user = { '_id' : '1'*24, 'password' : conf_auth_db['init.default.password'], 'name' : 'Admin', 'surname' : 'Default', 'username': conf_auth_db['init.default.admin'], 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : 'administrator', 'salary' : []  }
+        json_user = { '_id' : '1'*24, 'password' : password, 'name' : 'Admin', 'surname' : 'Default', 'username': username, 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : 'administrator', 'salary' : []  }
     
         sanified_documents_list = sanitize_objectify_json(json_user)
         update_password_salt_user_json(sanified_documents_list)
         
         db['user'].update( { '_id' : '1'*24 }, sanified_documents_list, True)
-
     else:
-        print 'OK!\n[+] Skipping default administrator add',
-    
-        
+        print 'OK!\n[-] Skipping admin insert, use \'--add-admin <usr> <pwd>\', \'--ldap <usr> <pwd> --add-admin-ldap\''
 
 if __name__ == "__main__":
     
@@ -123,6 +131,6 @@ if __name__ == "__main__":
     connection = _check_mongodb()
     _drop_db(connection)
     db = _create_db_collections(connection)
+    _check_ldap()
     _add_default_admin(db)
-    _check_ldap(db)
-    print
+
