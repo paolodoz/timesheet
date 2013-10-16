@@ -50,6 +50,7 @@ user:
       enum:
         - administrator
         - employee
+        - project manager
     password: 
       type: string
       blank: True

@@ -4,7 +4,7 @@ from cookielib import CookieJar
 
 
 # Possible users groups
-users_groups = [ 'administrator', 'employee']
+users_groups = [ 'administrator', 'employee', 'project manager']
 
 
 cj = CookieJar()
