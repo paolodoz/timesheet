@@ -30,12 +30,12 @@
       Notifiche
     </a>
   </li>
-  <li class="active">
+  <li class="${'active' if view == 'calendar' else ''}">
     <a href="/index/calendar">
       Consuntivazione
     </a>
   </li>
-      <li class="dropdown">
+      <li class="${'active' if view == 'trips' else ''} dropdown">
 	<a href="#" data-toggle="dropdown" role="button">Trasferte<b class="caret"></b></a>
         <ul aria-labelledby="drop4" role="menu" class="dropdown-menu" id="menurep">
             <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Nuova richiesta</a></li>
@@ -46,14 +46,14 @@
 
     </a>
   </li>
-<li>
+<li class="${'active' if view == 'expences' else ''}">
     <a href="#">
       Note spese
     </a>
   </li>
 
 <li><hr></li>
- <li class="dropdown">
+ <li class="${'active' if view == 'report' else ''} dropdown">
     <a href="#" data-toggle="dropdown" role="button">Report<b class="caret"></b></a>
 	<ul aria-labelledby="drop4" role="menu" class="dropdown-menu" id="menurep">
             <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Per utente</a></li>
@@ -63,7 +63,7 @@
             <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Totale mese</a></li>
         </ul>
   </li>
-  <li class="dropdown">
+  <li class="${'active' if view == 'customers' else ''} dropdown">
     <a href="#" data-toggle="dropdown" role="button">Customers<b class="caret"></b></a>
 	<ul aria-labelledby="drop4" role="menu" class="dropdown-menu" id="menucust">
             <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Aggiungi</a></li>
@@ -72,19 +72,19 @@
             <li role="presentation"><a href="/index/customers" tabindex="-1" role="menuitem">List</a></li>
         </ul>
   </li>
-<li class="dropdown">
+<li class="${'active' if view == 'projects' else 'active' if view == 'offers' else ''} dropdown">
     <a href="#" data-toggle="dropdown" role="button">Projects<b class="caret"></b></a>
 	<ul aria-labelledby="drop4" role="menu" class="dropdown-menu" id="menucust">
             <li role="presentation"><a href="/index/projects" tabindex="-1" role="menuitem">List</a></li>
             <li role="presentation"><a href="/index/offers" tabindex="-1" role="menuitem">Offers</a></li>
         </ul>
   </li>
-<li>
+<li class="${'active' if view == 'users' else ''}">
     <a href="/index/users">
       Users
     </a>
   </li>
-  <li class="dropdown">
+  <li class="${'active' if view == 'invoice' else ''} dropdown">
     <a href="#" data-toggle="dropdown" role="button">Fatture<b class="caret"></b></a>
 	<ul aria-labelledby="drop4" role="menu" class="dropdown-menu" id="menuin">
             <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Crea Nuova</a></li>
@@ -100,8 +100,7 @@
 
 </div>
 <div class="col-lg-9">
-  ${view}
-
+  ${view_page}
 </div>
 </div>  
 

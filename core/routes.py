@@ -31,7 +31,8 @@ class Routes:
         """
         
         if view in views.keys():
-            return templates.get_template('index.tpl').render(view=open(views[view]).read())
+            # Templatize index passing requested page and user session data 
+            return templates.get_template('index.tpl').render(view = view, view_page=open(views[view]).read(), **cherrypy.session['_ts_user'])
         else:
             raise cherrypy.HTTPError(404)
 
