@@ -1,5 +1,5 @@
 import cherrypy, os, traceback
-from core.auth import AuthController, require, member_of
+from core.auth import AuthController, require, is_logged
 from core import db
 from config import views_folder, templates
 from glob import glob
@@ -22,7 +22,7 @@ class Routes:
     auth = AuthController()
     
     @cherrypy.expose
-    @require(member_of("employee"))
+    @require(is_logged())
     def index(self, view = 'index'):
         """
         Serves HTML views stored in 'views/<view>.html' rendered with template 'templates/index.tpl'
@@ -37,7 +37,7 @@ class Routes:
             raise cherrypy.HTTPError(404)
 
     @cherrypy.expose
-    @require(member_of("employee"))
+    @require(is_logged())
     @cherrypy.tools.json_out(on = True)
     def me(self):
         """
@@ -50,7 +50,7 @@ class Routes:
         
 
     @cherrypy.expose
-    @require(member_of("employee"))
+    @require(is_logged())
     @cherrypy.tools.allow(methods=['POST'])
     @cherrypy.tools.json_in(on = True)
     @cherrypy.tools.json_out(on = True)
@@ -76,7 +76,7 @@ class Routes:
         
 
     @cherrypy.expose
-    @require(member_of("employee"))
+    @require(is_logged())
     @cherrypy.tools.allow(methods=['POST'])
     @cherrypy.tools.json_in(on = True)
     @cherrypy.tools.json_out(on = True)
@@ -103,7 +103,7 @@ class Routes:
             return { 'error' : None, 'records' : records}
      
     @cherrypy.expose
-    @require(member_of("employee"))
+    @require(is_logged())
     @cherrypy.tools.allow(methods=['POST'])
     @cherrypy.tools.json_in(on = True)
     @cherrypy.tools.json_out(on = True)
@@ -128,7 +128,7 @@ class Routes:
             return { 'error' : None }
             
     @cherrypy.expose
-    @require(member_of("employee"))
+    @require(is_logged())
     @cherrypy.tools.allow(methods=['POST'])
     @cherrypy.tools.json_in(on = True)
     @cherrypy.tools.json_out(on = True)
@@ -154,7 +154,7 @@ class Routes:
             return { 'error' : None }  
 
     @cherrypy.expose
-    @require(member_of("employee"))
+    @require(is_logged())
     @cherrypy.tools.allow(methods=['POST'])
     @cherrypy.tools.json_in(on = True)
     @cherrypy.tools.json_out(on = True)

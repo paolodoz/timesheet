@@ -74,19 +74,20 @@ def require(*conditions):
 
 def member_of(groupname):
     def check():
+        user_record = db.user.find({ 'username' : cherrypy.request.login }, { 'group' : 1, '_id' : 0}).limit(1)
+        if user_record: 
+            user_group = user_record[0].get('group')
+            return user_group == 'administrator' or user_group == groupname
         
-        user_record = db['user'].find_one({ 'username' : cherrypy.request.login })
-        if user_record:
-            user_group = user_record.get('group', None)
-            if user_group:
-                return user_group == 'administrator' or user_group == groupname
     return check
+
+def is_logged():
+    return lambda: bool(cherrypy.request.login)
 
 def name_is(reqd_username):
     return lambda: reqd_username == cherrypy.request.login
 
 # These might be handy
-
 def any_of(*conditions):
     """Returns True if any of the conditions match"""
     def check():
@@ -116,7 +117,14 @@ class AuthController(object):
         """Called on successful login"""
         
         # Save user data
-        cherrypy.session['_ts_user'] = db['user'].find_one({ 'username' : username }, { 'username' : 1, 'group' : 1 })
+        cherrypy.session['_ts_user'] = db.user.find_one({ 'username' : username }, { 'username' : 1, 'group' : 1 })
+        
+        # If user is a project manager, save ids in managed_projects
+        cherrypy.session['_ts_user']['managed_projects'] = []
+        if cherrypy.session['_ts_user']['group'] == 'project manager':
+            cursor = db.project.find({ 'responsible._id' : cherrypy.session['_ts_user']['_id'] }, { '_id' : 1 })
+            for document in cursor:
+                cherrypy.session['_ts_user']['managed_projects'].append(document['_id'])
         
         # Save formatted permissions schemas to speedup following accesses
         cherrypy.session['_ts_user']['restrictions'] = get_formatted_restrictions()
