@@ -3,7 +3,7 @@ try:
 except ImportError as e:
     from pymongo import Connection
 
-from validation import update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
+from validation import recursive_merge, update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
 from permissions import restrict_criteria, check_request_permissions
 from bson.objectid import ObjectId
 from config import collections, conf_mongodb, conf_auth, conf_auth_db
@@ -61,5 +61,6 @@ def update(collection, document):
     check_request_permissions('update', collection)
     sanified_document = sanitize_objectify_json(document)
     
-    db[collection].update({ '_id' : sanified_document['_id'] }, sanified_document)
+    db_collection = db[collection].find_one({ '_id' : sanified_document['_id'] })
+    db[collection].update({ '_id' : sanified_document['_id'] }, recursive_merge(db_collection, sanified_document))
     

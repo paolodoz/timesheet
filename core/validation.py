@@ -10,6 +10,36 @@ try:
 except ImportError as e:
     from bson import ObjectId
 
+def recursive_merge(container, container_override):
+    """merges container_override into container and return merged result"""
+    key = None
+    try:
+        if not isinstance(container, (types.DictType, types.ListType)):
+            # border case for first run or if container is container primitive
+            container = container_override
+        elif isinstance(container, types.ListType):
+            # lists can be only appended
+            if isinstance(container_override, types.ListType):
+                # merge lists
+                container.extend(container_override)
+            else:
+                # append to list
+                container.append(container_override)
+        elif isinstance(container, types.DictType):
+            # dicts must be merged
+            if isinstance(container_override, types.DictType):
+                for key in container_override:
+                    if key in container:
+                        container[key] = recursive_merge(container[key], container_override[key])
+                    else:
+                        container[key] = container_override[key]
+            else:
+                raise ValueError('Cannot merge non-dict "%s" into dict "%s"' % (container_override, container))
+        else:
+            raise ValueError('Not implemented "%s" into "%s"' % (container_override, container))
+    except TypeError, e:
+        raise ValueError('TypeError "%s" in key "%s" when merging "%s" into "%s"' % (e, key, container_override, container))
+    return container
 
 def recursive_replace(container, replace_function):
     t = container.__class__
