@@ -1,4 +1,4 @@
-import cgi, yaml, random, string, hashlib, collections, types
+import cgi, yaml, random, string, hashlib, types
 from core.config import schema, core_folder
 from validictory import ValidationError, validate
 
@@ -10,6 +10,7 @@ try:
 except ImportError as e:
     from bson import ObjectId
 
+
 def recursive_replace(container, replace_function):
     t = container.__class__
     
@@ -17,9 +18,9 @@ def recursive_replace(container, replace_function):
     
     if replaced != None:
         return replaced
-    elif isinstance(container, collections.Mapping):
+    elif isinstance(container, types.DictType):
         return t((x,recursive_replace(container[x], replace_function)) for x in container)
-    elif isinstance(container, collections.Iterable):
+    elif isinstance(container, types.ListType):
         # Add other non-replicable iterables here. 
         t = tuple if isinstance(t, (types.GeneratorType,)) else t
         return t(recursive_replace(x, replace_function) for x in container)
@@ -32,7 +33,7 @@ def recursive_replace(container, replace_function):
 def _replace_function_sanitize_objectify_json(container):
     """Callback for sanitize_objectify_json"""
     
-    if isinstance(container, collections.Mapping):
+    if isinstance(container, types.DictType):
         
         # Objectify '_id' and dot-notation 'object._id' strings. Assume there is only one per dictionary.
         id_key = next((k for k in container.keys() if isinstance(container[k],basestring) and (k == '_id' or k.endswith('._id'))), None)
@@ -55,7 +56,7 @@ def sanitize_objectify_json(json_in):
 def _replace_function_stringify_objectid_json(container):
     """Callback for stringify_objectid_cursor"""
     
-    if isinstance(container, collections.Mapping) and '_id' in container and isinstance(container['_id'],ObjectId):
+    if isinstance(container, types.DictType) and '_id' in container and isinstance(container['_id'],ObjectId):
         # Objectify id string and continue with recursive replace
         container['_id'] = str(container['_id'])
         t = container.__class__
