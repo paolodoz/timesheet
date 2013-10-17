@@ -54,12 +54,9 @@ def recursive_replace(container, replace_function):
         # Add other non-replicable iterables here. 
         t = tuple if isinstance(t, (types.GeneratorType,)) else t
         return t(recursive_replace(x, replace_function) for x in container)
-    elif isinstance(container, (int, long, float, complex)):
-        return container
     else:
-        raise ValueError("I don't know how to handle container type: %s" % type(container))
-
-
+        return container
+    
 def _replace_function_sanitize_objectify_json(container):
     """Callback for sanitize_objectify_json"""
     
