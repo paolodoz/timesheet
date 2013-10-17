@@ -12,6 +12,19 @@ $(document).ready( function() {
       dateend = end;
       $('#edithours').modal('show');
     },
+    eventClick: function(calEvent, jsEvent, view) {
+      var cday = calEvent.start.getDate() - 1;
+      var i, event = {};
+      for(i = 0; i < myhours[cday].users[0].hours.length; i++) {
+        event.project = calEvent.id.substr(11,24);
+        event.isextra = calEvent.id.substr(36).bool();
+        event.date = simpleDate(calEvent.start);
+        if(eventCompare(myhours[cday].users[0].hours[i],event)) {
+          myhours[cday].users[0].hours.splice(i,1);
+          day.remove(event, me._id, loadCalendarHours);
+        }
+      }
+    }
   });
   $("#hours-range").slider({
     range: "min",
@@ -42,9 +55,6 @@ function userdata(data){
   me = data;
   var filter = [ { 'employees._id' : me._id }, { name: 1, tasks : 1 } ];
   project.load(filter,loadprojects,"");
-  filter = { 'date_from' : firstday, 'date_to' : lastday, 'user_id' : me._id };
-  day.load(filter,loadDays);
-  //loadthismonthhours(today);
 }
 
 function currentVis() {
@@ -52,6 +62,13 @@ function currentVis() {
   lastday = new Date(calendar.fullCalendar('getView').end);
   lastday.setDate(lastday.getDate()-1);
   lastday = simpleDate(lastday);
+}
+
+function eventCompare(array, myevent) {
+  if(array.project == myevent.project && array.isextra == myevent.isextra)
+    return true;
+  else
+    return false;
 }
 
 function loadDays(data) {
@@ -91,11 +108,13 @@ function loadprojects(data, target) {
     }
     $("#hourstask").html(htmlselect);
   });
+  filter = { 'date_from' : firstday, 'date_to' : lastday, 'user_id' : me._id };
+  day.load(filter,loadDays);
 }
 
 function addCalEvent(start, end, event, allDay) {
   var diffdays = end.getDate() - start.getDate();
-  var cday;
+  var cday, i, j, found;
   for(i = 0; i <= diffdays; i++) {
     if ( start.getDay() == 6 || start.getDay() == 0 ) {
       start = new Date(start);
@@ -104,18 +123,25 @@ function addCalEvent(start, end, event, allDay) {
     }
     cday = start.getDate()-1;
     if (myhours[cday].users) {
+      found = false;
       //search for same event data
+      for(j = 0; j < myhours[cday].users[0].hours.length; j++) {
+        if(myhours[cday].users[0].hours[j].project == event.project) {
+          saveEvent(myhours[cday].users[0].hours[j], event);
+          found = true;
+        }
+      }
+      if(!found) {
+        myhours[cday].users[0].hours[j] = {}
+        saveEvent(myhours[cday].users[0].hours[j], event);
+      }
     } else {
       myhours[cday].users = new Array();
       myhours[cday].users[0] = {}
       myhours[cday].users[0].user_id = me._id;
       myhours[cday].users[0].hours = new Array();
       myhours[cday].users[0].hours[0] = {};
-      myhours[cday].users[0].hours[0].project = event.project;
-      myhours[cday].users[0].hours[0].amount = Number(event.amount);
-      myhours[cday].users[0].hours[0].isextra = event.isextra;
-      myhours[cday].users[0].hours[0].note = event.note;
-      myhours[cday].users[0].hours[0].task = Number(event.task);
+      saveEvent(myhours[cday].users[0].hours[0], event);
     }
     start = new Date(start);
     start.setDate(start.getDate()+1);
@@ -126,11 +152,21 @@ function addCalEvent(start, end, event, allDay) {
   calendar.fullCalendar('unselect');
 }
 
+function saveEvent(arrayEl, event) {
+  arrayEl.project = event.project;
+  arrayEl.amount = Number(event.amount);
+  arrayEl.isextra = event.isextra;
+  arrayEl.note = event.note;
+  arrayEl.task = Number(event.task);
+}
+
 function nothing(){
 
 }
 
 function loadCalendarHours(list) {
+  if(!list)
+    list = myhours;
   var i, j, singleentry;
   $("#calendar").fullCalendar('removeEvents');
   for(i = 0; i < list.length; i++) {
@@ -138,7 +174,7 @@ function loadCalendarHours(list) {
       for(j = 0; j < list[i].users[0].hours.length; j++) {
       //add event
         var event = {};
-	singleentry = list[i].users[0].hours[0];
+        singleentry = list[i].users[0].hours[j];
         event.id = list[i].date + "+" + singleentry.project + "+" + singleentry.isextra;
         event.title = project.getname(singleentry.project) + " " + singleentry.amount + "h";
         event.start = list[i].date;

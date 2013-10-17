@@ -61,7 +61,7 @@ var user = {
 }
 
 var project = {
-  _prj: new Array(),
+  prj: new Array(),
   load : function (filter, callback, target) {
     $.ajax({
       type: "POST",
@@ -69,7 +69,7 @@ var project = {
       data: JSON.stringify(filter),
       success: function(data) {
         if(!data.error) {
-          _prj = data.records;
+          project.prj = data.records;
           callback(data, target);
         } else {
           showmessage("error", data.error);
@@ -142,9 +142,11 @@ var project = {
   },
   getname : function(id) {
     var i;
-    for(i = 0; i < _prj.length; i++) {
-      if(_prj[i]._id == id)
-        return _prj[i].name;
+    if(!this.prj)
+      return "error";
+    for(i = 0; i < this.prj.length; i++) {
+      if(this.prj[i]._id == id)
+        return this.prj[i].name;
     }
     return "error";
   }
@@ -327,28 +329,28 @@ var day  = {
       dataType: "json",
     });
   },
-  remove : function (id, callback) {
-/*    if (id == 0)
-      return;
+  remove : function (event, userid, callback) {
     var filter = [{}];
-    filter[0]._id = id;
+    filter[0].date = event.date;
+    filter[0]["users.user_id"] = userid;
+    filter[0]["users.hours.project"] = event.project;
+    filter[0]["users.hours.isextra"] = event.isextra;
     $.ajax({
       type: "POST",
-      url: "/remove/customer",
+      url: "/remove/day",
       data: JSON.stringify(filter),
       success: function(data) {
         if(!data.error) {
-          callback(data);
+          callback();
         } else {
           showmessage("error", data.error);
         }
       },
       contentType: 'application/json; charset=utf-8',
       dataType: "json",
-    });*/
+    });
   },
   update : function (isupdate, obj, callback) {
-
     $.ajax({
       type: "POST",
       url: '/data/push_days',
@@ -467,3 +469,6 @@ function simpleDate(date) {
   return date.getFullYear() + "-" + month + "-" + day;
 }
 
+String.prototype.bool = function() {
+    return (/^true$/i).test(this);
+};
