@@ -11,7 +11,9 @@ except ImportError as e:
     from bson import ObjectId
 
 def recursive_merge(container, container_override):
-    """merges container_override into container and return merged result"""
+    """merges container_override into container and return merged result.
+    If keep is set, only items already present in container are modified."""
+    
     key = None
     try:
         if not isinstance(container, (types.DictType, types.ListType)):
@@ -25,6 +27,7 @@ def recursive_merge(container, container_override):
             else:
                 # append to list
                 container.append(container_override)
+                    
         elif isinstance(container, types.DictType):
             # dicts must be merged
             if isinstance(container_override, types.DictType):

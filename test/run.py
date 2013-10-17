@@ -164,7 +164,7 @@ def main(admin_credentials):
 
     # TEST PERMISSIONS LIMITATIONS
     # GET admin password
-    _assert('/get/user', [ { 'username' : 'ts_admin' }, { 'password' : 1} ], { 'error' : "ValidationError: Field 'password' is restricted for current user", 'records' : [ ] })
+    _assert('/get/user', [ { '_id' : '1'*24 }, { 'password' : 1} ], { 'error' : "ValidationError: Field 'password' is restricted for current user", 'records' : [ ] })
     # Add user in group employee for following tests
     employee_json = _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
     # Add project manager for following tests

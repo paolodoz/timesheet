@@ -8,15 +8,19 @@ restrictions:
         username: '%%username%%'
     projection_restrictions:
       employee:
-        user: true
-        password: true
+        - salt
+        - password
       administrator:
-        user: true
-        password: true
+        - salt
+        - password
+      project manager:
+        - salt
+        - password
+        
     action_restrictions:
       employee:
-        remove: true
-        add: true
+        - remove
+        - add
 
   day:
     criteria_restrictions:
@@ -44,6 +48,6 @@ restrictions:
     
     action_restrictions:
       employee:
-        remove: true
-        add: true
+        - remove
+        - add
 

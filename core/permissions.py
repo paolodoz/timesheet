@@ -52,26 +52,21 @@ def check_request_permissions(action, collection, projections = {}):
     
     try:
         # Check if request restrictions are set for the collection.user
-        restrictions = cherrypy.session['_ts_user']['restrictions'][collection]['projection_restrictions'][group]
-            
-        if restrictions == True:
-            raise ValidationError("Collection '%s' is restricted for current user" % (collection))
-        
+        restrictions_projs = cherrypy.session['_ts_user']['restrictions'][collection]['projection_restrictions'][group]
     except KeyError:
         # If not, skip procedure
         pass
     else:
-        # If some of the restrictions are already set in criteria with different values, raise an error 
-        for restr_k, restr_v in restrictions.items():
-            if restr_k in projections and restr_v == True:
-                raise ValidationError("Field '%s' is restricted for current user" % (restr_k))
-        
+        # If some projection is restricted, raise an error 
+        restricted_projs = next((p for p in projections if p in restrictions_projs), None)
+        if restricted_projs:
+            raise ValidationError("Field '%s' is restricted for current user" % (restricted_projs))
         
     try:
         # Check if request restrictions are set for the collection.user
-        restrictions = cherrypy.session['_ts_user']['restrictions'][collection]['action_restrictions'][group]
+        restrictions_acts = cherrypy.session['_ts_user']['restrictions'][collection]['action_restrictions'][group]
 
-        if restrictions == True or restrictions[action] == True:
+        if action in restrictions_acts:
             raise ValidationError("Action '%s' in '%s' is restricted for current user" % (action, collection))
         
     except KeyError:
