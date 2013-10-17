@@ -192,6 +192,8 @@ function loadCalendarHours(list) {
         event.start = list[i].date;
         event.end = list[i].date;
         event.note = singleentry.note;
+        if(singleentry.isextra)
+          event.borderColor = "#f00";
         $("#calendar").fullCalendar('renderEvent', event , false);
       }
     }
