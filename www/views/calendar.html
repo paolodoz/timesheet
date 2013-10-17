@@ -24,6 +24,13 @@ $(document).ready( function() {
           day.remove(event, me._id, loadCalendarHours);
         }
       }
+    },
+    viewRender : function(view,element) {
+      if(myhours.length != 0) {
+        currentVis();
+        filter = { 'date_from' : firstday, 'date_to' : lastday, 'user_id' : me._id };
+        day.load(filter,loadDays);
+      }
     }
   });
   $("#hours-range").slider({
