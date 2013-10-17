@@ -1,6 +1,6 @@
 <link rel='stylesheet' type='text/css' href='/static/css/fullcalendar.css' />
 <script type="text/javascript">
-var me, myprj, datestart, dateend, calendar, firstday, lastday, myhours = new Array();
+var me, myprj, datestart, dateend, cevent, calendar, firstday, lastday, myhours = new Array();
 var tasks = ["","Office","Away"];
 $(document).ready( function() {
   calendar = $('#calendar').fullCalendar({
@@ -13,17 +13,8 @@ $(document).ready( function() {
       $('#edithours').modal('show');
     },
     eventClick: function(calEvent, jsEvent, view) {
-      var cday = calEvent.start.getDate() - 1;
-      var i, event = {};
-      for(i = 0; i < myhours[cday].users[0].hours.length; i++) {
-        event.project = calEvent.id.substr(11,24);
-        event.isextra = calEvent.id.substr(36).bool();
-        event.date = simpleDate(calEvent.start);
-        if(eventCompare(myhours[cday].users[0].hours[i],event)) {
-          myhours[cday].users[0].hours.splice(i,1);
-          day.remove(event, me._id, loadCalendarHours);
-        }
-      }
+      cevent = calEvent;
+      $('#removehours').modal('show');
     },
     viewRender : function(view,element) {
       if(myhours.length != 0) {
@@ -52,6 +43,20 @@ $(document).ready( function() {
     obj.note = $("#hoursnotes").val();
     addCalEvent(datestart, dateend, obj, true);
     $('#edithours').modal('hide');
+  });
+  $("#btnremove").click(function () {
+    var cday = cevent.start.getDate() - 1;
+    var i, event = {};
+    for(i = 0; i < myhours[cday].users[0].hours.length; i++) {
+      event.project = cevent.id.substr(11,24);
+      event.isextra = cevent.id.substr(36).bool();
+      event.date = simpleDate(cevent.start);
+      if(eventCompare(myhours[cday].users[0].hours[i],event)) {
+        myhours[cday].users[0].hours.splice(i,1);
+        day.remove(event, me._id, loadCalendarHours);
+      }
+    }
+    $('#removehours').modal('hide');
   });
   $("#hoursamount").val( $("#hours-range").slider("value"));
   currentVis();
@@ -195,6 +200,24 @@ function loadCalendarHours(list) {
 </script>
 
 <div id="calendar"></div>
+
+<div class="modal fade" id="removehours" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Remove hours</h4>
+        </div>
+        <div class="modal-body">
+          Do you really want to remove these hours from your timesheet?
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="btnremove">Remove</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
 
 <div class="modal fade" id="edithours">
   <div class="modal-dialog">
