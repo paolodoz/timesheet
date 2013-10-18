@@ -1,6 +1,6 @@
 import cgi, yaml, random, string, hashlib, types
 from core.config import schema, core_folder
-from validictory import ValidationError, validate
+from jsonschema import validate
 
 # Dirty hack to avoid the bug 
 # http://stackoverflow.com/questions/10401499/mongokit-importerror-no-module-named-objectid-error
@@ -9,6 +9,9 @@ try:
     from pymongo.objectid import ObjectId
 except ImportError as e:
     from bson import ObjectId
+
+class TSValidationError(Exception):
+    pass
 
 def recursive_merge(container, container_override):
     """merges container_override into container and return merged result.
@@ -124,7 +127,7 @@ def update_password_salt_user_list(collection, list_in):
             if 'password' in json_in and json_in['password']:
                 update_password_salt_user_json(json_in)
             else:
-                raise ValidationError('Expected nonempty password')
+                raise TSValidationError('Expected nonempty password')
         
     return list_in
         

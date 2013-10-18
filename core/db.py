@@ -3,12 +3,11 @@ try:
 except ImportError as e:
     from pymongo import Connection
 
-from validation import recursive_merge, update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
+from validation import TSValidationError, recursive_merge, update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
 from permissions import restrict_criteria, check_request_permissions
 from bson.objectid import ObjectId
 from config import collections, conf_mongodb, conf_auth, conf_auth_db
 import string, hashlib, random
-from validictory import ValidationError
 
 connection = Connection(conf_mongodb['hostname'], conf_mongodb['port'])
 db = connection[conf_mongodb['db']]
@@ -20,7 +19,7 @@ def get(collection, criteria_projection):
     if (isinstance(criteria_projection, list) and len(criteria_projection) == 2 and criteria_projection[1]):
         criteria, projection = criteria_projection
     else:
-        raise ValidationError('Expected list with criteria and nonempty projection')
+        raise TSValidationError('Expected list with criteria and nonempty projection')
         
     check_request_permissions('get', collection, projection)
     restricted_criteria = restrict_criteria('get', collection, criteria)
@@ -44,7 +43,7 @@ def add(collection, documents_list):
     Called by POST /add/<collection>/"""
     
     if not isinstance(documents_list, list):
-        raise ValidationError("List expected, not '%s'" % documents_list.__class__.__name__)
+        raise TSValidationError("List expected, not '%s'" % documents_list.__class__.__name__)
     
     check_request_permissions('add', collection)
     validate_json_list(collection, documents_list)

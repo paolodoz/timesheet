@@ -1,6 +1,5 @@
 import yaml, cherrypy
-from validictory import ValidationError
-from validation import recursive_replace
+from validation import TSValidationError, recursive_replace
 from config import restrictions_schema
 
 def get_formatted_restrictions():
@@ -37,7 +36,7 @@ def restrict_criteria(action, collection, criteria):
     # If some of the restrictions are already set in criteria with different values, raise an error 
     for restr_k, restr_v in restrictions.items():
         if restr_k in criteria and criteria[restr_k] != restr_v:
-            raise ValidationError("Field '%s' is restricted for current user" % (restr_k))
+            raise TSValidationError("Field '%s' is restricted for current user" % (restr_k))
         
     criteria.update(restrictions)
         
@@ -60,14 +59,14 @@ def check_request_permissions(action, collection, projections = {}):
         # If some projection is restricted, raise an error 
         restricted_projs = next((p for p in projections if p in restrictions_projs), None)
         if restricted_projs:
-            raise ValidationError("Field '%s' is restricted for current user" % (restricted_projs))
+            raise TSValidationError("Field '%s' is restricted for current user" % (restricted_projs))
         
     try:
         # Check if request restrictions are set for the collection.user
         restrictions_acts = cherrypy.session['_ts_user']['restrictions'][collection]['action_restrictions'][group]
 
         if action in restrictions_acts:
-            raise ValidationError("Action '%s' in '%s' is restricted for current user" % (action, collection))
+            raise TSValidationError("Action '%s' in '%s' is restricted for current user" % (action, collection))
         
     except KeyError:
         # If not, skip procedure

@@ -1,7 +1,7 @@
 from validation import update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
 from permissions import restrict_criteria, check_request_permissions
 from bson.objectid import ObjectId
-from validictory import ValidationError
+from core.validation import TSValidationError
 from core.db import db
 
 def push_days(documents_list):
@@ -30,7 +30,7 @@ def push_days(documents_list):
                          
             # Validate one user per day insertion
             if len(sanified_document['users']) > 1:
-                raise ValidationError("Push only one user per day")
+                raise TSValidationError("Push only one user per day")
             
             user_id = sanified_document['users'][0]['user_id']
             
@@ -53,9 +53,9 @@ def search_days(criteria):
     Returns { 'error' : string, 'records' : [ { }, { }, .. ]  } 
     """
     
-    # TODO: Validate with validictory. Test also values.
+    # TODO: Validate and test also values.
     if not (sorted(criteria.keys()) == sorted(('date_from', 'date_to', 'user_id'))):
-        raise ValidationError("Expected list with 'date_from', 'date_to', 'user_id' keys")
+        raise TSValidationError("Expected list with 'date_from', 'date_to', 'user_id' keys")
     
     check_request_permissions('get', 'day')
     sanified_criteria = sanitize_objectify_json(criteria)

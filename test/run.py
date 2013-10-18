@@ -41,7 +41,7 @@ def _assert(uri, json_in, json_expected):
         for rec in records:
             if '_id' in rec:
                 rec['_id'] = ''
-    elif 'ids' in json_returned_noid:
+    elif 'ids' in json_returned_noid and json_returned_noid['ids']:
         json_returned_noid['ids'] = ['']*len(json_returned_noid['ids']) 
     else:
         records = [ json_returned_noid ]
@@ -66,15 +66,15 @@ def main(admin_credentials):
     
     ## TEST BAD REQUESTS
     # Add directly json without list
-    _assert('/add/wrong', { 'single': 'dict' }, {'error' : "ValidationError: List expected, not 'dict'", 'ids' : [] })
+    _assert('/add/wrong', { 'single': 'dict' }, {'error' : "TSValidationError: List expected, not 'dict'", 'ids' : [] })
     # Add unexistant collection
-    _assert('/add/wrong', [ { 'wrong': 'param' } ], {'error' : "KeyError: 'wrong'", 'ids' : [] })
+    _assert('/add/wrong', [ { 'wrong': 'param' } ], {'error' : "KeyError internal exception", 'ids' : [] })
     # Add user with unsupported param 
-    _assert('/add/user', [ { 'wrong': 'param' } ], {'error' : 'ValidationError: Required field \'username\' is missing', 'ids' : []  })
+    _assert('/add/user', [ { 'wrong': 'param' } ], {'error' : 'TSValidationError: Expected nonempty password', 'ids' : []  })
     # Get without a valid projection
-    _assert('/get/user', [ { }, { } ], { 'error': 'ValidationError: Expected list with criteria and nonempty projection', 'records' : [] })
+    _assert('/get/user', [ { }, { } ], { 'error': 'TSValidationError: Expected list with criteria and nonempty projection', 'records' : [] })
     # Get badly formatted
-    _assert('/get/user', [ { } ], { 'error': 'ValidationError: Expected list with criteria and nonempty projection', 'records' : [] })
+    _assert('/get/user', [ { } ], { 'error': 'TSValidationError: Expected list with criteria and nonempty projection', 'records' : [] })
        
     
     ## API CUSTOMER
@@ -131,7 +131,7 @@ def main(admin_credentials):
     # Add one user with password, should login
     _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
     # Add user without password, should raise error
-    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT', 'salary' : []  } ], { 'error' : 'ValidationError: Expected nonempty password', 'ids' : [ ] })
+    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT', 'salary' : []  } ], { 'error' : 'TSValidationError: Expected nonempty password', 'ids' : [ ] })
     # Check if can't login with NEW_USER_WITH_NO_PWD
     _login({'username' : 'NEW_USER_WITH_NO_PWD', 'password' : '' })
     _assert_page_contains('Timesheet login', True)
@@ -159,12 +159,12 @@ def main(admin_credentials):
     _assert('/remove/customer', [ { '_id' : json_returned['ids'][0]} ], { 'error' : None })
     
     # TEST SCHEMA OPTIONS CONSTRAINTS
-    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'WRONG_GROUP', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : "ValidationError: Value u'WRONG_GROUP' for field 'group' is not in the enumeration: %s" % (str(users_groups)), 'ids' : [ ] })
+    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'WRONG_GROUP', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : "ValidationError: Error in 'WRONG_GROUP' validation", 'ids' : [ ] })
 
 
     # TEST PERMISSIONS LIMITATIONS
     # GET admin password
-    _assert('/get/user', [ { '_id' : '1'*24 }, { 'password' : 1} ], { 'error' : "ValidationError: Field 'password' is restricted for current user", 'records' : [ ] })
+    _assert('/get/user', [ { '_id' : '1'*24 }, { 'password' : 1} ], { 'error' : "TSValidationError: Field 'password' is restricted for current user", 'records' : [ ] })
     # Add user in group employee for following tests
     employee_json = _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
     # Add project manager for following tests
@@ -182,21 +182,21 @@ def main(admin_credentials):
     _assert_page_contains('Timesheet login', False)
 
     # GET his own password
-    _assert('/get/user', [ { 'username' : 'PERM_TEST' }, { 'password' : 1} ], { 'error' : "ValidationError: Field 'password' is restricted for current user", 'records' : [ ] })
+    _assert('/get/user', [ { 'username' : 'PERM_TEST' }, { 'password' : 1} ], { 'error' : "TSValidationError: Field 'password' is restricted for current user", 'records' : [ ] })
     # GET other employee surname
-    _assert('/get/user', [ { 'username' : admin_credentials['username'] }, { 'surname' : 1 } ], { 'error' : "ValidationError: Field 'username' is restricted for current user", 'records' : [ ] })
+    _assert('/get/user', [ { 'username' : admin_credentials['username'] }, { 'surname' : 1 } ], { 'error' : "TSValidationError: Field 'username' is restricted for current user", 'records' : [ ] })
     # REMOVE himself
-    _assert('/remove/user', [ { 'username' : 'PERM_TEST' } ], { 'error' : "ValidationError: Action 'remove' in 'user' is restricted for current user" })
+    _assert('/remove/user', [ { 'username' : 'PERM_TEST' } ], { 'error' : "TSValidationError: Action 'remove' in 'user' is restricted for current user" })
     # Add new employee 
-    _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST2', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ], { 'error' : "ValidationError: Action 'add' in 'user' is restricted for current user", 'ids' : [ ] })
+    _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST2', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ], { 'error' : "TSValidationError: Action 'add' in 'user' is restricted for current user", 'ids' : [ ] })
     # Get projects of other users
     _assert('/get/project', [ { 'name' : 'NAME' }, { 'customer' : 1 } ], { 'error' : None, 'records' : [ ] })
     # Get explicitely admin projects 
     _assert('/get/project', [ { 'responsible' : { '_id' : '1'*24 } }, { 'customer' : 1 } ], { 'error' : None, 'records' : [ ] })
     # Wrongly delete added project
-    _assert('/remove/project', [ { 'employees._id' : '1'*24 } ], { 'error' : "ValidationError: Action 'remove' in 'project' is restricted for current user" })
+    _assert('/remove/project', [ { 'employees._id' : '1'*24 } ], { 'error' : "TSValidationError: Action 'remove' in 'project' is restricted for current user" })
     # Wrongly get day from another users, returns error
-    _assert('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2000-01-01', 'user_id' : '111111111111111111111111' }, { 'error': 'ValidationError: Field \'users.user_id\' is restricted for current user'})
+    _assert('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2000-01-01', 'user_id' : '111111111111111111111111' }, { 'error': 'TSValidationError: Field \'users.user_id\' is restricted for current user'})
     
     # Relogin as manager
     _login({'username' : 'MANAGER', 'password' : 'mypassword' })
@@ -233,7 +233,7 @@ def main(admin_credentials):
                                              } 
                                             ]
                                   }
-                                ], { 'error' : 'ValidationError: Push only one user per day' })
+                                ], { 'error' : 'TSValidationError: Push only one user per day' })
     # Insert the day 17 for user  '111111111111111111111111'                                      
     _assert('/data/push_days', [ {'date': '2000-10-17', 
                                   'users': [ 
