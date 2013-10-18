@@ -51,7 +51,9 @@
       Note spese
     </a>
   </li>
-
+<li>
+  <a href="/auth/logout">Logout</a>
+</li>
 ## TODO: add project managers menu view
 % if group == 'administrator':
 	
