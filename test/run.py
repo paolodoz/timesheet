@@ -64,19 +64,6 @@ def main(admin_credentials):
     ## GET CURRENT INFORMATIONS
     _assert('/me', None, { 'username' : admin_credentials['username'], '_id' : '1'*24 })
     
-    ## TEST BAD REQUESTS
-    # Add directly json without list
-    _assert('/add/wrong', { 'single': 'dict' }, {'error' : "TSValidationError: List expected, not 'dict'", 'ids' : [] })
-    # Add unexistant collection
-    _assert('/add/wrong', [ { 'wrong': 'param' } ], {'error' : "KeyError internal exception", 'ids' : [] })
-    # Add user with unsupported param 
-    _assert('/add/user', [ { 'wrong': 'param' } ], {'error' : 'TSValidationError: Expected nonempty password', 'ids' : []  })
-    # Get without a valid projection
-    _assert('/get/user', [ { }, { } ], { 'error': 'TSValidationError: Expected list with criteria and nonempty projection', 'records' : [] })
-    # Get badly formatted
-    _assert('/get/user', [ { } ], { 'error': 'TSValidationError: Expected list with criteria and nonempty projection', 'records' : [] })
-       
-    
     ## API CUSTOMER
     # Remove already unexistant customer
     _assert('/remove/customer', [ { 'name' : 'CUSTOMERTEST' } ], { 'error' : None  })
@@ -159,7 +146,7 @@ def main(admin_credentials):
     _assert('/remove/customer', [ { '_id' : json_returned['ids'][0]} ], { 'error' : None })
     
     # TEST SCHEMA OPTIONS CONSTRAINTS
-    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'WRONG_GROUP', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : "ValidationError: Error in 'WRONG_GROUP' validation", 'ids' : [ ] })
+    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'WRONG_GROUP', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : "ValidationError: Error 'WRONG_GROUP' is not valid", 'ids' : [ ] })
 
 
     # TEST PERMISSIONS LIMITATIONS
@@ -182,29 +169,31 @@ def main(admin_credentials):
     _assert_page_contains('Timesheet login', False)
 
     # GET his own password
-    _assert('/get/user', [ { 'username' : 'PERM_TEST' }, { 'password' : 1} ], { 'error' : "TSValidationError: Field 'password' is restricted for current user", 'records' : [ ] })
+    _assert('/get/user', [ { '_id' : employee_json['ids'][0] }, { 'password' : 1} ], { 'error' : "TSValidationError: Field 'password' is restricted for current user", 'records' : [ ] })
     # GET other employee surname
-    _assert('/get/user', [ { 'username' : admin_credentials['username'] }, { 'surname' : 1 } ], { 'error' : "TSValidationError: Field 'username' is restricted for current user", 'records' : [ ] })
+    _assert('/get/user', [ { 'username' : admin_credentials['username'] }, { 'surname' : 1 } ], { 'error' : "ValidationError: Error '{u'username': u'usr'}' is not valid", 'records' : [ ] })
     # REMOVE himself
     _assert('/remove/user', [ { 'username' : 'PERM_TEST' } ], { 'error' : "TSValidationError: Action 'remove' in 'user' is restricted for current user" })
     # Add new employee 
     _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST2', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ], { 'error' : "TSValidationError: Action 'add' in 'user' is restricted for current user", 'ids' : [ ] })
     # Get projects of other users
-    _assert('/get/project', [ { 'name' : 'NAME' }, { 'customer' : 1 } ], { 'error' : None, 'records' : [ ] })
+    _assert('/get/project', [ { 'name' : 'NAME' }, { 'customer' : 1 } ], { 'error' : "ValidationError: Error '{u'name': u'NAME'}' is not valid", 'records' : [ ] })
     # Get explicitely admin projects 
-    _assert('/get/project', [ { 'responsible' : { '_id' : '1'*24 } }, { 'customer' : 1 } ], { 'error' : None, 'records' : [ ] })
+    _assert('/get/project', [ { 'responsible' : { '_id' : '1'*24 } }, { 'customer' : 1 } ], { 'error' : "ValidationError: Error '{u'responsible': {u'_id': u'111111111111111111111111'}}' is not valid", 'records' : [ ] })
     # Wrongly delete added project
     _assert('/remove/project', [ { 'employees._id' : '1'*24 } ], { 'error' : "TSValidationError: Action 'remove' in 'project' is restricted for current user" })
     # Wrongly get day from another users, returns error
-    _assert('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2000-01-01', 'user_id' : '111111111111111111111111' }, { 'error': 'TSValidationError: Field \'users.user_id\' is restricted for current user'})
+    _assert('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2000-01-01', 'user_id' : '111111111111111111111111' }, { 'error': "ValidationError: Error '111111111111111111111111' is not valid"})
     
     # Relogin as manager
     _login({'username' : 'MANAGER', 'password' : 'mypassword' })
     _assert_page_contains('Timesheet login', False)   
     # Get all the projects of MANAGER
-    _assert('/get/project', [ {  }, { 'customer' : 1 } ], {u'records': [{u'customer': u'CUSTOMER', u'_id': ''}], u'error': None})
+    _assert('/get/project', [ {  }, { 'customer' : 1 } ], {u'records': [], u'error': u"ValidationError: Error '{}' is not valid"})
     # Get project that MANAGER does not manage
-    _assert('/get/project', [ { 'name' : 'ADMINPROJECT' }, { 'customer' : 1 } ], {u'records': [ ], u'error': None})
+    _assert('/get/project', [ { 'responsible._id' : manager_json['ids'][0], 'name' : 'ADMINPROJECT' }, { 'customer' : 1 } ], {u'records': [], u'error': None })
+    # Get project that MANAGER manage
+    _assert('/get/project', [ { 'responsible._id' : manager_json['ids'][0] }, { 'customer' : 1 } ], { u'records': [{u'customer': u'CUSTOMER', u'_id': ''}], u'error': None})
 
 
     # Check if normal user can see user management in admin menu
@@ -219,61 +208,6 @@ def main(admin_credentials):
     
     
     ## API DAYS
-    # Insert a day with no user
-    _assert('/data/push_days', [ {'date': '2000-01-01' }
-                                ], { 'error' : None })   
-    # Insert wrongly a day with multiple users
-    _assert('/data/push_days', [ {'date': '2000-01-01', 
-                                  'users': [ 
-                                            { 'user_id' : '111111111111111111111111', 
-                                             'hours': []
-                                             },
-                                             { 'user_id' : '0', 
-                                             'hours': []
-                                             } 
-                                            ]
-                                  }
-                                ], { 'error' : 'TSValidationError: Push only one user per day' })
-    # Insert the day 17 for user  '111111111111111111111111'                                      
-    _assert('/data/push_days', [ {'date': '2000-10-17', 
-                                  'users': [ 
-                                            { 'user_id' : '111111111111111111111111', 
-                                             'hours': [
-                                                       {u'note': u'FIRST 4 HOURS', u'task': u'', u'isextra': False, u'project': u'524efeef2c066a1bc6000001', u'amount': u'4'}, 
-                                                       {u'note': u'SECOND 4 HOURS', u'task': u'', u'isextra': False, u'project': u'524efeef2c066a1bc6000001', u'amount': u'4'}
-                                                       ]
-                                             }
-                                            ]
-                                  }
-                                ], { 'error' : None })   
-    # Push in the day 17 also user  '0'                                      
-    _assert('/data/push_days', [ {'date': '2000-10-17', 
-                                  'users': [ 
-                                            { 'user_id' : '0', 
-                                             'hours': []
-                                             }
-                                            ]
-                                  }
-                                ], { 'error' : None })                                            
-    # Push also the year after the user  '0'                                      
-    _assert('/data/push_days', [ {'date': '2001-02-02', 
-                                  'users': [ 
-                                            { 'user_id' : '0', 
-                                             'hours': []
-                                             }
-                                            ]
-                                  }
-                                ], { 'error' : None })   
-    # Get the day 2000-10-17 for user 0                                        
-    _assert('/data/search_days', { 'date_from' : '2000-10-17', 'date_to' : '2000-10-17', 'user_id' : '0' }, {u'records': [{u'date': u'2000-10-17', u'_id': '', u'users': [{u'hours': [], u'user_id': u'0'}]}], u'error': None})
-    # Get the years 2000-01-01 2003-01-01 for user 0
-    _assert('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2003-01-01', 'user_id' : '0' }, {u'records': [{u'date': u'2000-10-17', u'_id': '', u'users': [{u'hours': [], u'user_id': u'0'}]}, {u'date': u'2001-02-02', u'_id': '', u'users': [{u'hours': [], u'user_id': u'0'}]}], u'error': None} )
-    # Get unexistant user 2
-    _assert('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2003-01-01', 'user_id' : '2' }, {u'records': [ ], u'error': None} )
-    # Get empty span 
-    _assert('/data/search_days', { 'date_from' : '2010-01-01', 'date_to' : '2011-01-01', 'user_id' : '0' }, {u'records': [ ], u'error': None} )
-    # Delete all inserted days
-    _assert('/remove/day', [ { "date" :  "2000-10-17" },  { "date" :  "2000-01-01" },  { "date" :  "2001-02-02" } ] , { 'error' : None })
     
     
 if __name__ == "__main__":

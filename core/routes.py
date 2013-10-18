@@ -71,7 +71,7 @@ class Routes:
             ids = db.add(collection, json_in)
         except ValidationError as e:
             print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s: Error in \'%s\' validation' % (type(e).__name__, str(e.instance)), 'ids' : []}
+            return {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)), 'ids' : []}
         except TSValidationError as e:
             print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
             return {'error' : '%s: %s' % (type(e).__name__, str(e)), 'ids' : []}
@@ -104,7 +104,7 @@ class Routes:
             records = db.get(collection, json_in)
         except ValidationError as e:
             print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s: Error in \'%s\' validation' % (type(e).__name__, str(e.instance)), 'records' : []}
+            return {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)), 'records' : []}
         except TSValidationError as e:
             print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
             return {'error' : '%s: %s' % (type(e).__name__, str(e)), 'records' : []}
@@ -134,7 +134,7 @@ class Routes:
             ids = db.remove(collection, json_in)
         except ValidationError as e:
             print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s: Error in \'%s\' validation' % (type(e).__name__, str(e.instance)), 'ids' : []}
+            return {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)), 'ids' : []}
         except TSValidationError as e:
             print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
             return {'error' : '%s: %s' % (type(e).__name__, str(e)) }
@@ -165,7 +165,7 @@ class Routes:
             db.update(collection, json_in)
         except ValidationError as e:
             print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s: Error in \'%s\' validation' % (type(e).__name__, str(e.instance)), 'ids' : []}
+            return {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)), 'ids' : []}
         except TSValidationError as e:
             print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
             return {'error' : '%s: %s' % (type(e).__name__, str(e)) }
@@ -196,7 +196,7 @@ class Routes:
             returned_dict = getattr(datamine, action)(json_in)
         except ValidationError as e:
             print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s: Error in \'%s\' validation' % (type(e).__name__, str(e.instance)) }
+            return {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)) }
         except TSValidationError as e:
             print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
             return {'error' : '%s: %s' % (type(e).__name__, str(e)) }

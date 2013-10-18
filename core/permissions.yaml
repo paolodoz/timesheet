@@ -1,11 +1,15 @@
-# TODO: fix the ambiguity of project manager that can't select only project.responsible or only project.employees._id 
 
-restrictions:
-  user:
-    criteria_restrictions:
+user:   
+    criteria_restrictions_schema:
       employee:
-        _id: '%%_id%%'
-        username: '%%username%%'
+        type: object
+        properties:
+          _id:
+            type: string
+            pattern: '^%%_id%%$'
+        required: 
+          - _id
+        
     projection_restrictions:
       employee:
         - salt
@@ -22,29 +26,51 @@ restrictions:
         - remove
         - add
 
-  day:
+day:
+    criteria_restrictions_schema:
+      employee:
+        type: object
+        properties:
+          users.user_id: 
+            type: string
+            pattern: '^%%_id%%$'
+        required: 
+          - users.user_id                
+    
     criteria_restrictions:
       employee:
-        users.user_id: '%%_id%%'
+        users.user_id: '^%%_id%%$'
       project manager:
          $or:
-           - users.user_id: '%%_id%%'
+           - users.user_id: '^%%_id%%$'
            - hours.project:
                  $in: '%%managed_projects%%'
 
-  project:
-    criteria_restrictions:
+project:
+    criteria_restrictions_schema:
       employee:
-        employees._id:
-            $elemMatch:
-              _id: '%%_id%%'
+        type: object
+        properties:
+          employees._id: 
+            type: string
+            pattern: '^%%_id%%$'
+        required:
+          - employees._id
               
       project manager:
-        $or:
-          - responsible._id: '%%_id%%'
-          - employees._id:
-              $elemMatch:
-                _id: '%%_id%%'  
+        oneOf:
+          - type: object
+            required: [ employees._id ]
+            properties:
+              employees._id:
+                type: string
+                pattern: '^%%_id%%$'
+          - type: object
+            required: [ responsible._id ]
+            properties:
+              responsible._id:
+                type: string
+                pattern: '^%%_id%%$'
     
     action_restrictions:
       employee:

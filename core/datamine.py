@@ -1,5 +1,5 @@
 from validation import update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
-from permissions import restrict_criteria, check_request_permissions
+from permissions import check_action_permissions, check_criteria_permissions, check_projection_permissions
 from bson.objectid import ObjectId
 from core.validation import TSValidationError
 from core.db import db
@@ -15,7 +15,7 @@ def push_days(documents_list):
     Returns { 'error' : string }
     """
     
-    check_request_permissions('update', 'day')
+    check_action_permissions('add', 'day')
     validate_json_list('day', documents_list)
     
     sanified_documents_list = sanitize_objectify_json(documents_list)
@@ -57,19 +57,17 @@ def search_days(criteria):
     if not (sorted(criteria.keys()) == sorted(('date_from', 'date_to', 'user_id'))):
         raise TSValidationError("Expected list with 'date_from', 'date_to', 'user_id' keys")
     
-    check_request_permissions('get', 'day')
+    check_action_permissions('get', 'day')
     sanified_criteria = sanitize_objectify_json(criteria)
 
     user_id = sanified_criteria['user_id']
 
     # Prepare the criteria with date range && user_id
     prepared_criteria = { "date" :  {"$gte": sanified_criteria['date_from'], "$lte": sanified_criteria['date_to']}, "users.user_id" : user_id }
-    
-    # Restrict already prepared criteria
-    restricted_prepared_criteria = restrict_criteria('get', 'day', prepared_criteria)
+    check_criteria_permissions('get', 'day', prepared_criteria)
     
     # Prepare the projection to return only date and users.date where user id is correct
     projection = { 'date' : 1, 'users' : { '$elemMatch' : { 'user_id' : user_id }}}
 
-    return { 'records' : stringify_objectid_cursor(db.day.find(restricted_prepared_criteria, projection)) }
+    return { 'records' : stringify_objectid_cursor(db.day.find(prepared_criteria, projection)) }
     
