@@ -329,27 +329,6 @@ var day  = {
       dataType: "json",
     });
   },
-  remove : function (event, userid, callback) {
-    var filter = [{}];
-    filter[0].date = event.date;
-    filter[0]["users.user_id"] = userid;
-    filter[0]["users.hours.project"] = event.project;
-    filter[0]["users.hours.isextra"] = event.isextra;
-    $.ajax({
-      type: "POST",
-      url: "/remove/day",
-      data: JSON.stringify(filter),
-      success: function(data) {
-        if(!data.error) {
-          callback();
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
   update : function (isupdate, obj, callback) {
     $.ajax({
       type: "POST",

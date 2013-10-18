@@ -53,7 +53,10 @@ $(document).ready( function() {
       event.date = simpleDate(cevent.start);
       if(eventCompare(myhours[cday].users[0].hours[i],event)) {
         myhours[cday].users[0].hours.splice(i,1);
-        day.remove(event, me._id, loadCalendarHours);
+        var singleday = [{}];
+        singleday[0] = myhours[cday];
+        day.update(true, singleday, loadCalendarHours);
+        break;
       }
     }
     $('#removehours').modal('hide');
@@ -177,7 +180,7 @@ function nothing(){
 }
 
 function loadCalendarHours(list) {
-  if(!list)
+  if(!list.error)
     list = myhours;
   var i, j, singleentry;
   $("#calendar").fullCalendar('removeEvents');
