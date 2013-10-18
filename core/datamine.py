@@ -64,7 +64,7 @@ def search_days(criteria):
 
     # Prepare the criteria with date range && user_id
     prepared_criteria = { "date" :  {"$gte": sanified_criteria['date_from'], "$lte": sanified_criteria['date_to']}, "users.user_id" : user_id }
-    check_criteria_permissions('get', 'day', prepared_criteria)
+    check_criteria_permissions('day', prepared_criteria)
     
     # Prepare the projection to return only date and users.date where user id is correct
     projection = { 'date' : 1, 'users' : { '$elemMatch' : { 'user_id' : user_id }}}

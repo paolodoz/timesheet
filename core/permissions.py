@@ -42,7 +42,7 @@ def check_action_permissions(action, collection):
     if action in restrictions_acts:
         raise TSValidationError("Action '%s' in '%s' is restricted for current user" % (action, collection))
     
-def check_criteria_permissions(action, collection, criteria):
+def check_criteria_permissions(collection, criteria):
 
     try:
         # Check if request restrictions are set for the collection.user
@@ -51,11 +51,9 @@ def check_criteria_permissions(action, collection, criteria):
         # If not, skip procedure
         return
     
-    print 'DA VALIDARE', criteria, 'con',  restrictions_criteria
     validate(criteria, restrictions_criteria)
-    print 'VALIDATO!'
     
-def check_projection_permissions(action, collection, projections):    
+def check_projection_permissions(collection, projections):    
     """Check if group user can access to the resource"""
     
     try:

@@ -23,8 +23,8 @@ def get(collection, criteria_projection):
       
     # Check permissions  
     check_action_permissions('get', collection)
-    check_criteria_permissions('get', collection, criteria)
-    check_projection_permissions('get', collection, projection)
+    check_criteria_permissions(collection, criteria)
+    check_projection_permissions(collection, projection)
     
     # Sanify criteria (to match with sanified documents)
     sanified_criteria = sanitize_objectify_json(criteria)
@@ -41,7 +41,7 @@ def remove(collection, criterias = []):
     # Check permissions before requests  
     check_action_permissions('remove', collection)
     for criteria in criterias:
-        check_criteria_permissions('remove', collection, criteria)
+        check_criteria_permissions(collection, criteria)
 
     # Sanify criteria (to match with sanified documents)
     criterias = sanitize_objectify_json(criterias)
