@@ -104,7 +104,7 @@ class Routes:
             records = db.get(collection, json_in)
         except ValidationError as e:
             print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s: Error in \'%s\' validation' % (type(e).__name__, str(e.instance)), 'ids' : []}
+            return {'error' : '%s: Error in \'%s\' validation' % (type(e).__name__, str(e.instance)), 'records' : []}
         except TSValidationError as e:
             print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
             return {'error' : '%s: %s' % (type(e).__name__, str(e)), 'records' : []}
