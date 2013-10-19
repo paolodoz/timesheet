@@ -3,11 +3,8 @@ from testclasses import TestClassBase, TestCaseAsEmployee, TestCaseAsManager
 
 class DayAPIAsAdmin(TestClassBase):
     
-    def test_day_ok(self):
+    def test_day_ko(self):
         
-        # Insert a day without user
-        self._assert_req('/data/push_days', [ {'date': '2000-01-01' }
-                                    ], { 'error' : None })   
         # Insert wrongly a day with multiple users
         self._assert_req('/data/push_days', [ {'date': '2000-01-01', 
                                       'users': [ 
@@ -21,7 +18,12 @@ class DayAPIAsAdmin(TestClassBase):
                                       }
                                     ], { 'error' : 'TSValidationError: Push only one user per day' })
         
-    def test_day_ko(self):
+    def test_day_ok(self):
+        
+        # Insert a day without user
+        self._assert_req('/data/push_days', [ {'date': '2000-01-01' }
+                                    ], { 'error' : None })   
+        
         # Insert the day 17 for user  '111111111111111111111111'                                      
         self._assert_req('/data/push_days', [ {'date': '2000-10-17', 
                                       'users': [ 
@@ -42,7 +44,8 @@ class DayAPIAsAdmin(TestClassBase):
                                                  }
                                                 ]
                                       }
-                                    ], { 'error' : None })                                            
+                                    ], { 'error' : None })           
+                                         
         # Push also the year after the user  '0'                                      
         self._assert_req('/data/push_days', [ {'date': '2001-02-02', 
                                       'users': [ 
@@ -142,4 +145,6 @@ class DayAPIAsManager(TestCaseAsManager):
                                       }
                                     ], {u'error': None})   
 
-
+        # Delete all inserted days
+        self.execOnTearDown.append(('/remove/day', [ { "date" :  "2000-10-17" },  { "date" :  "2000-01-01" },  { "date" :  "2001-02-02" } ] , { 'error' : None }))
+        

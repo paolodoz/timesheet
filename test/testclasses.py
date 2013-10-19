@@ -21,6 +21,9 @@ def clean_id(json_in):
 class TestClassBase(unittest.TestCase):
 
     def setUp(self):
+        
+        self.execOnTearDown = []
+        
         self.cookies = CookieJar()
         self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cookies))
         self._assert_unlogged()
@@ -46,6 +49,17 @@ class TestClassBase(unittest.TestCase):
         self.assertEqual(clean_id(self._request(uri, json_in)), json_expected)
         
         
+    def tearDown(self):
+        
+        self._login(admin_credentials)
+        self._assert_logged(admin_credentials)
+        
+        for command in self.execOnTearDown:
+            uri, json_in, json_expected = command
+            
+            self.assertEqual(clean_id(self._request(uri, json_in)), json_expected)
+        
+        
 class TestCaseAsEmployee(TestClassBase):
     def setUp(self):
         TestClassBase.setUp(self)
@@ -57,22 +71,13 @@ class TestCaseAsEmployee(TestClassBase):
         self.assertEqual(clean_id(employee_json), { 'error' : None, 'ids' : [ '' ] })
         
         self.employee_id = employee_json['ids'][0]
+        self.execOnTearDown.append(('/remove/user', [ { '_id' : self.employee_id } ], { 'error' : None }))
+        
         
         employee_credentials = { 'username' : 'USERNAME', 'password' : 'mypassword' }
         self._login(employee_credentials)
         self._assert_logged(employee_credentials)
-                
-    def tearDown(self):
 
-        self._login(admin_credentials)
-        self._assert_logged(admin_credentials)
-        
-        uri = '/remove/user'
-        json_in = [ { '_id' : self.employee_id } ]
-        
-        employee_json = self._request(uri, json_in)
-        self.assertEqual(clean_id(employee_json), { 'error' : None })
-        
     
 class TestCaseAsManager(TestClassBase):
     def setUp(self):
@@ -86,6 +91,7 @@ class TestCaseAsManager(TestClassBase):
         self.assertEqual(clean_id(manager_json), { 'error' : None, 'ids' : [ '' ] })
         
         self.manager_id = manager_json['ids'][0]
+        self.execOnTearDown.append(('/remove/user', [ { '_id' : self.manager_id } ], { 'error' : None }))
         
         # Add managed projects
         uri = '/add/project'
@@ -99,22 +105,9 @@ class TestCaseAsManager(TestClassBase):
         self.assertEqual(clean_id(projects_json), { 'error' : None, 'ids' : [ '', '' ] })
         self.managed_projects = projects_json['ids']
         
+        self.execOnTearDown.append(('/remove/project', [ { '_id' : self.managed_projects[0] }, { '_id' : self.managed_projects[1] } ], { 'error' : None }))
+        
         employee_credentials = { 'username' : 'MANAGER', 'password' : 'mypassword' }
         self._login(employee_credentials)
         self._assert_logged(employee_credentials)
                 
-    def tearDown(self):
-
-        self._login(admin_credentials)
-        self._assert_logged(admin_credentials)
-        
-        uri = '/remove/user'
-        json_in = [ { '_id' : self.manager_id } ]
-        
-        self.assertEqual(clean_id(self._request(uri, json_in)), { 'error' : None })
-        
-        
-        uri = '/remove/project'
-        json_in = [ { '_id' : self.managed_projects[0] }, { '_id' : self.managed_projects[1] }  ]
-        
-        self.assertEqual(clean_id(self._request(uri, json_in)), { 'error' : None })

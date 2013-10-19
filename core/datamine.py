@@ -27,16 +27,18 @@ def push_days(documents_list):
         
         found = db.day.find({ 'date' : date }).limit(1).count()
 
-        if found and sanified_document.get('users') and 'user_id' in sanified_document['users'][0]:
-                         
-            # Validate one user per day insertion
-            if len(sanified_document['users']) > 1:
-                raise TSValidationError("Push only one user per day")
-            
-            user_id = sanified_document['users'][0]['user_id']
+        users = sanified_document.get('users', [])
+
+        # Validate one user per day insertion
+        if len(users) > 1:
+            raise TSValidationError("Push only one user per day")
+
+        if found and users and 'user_id' in sanified_document['users'][0]:
+                                     
+            user_id = users[0]['user_id']
             
             db.day.update({'date': date }, {'$pull': {'users': {'user_id': user_id }}})
-            db.day.update({'date': date }, {'$push': {'users': {'user_id': user_id, 'hours' : sanified_document['users'][0]['hours'] }}})
+            db.day.update({'date': date }, {'$push': {'users': {'user_id': user_id, 'hours' : users[0]['hours'] }}})
         else:
             db.day.insert(sanified_document)
 
