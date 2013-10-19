@@ -1,6 +1,6 @@
 <link rel='stylesheet' type='text/css' href='/static/css/fullcalendar.css' />
 <script type="text/javascript">
-var me, myprj, datestart, dateend, cevent, calendar, firstday, lastday, myhours = new Array();
+var me, myprj, validator, datestart, dateend, cevent, calendar, firstday, lastday, myhours = new Array();
 var tasks = ["","Office","Away"];
 $(document).ready( function() {
   calendar = $('#calendar').fullCalendar({
@@ -34,6 +34,8 @@ $(document).ready( function() {
     }
   });
   $("#btnsave").click(function () {
+    if(!validator.form())
+      return;
     var obj = {};
     obj.project = $('#hoursproject').find('option:selected').val();
     obj.projectname = $('#hoursproject').find('option:selected').text();
@@ -64,6 +66,21 @@ $(document).ready( function() {
   $("#hoursamount").val( $("#hours-range").slider("value"));
   currentVis();
   user.me(userdata);
+  validator = $("#frmedithours").validate({
+    rules: {
+      hoursamount: {
+        required: true,
+        min: 1,
+        max: 8,
+      }
+    },
+    highlight: function (element) {
+      $(element).closest('.form-group').addClass('has-error');
+    },
+    unhighlight: function (element) {
+      $(element).closest('.form-group').removeClass('has-error');
+    }
+  });
 });
 
 function userdata(data){
@@ -232,18 +249,18 @@ function loadCalendarHours(list) {
         <h4 class="modal-title">Add hours</h4>
       </div>
       <div class="modal-body">
-	<form class="form-horizontal">
+	<form class="form-horizontal" id="frmedithours">
 	  <div class="form-group">
 	    <label for="hoursproject" class="col-lg-3 control-label">Project</label>
 	    <div class="col-lg-9">
-	      <select class="form-control" id="hoursproject">
+	      <select class="form-control" name="hoursproject" id="hoursproject" required>
               </select>
 	    </div>
 	  </div>
 	  <div class="form-group">
 	    <label for="hourstask" class="col-lg-3 control-label">Task</label>
 	    <div class="col-lg-9">
-	      <select class="form-control" id="hourstask">
+	      <select class="form-control" name="hourstask" id="hourstask" required>
 	      </select>
 	    </div>
 	  </div>
@@ -253,7 +270,7 @@ function loadCalendarHours(list) {
 		<div id="hours-range"></div>
 	    </div>
 	      <div class="col-lg-2">
-	        <input type="text" class="form-control" id="hoursamount">
+	        <input type="text" class="form-control" name="hoursamount" id="hoursamount">
 	      </div>
 	  </div>
 	  <div class="form-group">
