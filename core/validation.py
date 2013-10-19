@@ -23,10 +23,10 @@ def recursive_merge(container, container_override):
             # border case for first run or if container is container primitive
             container = container_override
         elif isinstance(container, types.ListType):
-            # lists can be only appended
+            # lists can be only replaced
             if isinstance(container_override, types.ListType):
-                # merge lists
-                container.extend(container_override)
+                # replace list
+                container = container_override[:]
             else:
                 # append to list
                 container.append(container_override)
