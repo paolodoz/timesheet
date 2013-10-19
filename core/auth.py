@@ -128,6 +128,8 @@ class AuthController(object):
         
         # Save formatted permissions schemas to speedup following accesses
         cherrypy.session['_ts_user']['criteria_restrictions_schema'] = get_user_restrictions('criteria_restrictions_schema')
+        cherrypy.session['_ts_user']['insert_restrictions_schema'] = get_user_restrictions('insert_restrictions_schema')
+
 
         cherrypy.request.login = username
         

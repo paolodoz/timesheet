@@ -1,5 +1,5 @@
 from validation import update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
-from permissions import check_action_permissions, check_criteria_permissions, check_projection_permissions
+from permissions import check_action_permissions, check_criteria_permissions, check_projection_permissions, check_insert_permissions
 from bson.objectid import ObjectId
 from core.validation import TSValidationError
 from core.db import db
@@ -22,8 +22,7 @@ def push_days(documents_list):
     
     for sanified_document in sanified_documents_list:
 
-        # Use check_criteria_permissions to check users.user_id or hours.project permissions on push
-        check_criteria_permissions('day', sanified_document)
+        check_insert_permissions('day', sanified_document)
 
         date = sanified_document['date']
         

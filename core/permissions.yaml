@@ -6,7 +6,7 @@ user:
         properties:
           _id:
             type: string
-            pattern: '^%%_id%%$'
+            pattern: '%%_id%%'
         required: 
           - _id
         
@@ -33,19 +33,11 @@ day:
         properties:
           users.user_id: 
             type: string
-            pattern: '^%%_id%%$'
+            pattern: '%%_id%%'
         required: 
           - users.user_id                
-    
-    criteria_restrictions:
-      employee:
-        users.user_id: '^%%_id%%$'
-      project manager:
-         $or:
-           - users.user_id: '^%%_id%%$'
-           - hours.project:
-                 $in: '%%managed_projects%%'
 
+          
 project:
     criteria_restrictions_schema:
       employee:
@@ -53,7 +45,7 @@ project:
         properties:
           employees._id: 
             type: string
-            pattern: '^%%_id%%$'
+            pattern: '%%_id%%'
         required:
           - employees._id
               
@@ -64,13 +56,13 @@ project:
             properties:
               employees._id:
                 type: string
-                pattern: '^%%_id%%$'
+                pattern: '%%_id%%'
           - type: object
             required: [ responsible._id ]
             properties:
               responsible._id:
                 type: string
-                pattern: '^%%_id%%$'
+                pattern: '%%_id%%'
     
     action_restrictions:
       employee:

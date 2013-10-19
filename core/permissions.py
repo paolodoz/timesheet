@@ -8,8 +8,8 @@ def get_user_restrictions(schema_name):
     
     # Recursively replace needs a condition_function and replace_function
     replacements = { 
-                    '^%%username%%$' : cherrypy.session['_ts_user']['username'], 
-                    '^%%_id%%$' : str(cherrypy.session['_ts_user']['_id']),
+                    '%%username%%' : '^%s$' % (cherrypy.session['_ts_user']['username']), 
+                    '%%_id%%' : '^%s$' % (str(cherrypy.session['_ts_user']['_id'])),
                     '%%managed_projects%%' : cherrypy.session['_ts_user']['managed_projects'] 
                     }
     replacements_templates = replacements.keys()
@@ -52,6 +52,18 @@ def check_criteria_permissions(collection, criteria):
         return
     
     validate(criteria, restrictions_criteria)
+   
+def check_insert_permissions(collection, document):
+
+    try:
+        # Check if request restrictions are set for the collection.user
+        restrictions_document = cherrypy.session['_ts_user']['insert_restrictions_schema'][collection]
+    except KeyError:
+        # If not, skip procedure
+        return
+    
+    print 'VALIDATING', document, 'AGAINST', restrictions_document
+    validate(document, restrictions_document)
     
 def check_projection_permissions(collection, projections):    
     """Check if group user can access to the resource"""
