@@ -22,6 +22,9 @@ def push_days(documents_list):
     
     for sanified_document in sanified_documents_list:
 
+        # Use check_criteria_permissions to check users.user_id or hours.project permissions on push
+        check_criteria_permissions('day', sanified_document)
+
         date = sanified_document['date']
         
         found = db.day.find({ 'date' : date }).limit(1).count()

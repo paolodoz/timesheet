@@ -6,7 +6,7 @@
 
 import cherrypy
 from core.config import conf_auth, conf_auth_db, conf_auth_ldap, templates
-from core.permissions import get_user_criteria_restrictions
+from core.permissions import get_user_restrictions
 from core.db import db
 
 
@@ -127,7 +127,7 @@ class AuthController(object):
                 cherrypy.session['_ts_user']['managed_projects'].append(document['_id'])
         
         # Save formatted permissions schemas to speedup following accesses
-        cherrypy.session['_ts_user']['restrictions'] = get_user_criteria_restrictions()
+        cherrypy.session['_ts_user']['criteria_restrictions_schema'] = get_user_restrictions('criteria_restrictions_schema')
 
         cherrypy.request.login = username
         

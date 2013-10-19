@@ -3,7 +3,7 @@ from validation import TSValidationError, recursive_replace
 from config import restrictions_schema
 from jsonschema import validate
 
-def get_user_criteria_restrictions():
+def get_user_restrictions(schema_name):
     """Format restriction schemas. Saved on auth login to speedup following accesses"""
     
     # Recursively replace needs a condition_function and replace_function
@@ -22,7 +22,7 @@ def get_user_criteria_restrictions():
     
     for collection_name, collection_schema in restrictions_schema.items():
         try:
-            schema = collection_schema['criteria_restrictions_schema'][cherrypy.session['_ts_user']['group']]
+            schema = collection_schema[schema_name][cherrypy.session['_ts_user']['group']]
         except KeyError as e:
             pass
         else:
@@ -46,7 +46,7 @@ def check_criteria_permissions(collection, criteria):
 
     try:
         # Check if request restrictions are set for the collection.user
-        restrictions_criteria = cherrypy.session['_ts_user']['restrictions'][collection]
+        restrictions_criteria = cherrypy.session['_ts_user']['criteria_restrictions_schema'][collection]
     except KeyError:
         # If not, skip procedure
         return
