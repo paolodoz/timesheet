@@ -36,8 +36,7 @@ day:
             pattern: '%%_id%%'
         required: 
           - users.user_id                
-
-          
+    
 project:
     criteria_restrictions_schema:
       employee:
