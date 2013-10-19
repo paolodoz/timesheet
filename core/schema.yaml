@@ -61,15 +61,15 @@ user:
       blank: True
     salary:
       type: array
-      blank: True
-      additionalProperties: False
-      properties:
-        cost:
-          type: number
-        from:
-          type: string
-        to:
-          type: string
+      items:
+        additionalProperties: False
+        properties:
+          cost:
+            type: number
+          from:
+            type: string
+          to:
+            type: string
 
 project:
   type: object
@@ -91,10 +91,10 @@ project:
       type: string
     tasks:
       type: array
-      additionalProperties: False
-      properties:
-        name:
-          type: string
+      items:
+        properties:
+          name:
+            type: string
     grand_total:
       type: number
       optional: True
@@ -111,13 +111,14 @@ project:
           type: string
     employees:
       type: array
-      optional: True
-      additionalProperties: False
-      properties:
-        _id:
-          type: string
-        name:
-          type: string
+      items:
+        optional: True
+        additionalProperties: False
+        properties:
+          _id:
+            type: string
+          name:
+            type: string
 
 trip:
   type: object
@@ -159,26 +160,26 @@ day:
     users:
       optional: True
       type: array
-      additionalProperties: False
-      properties:
-        user_id:
-          type: string
-        hours:
-          optional: True
-          type: object
-          additionalProperties: False
-          properties:
-            project:
-              type: string
-            amount:
-              type: number
-            isextra:
-              type: boolean
-            note:
-              optional: True
-              type: string
-            task:
-              type: integer
+      items:
+        properties:
+          user_id:
+            type: string
+          hours:
+            optional: True
+            type: array
+            items: 
+              properties:
+                project:
+                  type: string
+                amount:
+                  type: number
+                isextra:
+                  type: boolean
+                note:
+                  optional: True
+                  type: string
+                task:
+                  type: integer
               
 offer:
   type: object

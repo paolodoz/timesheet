@@ -62,6 +62,7 @@ def check_insert_permissions(collection, document):
         # If not, skip procedure
         return
     
+    print 'VALIDATING', document, 'AGAINST', restrictions_document
     validate(document, restrictions_document)
     
 def check_projection_permissions(collection, projections):    

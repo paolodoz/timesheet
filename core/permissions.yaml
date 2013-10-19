@@ -37,6 +37,21 @@ day:
         required: 
           - users.user_id                
     
+    insert_restrictions_schema:
+      employee:
+        type: object
+        properties:
+          users:
+            optional: True
+            type: array
+            additionalProperties: False
+            properties:
+              user_id:
+                type: string
+                pattern: '%%_id%%'
+            required:
+              - user_id
+          
 project:
     criteria_restrictions_schema:
       employee:
