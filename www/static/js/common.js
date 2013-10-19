@@ -116,6 +116,9 @@ var project = {
         return;
       project[property] = $(this).val();
     });
+    for(i = 0; i < project.tasks.length; i++) {
+      project.tasks[i] = Number(project.tasks[i]);
+    }
     project.responsible = {};
     project.responsible._id = $("#responsibleid").val();
     project.responsible.name  = $("#usersForm h4 span").text().trim();

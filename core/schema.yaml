@@ -94,7 +94,7 @@ project:
       items:
         properties:
           name:
-            type: string
+            type: integer
     grand_total:
       type: number
       optional: True
