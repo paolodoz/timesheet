@@ -111,7 +111,10 @@ class TestCaseAsManager(TestClassBase):
         uri = '/remove/user'
         json_in = [ { '_id' : self.manager_id } ]
         
-        manager_json = self._request(uri, json_in)
-        self.assertEqual(clean_id(manager_json), { 'error' : None })
+        self.assertEqual(clean_id(self._request(uri, json_in)), { 'error' : None })
         
         
+        uri = '/remove/project'
+        json_in = [ { '_id' : self.managed_projects[0] }, { '_id' : self.managed_projects[1] }  ]
+        
+        self.assertEqual(clean_id(self._request(uri, json_in)), { 'error' : None })
