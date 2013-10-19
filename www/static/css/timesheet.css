@@ -35,3 +35,7 @@
 #hours-range {
     margin-top: 10px;
 }
+
+form .error {
+    color: #B94A48;
+}
