@@ -70,8 +70,6 @@ class DayAPIAsEmployee(TestCaseAsEmployee):
         # Access directly to /day/
         self._assert_req('/get/day', [ {  }, { 'date' : '2000-01-01' } ], {u'error': u"TSValidationError: Action 'get' in 'day' is restricted for current user", 'records' : [] } )
     
-    def test_day_ko(self):
-        
         # Get unexistant user 0
         self._assert_req('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2003-01-01', 'user_id' : '0' }, {u'error': u"ValidationError: Error '0' is not valid"} )
         # Get admin days 
