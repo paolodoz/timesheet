@@ -44,13 +44,11 @@ day:
           users:
             optional: True
             type: array
-            additionalProperties: False
-            properties:
-              user_id:
-                type: string
-                pattern: '%%_id%%'
-            required:
-              - user_id
+            items:
+              properties:
+                user_id:
+                  type: string
+                  pattern: '%%_id%%'
           
 project:
     criteria_restrictions_schema:
