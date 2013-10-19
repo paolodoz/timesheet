@@ -124,7 +124,7 @@ class AuthController(object):
         if cherrypy.session['_ts_user']['group'] == 'project manager':
             cursor = db.project.find({ 'responsible._id' : cherrypy.session['_ts_user']['_id'] }, { '_id' : 1 })
             for document in cursor:
-                cherrypy.session['_ts_user']['managed_projects'].append(document['_id'])
+                cherrypy.session['_ts_user']['managed_projects'].append(str(document['_id']))
         
         # Save formatted permissions schemas to speedup following accesses
         cherrypy.session['_ts_user']['criteria_restrictions_schema'] = get_user_restrictions('criteria_restrictions_schema')

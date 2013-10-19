@@ -1,5 +1,5 @@
-import yaml, cherrypy
-from validation import TSValidationError, recursive_replace
+import yaml, cherrypy, types
+from validation import TSValidationError, recursive_replace, ObjectId
 from config import restrictions_schema
 from jsonschema import validate
 
@@ -12,11 +12,17 @@ def get_user_restrictions(schema_name):
                     '%%_id%%' : '^%s$' % (str(cherrypy.session['_ts_user']['_id'])),
                     '%%managed_projects%%' : cherrypy.session['_ts_user']['managed_projects'] 
                     }
-    replacements_templates = replacements.keys()
 
     def _replace_function_permissions_schema(container):
-        if isinstance(container,basestring) and container in replacements_templates:
-            return str(replacements[container])
+        if isinstance(container,basestring):
+            replacement = replacements.get(container)
+            if replacement:
+                # Replace strings and objectid with string
+                if isinstance(replacement,(basestring, ObjectId)):
+                    return str(replacement)
+                # Replace managed_projects with project list
+                elif isinstance(replacement, types.ListType):
+                    return replacement
         
     formatted_schemas = {}
     
@@ -38,7 +44,8 @@ def check_action_permissions(action, collection):
         restrictions_acts = restrictions_schema[collection]['action_restrictions'][cherrypy.session['_ts_user']['group']]
     except KeyError:
         # If not, skip procedure
-        return    
+        return
+
     if action in restrictions_acts:
         raise TSValidationError("Action '%s' in '%s' is restricted for current user" % (action, collection))
     
@@ -62,7 +69,6 @@ def check_insert_permissions(collection, document):
         # If not, skip procedure
         return
     
-    print 'VALIDATING', document, 'AGAINST', restrictions_document
     validate(document, restrictions_document)
     
 def check_projection_permissions(collection, projections):    

@@ -27,6 +27,20 @@ user:
         - add
 
 day:
+
+    # Only administrator can call /*/day directly
+    action_restrictions:
+      employee:
+        - get
+        - remove
+        - add
+        - update
+      project manager:
+        - get
+        - remove
+        - add
+        - update
+
     criteria_restrictions_schema:
       employee:
         type: object
@@ -36,7 +50,13 @@ day:
             pattern: '%%_id%%'
         required: 
           - users.user_id                
-    
+      project manager:
+        type: object
+        properties:
+          users.user_id: 
+            type: string
+            pattern: '%%_id%%'
+            
     insert_restrictions_schema:
       employee:
         type: object
@@ -49,7 +69,27 @@ day:
                 user_id:
                   type: string
                   pattern: '%%_id%%'
-          
+      project manager:
+        type: object
+        properties:
+          date:
+            type: string
+          users:
+            optional: True
+            type: array
+            items:
+              properties:
+                user_id:
+                  type: string
+                  pattern: '%%_id%%'
+                hours:
+                  optional: True
+                  type: array
+                  items: 
+                    properties:
+                      project:
+                        enum : '%%managed_projects%%'
+                  
 project:
     criteria_restrictions_schema:
       employee:
