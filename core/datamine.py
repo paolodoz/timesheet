@@ -15,7 +15,6 @@ def push_days(documents_list):
     Returns { 'error' : string }
     """
     
-    check_action_permissions('add', 'day')
     validate_json_list('day', documents_list)
     
     sanified_documents_list = sanitize_objectify_json(documents_list)
@@ -59,7 +58,6 @@ def search_days(criteria):
     if not (sorted(criteria.keys()) == sorted(('date_from', 'date_to', 'user_id'))):
         raise TSValidationError("Expected list with 'date_from', 'date_to', 'user_id' keys")
     
-    check_action_permissions('get', 'day')
     sanified_criteria = sanitize_objectify_json(criteria)
 
     user_id = sanified_criteria['user_id']
