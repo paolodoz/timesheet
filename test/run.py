@@ -63,21 +63,7 @@ def main(admin_credentials):
     
     ## GET CURRENT INFORMATIONS
     _assert('/me', None, { 'username' : admin_credentials['username'], '_id' : '1'*24 })
-    
-    ## API CUSTOMER
-    # Remove already unexistant customer
-    _assert('/remove/customer', [ { 'name' : 'CUSTOMERTEST' } ], { 'error' : None  })
-    # Add one customer (return one id)
-    json_returned = _assert('/add/customer', [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC' } ], { 'error' : None, 'ids' : [ '' ] })
-    # Get the inserted customer by name
-    _assert('/get/customer', [ { 'name' : 'CUSTOMERTEST' }, { 'name' : 1, 'address' : 1, 'phone' : 1, 'contact_person' : 1, 'vat_number' : 1, '_id' : 1, 'website' : 1, 'city' : 1, 'country' : 1, 'postal_code' : 1, 'email' : 1, 'description' : 1 } ], { 'error': None, 'records' : [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', '_id' : '', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC'   } ] })
-    # Get the inserted customer by id
-    _assert('/get/customer', [ { '_id' : json_returned['ids'][0] }, { 'address' : 1 }], { 'error': None, 'records' : [ { 'address' : 'CUSTOMER STREET', '_id' : '' } ] })
-    # Remove customer by id
-    _assert('/remove/customer', [ { '_id' : json_returned['ids'][0] } ], { 'error' : None  })
-    # Check if collection is empty
-    _assert('/get/customer', [ { '_id' : json_returned['ids'][0] }, { '_id' : 1 } ], { 'error': None, 'records' : [ ] })
-    
+
     ## API USER
     # Remove already unexistant user
     _assert('/remove/user', [ { 'name' : 'USERTEST'  } ], { 'error' : None  })

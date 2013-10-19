@@ -15,5 +15,4 @@ class BadRequest(TestClassBase):
         self._assert_req('/get/user', [ { }, { } ], { 'error': 'TSValidationError: Expected list with criteria and nonempty projection', 'records' : [] })
         # Get badly formatted
         self._assert_req('/add/day', [ {u'date': u'2000-10-17', u'UZERZ': [{u'hours': [], u'user_id': u'0'}]} ], { 'error': "ValidationError: Error '{u'date': u'2000-10-17', u'UZERZ': [{u'hours': [], u'user_id': u'0'}]}' is not valid", 'ids' : [] })
-        # Add day with random elements
         

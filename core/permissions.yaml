@@ -1,4 +1,15 @@
 
+customer:
+    action_restrictions:
+      employee:
+        - remove
+        - add
+        - update
+      project manager:
+        - remove
+        - add
+        - update
+
 user:   
     criteria_restrictions_schema:
       employee:

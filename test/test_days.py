@@ -24,6 +24,7 @@ class DayAPIAsAdmin(TestClassBase):
         self._assert_req('/data/push_days', [ {'date': '2000-01-01' }
                                     ], { 'error' : None })   
         
+        
         # Insert the day 17 for user  '111111111111111111111111'                                      
         self._assert_req('/data/push_days', [ {'date': '2000-10-17', 
                                       'users': [ 

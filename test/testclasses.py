@@ -46,8 +46,9 @@ class TestClassBase(unittest.TestCase):
         return json.loads(self.opener.open(request).read())
         
     def _assert_req(self, uri, json_in, json_expected):
-        self.assertEqual(clean_id(self._request(uri, json_in)), json_expected)
-        
+        json_out = self._request(uri, json_in)
+        self.assertEqual(clean_id(json_out.copy()), json_expected)
+        return json_out
         
     def tearDown(self):
         
@@ -69,9 +70,7 @@ class TestCaseAsEmployee(TestClassBase):
         uri = '/add/user'
         json_in = [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ]
         
-        employee_json = self._request(uri, json_in)
-        self.assertEqual(clean_id(employee_json), { 'error' : None, 'ids' : [ '' ] })
-        
+        employee_json = self._assert_req(uri, json_in, { 'error' : None, 'ids' : [ '' ] })
         self.employee_id = employee_json['ids'][0]
         self.execOnTearDown.append(('/remove/user', [ { '_id' : self.employee_id } ], { 'error' : None }))
         
@@ -89,10 +88,9 @@ class TestCaseAsManager(TestClassBase):
         uri = '/add/user'
         json_in = [ { 'name' : 'MANAGER', 'surname' : 'MANAGERSURNAME', 'username' : 'MANAGER', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'project manager', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ]
     
-        manager_json = self._request(uri, json_in)
-        self.assertEqual(clean_id(manager_json), { 'error' : None, 'ids' : [ '' ] })
-        
+        manager_json = self._assert_req(uri, json_in, { 'error' : None, 'ids' : [ '' ] })
         self.manager_id = manager_json['ids'][0]
+        
         self.execOnTearDown.append(('/remove/user', [ { '_id' : self.manager_id } ], { 'error' : None }))
         
         # Add managed projects
@@ -103,8 +101,7 @@ class TestCaseAsManager(TestClassBase):
                     ]
         
         
-        projects_json = self._request(uri, json_in)
-        self.assertEqual(clean_id(projects_json), { 'error' : None, 'ids' : [ '', '' ] })
+        projects_json = self._assert_req(uri, json_in, { 'error' : None, 'ids' : [ '', '' ] })
         self.managed_projects = projects_json['ids']
 
         self.execOnTearDown.append(('/remove/project', [ { '_id' : self.managed_projects[0] }, { '_id' : self.managed_projects[1] } ], { 'error' : None }))
