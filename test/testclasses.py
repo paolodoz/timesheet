@@ -58,7 +58,9 @@ class TestClassBase(unittest.TestCase):
             uri, json_in, json_expected = command
             
             self.assertEqual(clean_id(self._request(uri, json_in)), json_expected)
-        
+
+    def _plain_request(self, uri = ''):
+        return self.opener.open('https://localhost:9090/' + uri).read()        
         
 class TestCaseAsEmployee(TestClassBase):
     def setUp(self):
@@ -104,7 +106,7 @@ class TestCaseAsManager(TestClassBase):
         projects_json = self._request(uri, json_in)
         self.assertEqual(clean_id(projects_json), { 'error' : None, 'ids' : [ '', '' ] })
         self.managed_projects = projects_json['ids']
-        
+
         self.execOnTearDown.append(('/remove/project', [ { '_id' : self.managed_projects[0] }, { '_id' : self.managed_projects[1] } ], { 'error' : None }))
         
         employee_credentials = { 'username' : 'MANAGER', 'password' : 'mypassword' }

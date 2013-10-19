@@ -196,11 +196,8 @@ def main(admin_credentials):
     _assert('/get/project', [ { 'responsible._id' : manager_json['ids'][0] }, { 'customer' : 1 } ], { u'records': [{u'customer': u'CUSTOMER', u'_id': ''}], u'error': None})
 
 
-    # Check if normal user can see user management in admin menu
-    _assert_page_contains('/index/users', False)
     # Relogin as admin
     _login(admin_credentials)
-    _assert_page_contains('/index/users', True)    
     # Delete previously added test user
     _assert('/remove/user', [ { 'username' : 'PERM_TEST' } ], { 'error' : None })
     # Delete previously added project
