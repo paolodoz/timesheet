@@ -87,9 +87,6 @@ class DayAPIAsManager(TestCaseAsManager):
     
     def test_day_ok(self):
         
-        # Get admin
-        self._assert_req('/get/user', [ { '_id' : '1'*24 }, { '_id' : 1 } ], { 'error': None, 'records' : [ { '_id' : ''} ] })
-        
         # Get itself
         self._assert_req('/get/user', [ { '_id' : self.manager_id }, { '_id' : 1 } ], { 'error': None, 'records' : [ { '_id' : '' } ] })
  
@@ -100,6 +97,11 @@ class DayAPIAsManager(TestCaseAsManager):
         
  
     def test_day_ko(self):
+        
+        
+        # Get admin
+        self._assert_req('/get/user', [ { '_id' : '1'*24 }, { '_id' : 1 } ], { 'error': "ValidationError: Error '111111111111111111111111' is not valid", 'records' : [ ] })
+        
         
         # Get its password and salt
         self._assert_req('/get/user', [ { '_id' : self.manager_id }, { 'password' : 1 } ], { 'error': "TSValidationError: Field 'password' is restricted for current user", 'records' : [ ] })

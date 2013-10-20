@@ -20,6 +20,14 @@ user:
             pattern: '%%_id%%'
         required: 
           - _id
+      project manager:
+        type: object
+        properties:
+          _id:
+            type: string
+            pattern: '%%_id%%'
+        required: 
+          - _id
         
     projection_restrictions:
       employee:
