@@ -7,7 +7,7 @@ from validation import TSValidationError, recursive_merge, update_password_salt_
 from permissions import check_action_permissions, check_criteria_permissions, check_projection_permissions
 from bson.objectid import ObjectId
 from config import collections, conf_mongodb, conf_auth, conf_auth_db
-import string, hashlib, random
+import string, hashlib, random, types
 
 connection = Connection(conf_mongodb['hostname'], conf_mongodb['port'])
 db = connection[conf_mongodb['db']]
@@ -16,7 +16,7 @@ def get(collection, criteria_projection):
     """Get selected records from collection, and return it as json
     Called by GET /<collection>/"""
     
-    if (isinstance(criteria_projection, list) and len(criteria_projection) == 2 and criteria_projection[1]):
+    if (isinstance(criteria_projection, types.ListType) and len(criteria_projection) == 2 and criteria_projection[1]):
         criteria, projection = criteria_projection
     else:
         raise TSValidationError('Expected list with criteria and nonempty projection')
@@ -75,6 +75,9 @@ def update(collection, document):
     Called by POST /update/<collection>/"""
     
     # Check permission
+    if not (isinstance(document, types.DictType) and  '_id' in document):
+        raise TSValidationError("Dict with '_id' field expected, not '%s'" % document.__class__.__name__)
+    
     check_action_permissions('update', collection)
     
     # Sanify documents
