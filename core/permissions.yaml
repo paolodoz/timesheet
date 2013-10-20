@@ -5,6 +5,7 @@ customer:
         - remove
         - add
         - update
+        - get
       project manager:
         - remove
         - add

@@ -68,7 +68,7 @@ def main(admin_credentials):
     # Remove already unexistant project
     _assert('/remove/project', [ { 'name' : 'PROJECTNAME'  } ], { 'error' : None  })
     # Add one project
-    _assert('/add/project', [ { 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'name' : 'PROJECTNAME', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : 'start', 'end' : 'end', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Another Admin'}, 'employees' : [ { '_id' : '1'*24, 'name' : 'The employed administrator'} ] } ], { 'error' : None, 'ids' : [ '' ] })
+    _assert('/add/project', [ { 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'name' : 'PROJECTNAME', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2000-01-02', 'end' : '2001-02-03', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Another Admin'}, 'employees' : [ { '_id' : '1'*24, 'name' : 'The employed administrator'} ] } ], { 'error' : None, 'ids' : [ '' ] })
     # Get the inserted project by NAME
     _assert('/get/project', [ { 'name' : 'PROJECTNAME' }, { 'contact_person' : 1, '_id' : 0 } ], { 'error': None, 'records' : [ { 'contact_person' : 'contact_person'  } ] })
     # Get the inserted project by responsible
@@ -85,13 +85,13 @@ def main(admin_credentials):
     # GET admin password
     _assert('/get/user', [ { '_id' : '1'*24 }, { 'password' : 1} ], { 'error' : "TSValidationError: Field 'password' is restricted for current user", 'records' : [ ] })
     # Add user in group employee for following tests
-    employee_json = _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
+    employee_json = _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
     # Add project manager for following tests
-    manager_json = _assert('/add/user', [ { 'name' : 'MANAGER', 'surname' : 'MANAGERSURNAME', 'username' : 'MANAGER', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'project manager', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
+    manager_json = _assert('/add/user', [ { 'name' : 'MANAGER', 'surname' : 'MANAGERSURNAME', 'username' : 'MANAGER', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'project manager', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
     # Add project managed by MANAGER for following tests
-    _assert('/add/project', [ { 'name' : 'MANAGEDPROJECT', 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : 'start', 'end' : 'end', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : manager_json['ids'][0], 'name' : 'The manager'}, 'employees' : [ { '_id' : employee_json['ids'][0], 'name' : 'The employed administrator'} ] } ], { 'error' : None, 'ids' : [ '' ] })
+    _assert('/add/project', [ { 'name' : 'MANAGEDPROJECT', 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2000-01-02', 'end' : '2001-02-03', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : manager_json['ids'][0], 'name' : 'The manager'}, 'employees' : [ { '_id' : employee_json['ids'][0], 'name' : 'The employed administrator'} ] } ], { 'error' : None, 'ids' : [ '' ] })
     # Add project managed by admin
-    _assert('/add/project', [ { 'name' : 'ADMINPROJECT', 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : 'start', 'end' : 'end', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'The admin'}, 'employees' : [ { '_id' : employee_json['ids'][0], 'name' : 'The employed administrator'} ] } ], { 'error' : None, 'ids' : [ '' ] })
+    _assert('/add/project', [ { 'name' : 'ADMINPROJECT', 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2000-01-02', 'end' : '2001-02-03', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'The admin'}, 'employees' : [ { '_id' : employee_json['ids'][0], 'name' : 'The employed administrator'} ] } ], { 'error' : None, 'ids' : [ '' ] })
     
     # Add days for following tests
     _assert('/data/push_days', [ {'date': '2000-01-01', 'users': [ { 'user_id' : '111111111111111111111111', 'hours': [] } ] } ], { 'error' : None })    

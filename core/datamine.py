@@ -3,6 +3,7 @@ from permissions import check_action_permissions, check_criteria_permissions, ch
 from bson.objectid import ObjectId
 from core.validation import TSValidationError
 from core.db import db
+import jsonschema
 
 def push_days(documents_list):
     
@@ -56,9 +57,17 @@ def search_days(criteria):
     Returns { 'error' : string, 'records' : [ { }, { }, .. ]  } 
     """
     
-    # TODO: Validate and test also values.
-    if not (sorted(criteria.keys()) == sorted(('date_from', 'date_to', 'user_id'))):
-        raise TSValidationError("Expected list with 'date_from', 'date_to', 'user_id' keys")
+    
+    jsonschema.validate(criteria, { 'type' : 'object', 
+                                   'additionalProperties' : False,
+                                   'properties' : { 
+                                                   'date_from' : {'type' : 'string', 
+                                                                  'format' : 'date' }, 
+                                                   'date_to' : { 'type' : 'string', 
+                                                                  'format' : 'date' }, 
+                                                   'user_id' : { 'type' : 'string'  } 
+                                                   } 
+                                   }, format_checker=jsonschema.FormatChecker())
     
     sanified_criteria = sanitize_objectify_json(criteria)
 

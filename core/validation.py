@@ -1,6 +1,5 @@
-import cgi, yaml, random, string, hashlib, types
+import cgi, yaml, random, string, hashlib, types, jsonschema
 from core.config import schema, core_folder
-from jsonschema import validate
 
 # Dirty hack to avoid the bug 
 # http://stackoverflow.com/questions/10401499/mongokit-importerror-no-module-named-objectid-error
@@ -118,7 +117,7 @@ def validate_json_list(collection, list_in):
     
     for json_in in list_in:    
         # Validate json schema
-        validate(json_in, schema[collection])
+        jsonschema.validate(json_in, schema[collection], format_checker=jsonschema.FormatChecker())
    
 def update_password_salt_user_list(collection, list_in):
     

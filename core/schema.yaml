@@ -20,6 +20,7 @@ customer:
       type: string
     email:
       type: string
+      format: email
     phone:
       type: string
     contact_person:
@@ -42,7 +43,7 @@ user:
       minLength: 1
     email:
       type: string
-      minLength: 1
+      format: email
     phone:
       type: string
     mobile:
@@ -164,6 +165,7 @@ day:
   properties:
     date:
       type: string
+      format: date
     users:
       optional: True
       type: array

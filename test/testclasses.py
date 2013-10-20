@@ -68,7 +68,7 @@ class TestCaseAsEmployee(TestClassBase):
         TestClassBase.setUp(self)
         
         uri = '/add/user'
-        json_in = [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ]
+        json_in = [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ]
         
         employee_json = self._assert_req(uri, json_in, { 'error' : None, 'ids' : [ '' ] })
         self.employee_id = employee_json['ids'][0]
@@ -86,7 +86,7 @@ class TestCaseAsManager(TestClassBase):
         
         # Add manager user
         uri = '/add/user'
-        json_in = [ { 'name' : 'MANAGER', 'surname' : 'MANAGERSURNAME', 'username' : 'MANAGER', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'project manager', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ]
+        json_in = [ { 'name' : 'MANAGER', 'surname' : 'MANAGERSURNAME', 'username' : 'MANAGER', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'project manager', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ]
     
         manager_json = self._assert_req(uri, json_in, { 'error' : None, 'ids' : [ '' ] })
         self.manager_id = manager_json['ids'][0]
@@ -96,8 +96,8 @@ class TestCaseAsManager(TestClassBase):
         # Add managed projects
         uri = '/add/project'
         json_in = [
-                    { 'name' : 'MANAGEDPROJECT1', 'customer' : 'CUSTOMER1', 'type' : 'TYPE1', 'description' : 'description1', 'contact_person' : 'contact_person1', 'start' : '01-02-2003', 'end' : '02-03-2004', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : self.manager_id, 'name' : 'The manager'}, 'employees' : [ { '_id' : '1'*24, 'name' : 'The employed administrator'} ] }, 
-                    { 'name' : 'MANAGEDPROJECT2', 'customer' : 'CUSTOMER2', 'type' : 'TYPE2', 'description' : 'description2', 'contact_person' : 'contact_person2', 'start' : '03-04-2005', 'end' : '04-05-2006', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : self.manager_id, 'name' : 'The manager'}, 'employees' : [ { '_id' : '7'*24, 'name' : 'Another employee'} ] } 
+                    { 'name' : 'MANAGEDPROJECT1', 'customer' : 'CUSTOMER1', 'type' : 'TYPE1', 'description' : 'description1', 'contact_person' : 'contact_person1', 'start' : '2000-01-02', 'end' : '2000-01-03', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : self.manager_id, 'name' : 'The manager'}, 'employees' : [ { '_id' : '1'*24, 'name' : 'The employed administrator'} ] }, 
+                    { 'name' : 'MANAGEDPROJECT2', 'customer' : 'CUSTOMER2', 'type' : 'TYPE2', 'description' : 'description2', 'contact_person' : 'contact_person2', 'start' : '2000-01-01', 'end' : '2000-01-05', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : self.manager_id, 'name' : 'The manager'}, 'employees' : [ { '_id' : '7'*24, 'name' : 'Another employee'} ] } 
                     ]
         
         
