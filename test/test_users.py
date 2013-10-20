@@ -17,6 +17,10 @@ class UserAPIAsAdmin(TestClassBase):
         # Delete the remaining user
         self.execOnTearDown.append(('/remove/user', [ { 'name' : 'USERTEST2'  } ], { 'error' : None }))
  
+        # Add one user with unknown group
+        self._assert_req('/add/user', [ { 'name' : 'NEW_USER_NOGROUP', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'EMPLOIERZ', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT', 'salary' : []  } ], { 'error' : "ValidationError: Error 'EMPLOIERZ' is not valid", 'ids' : [ ] })
+        
+ 
     def test_username_uniqueness(self):
          
         # Add one customer (return one id)
@@ -37,7 +41,7 @@ class UserAPIAsAdmin(TestClassBase):
         id_user_pwd = json_user_pwd['ids'][0]
         
         # Add user without password, should raise error
-        json_user_nopwd = self._assert_req('/add/user', [ { 'name' : 'NEW_USER_WITH_NO_PWD', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT', 'salary' : []  } ], { 'error' : "ValidationError: Error '' is not valid", 'ids' : [ ] })
+        self._assert_req('/add/user', [ { 'name' : 'NEW_USER_WITH_NO_PWD', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT', 'salary' : []  } ], { 'error' : "ValidationError: Error '' is not valid", 'ids' : [ ] })
         
         # Check if can't login with NEW_USER_WITH_NO_PWD
         credentials = {'username' : 'NEW_USER_WITH_NO_PWD', 'password' : '' }
@@ -51,4 +55,57 @@ class UserAPIAsAdmin(TestClassBase):
         
         # Delete the inserted user
         self.execOnTearDown.append(('/remove/user', [ { '_id' :  json_user_pwd } ], { 'error' : None }))
+        
+
+class DayAPIAsEmployee(TestCaseAsEmployee):
+    
+    def test_day_ok(self):
+        
+        # Get itself
+        self._assert_req('/get/user', [ { '_id' : self.employee_id }, { '_id' : 1 } ], { 'error': None, 'records' : [ { '_id' : '' } ] })
+ 
+        # Update itself
+        self._assert_req('/update/user', { '_id' : self.employee_id, 'email' : 'CHANGEDEMAIL' }, { 'error': None })
+        self._assert_req('/get/user', [ { '_id' : self.employee_id }, { 'email' : 1, '_id' : 0 } ], { 'error': None, 'records' : [ { 'email' : 'CHANGEDEMAIL' } ] })
+        self._assert_req('/update/user', { '_id' : self.employee_id, 'email' : 'EMAIL' }, { 'error': None })
+        
+ 
+    def test_day_ko(self):
+ 
+        # Get admin
+        self._assert_req('/get/user', [ { '_id' : '1'*24 }, { '_id' : 1 } ], { 'error': "ValidationError: Error '111111111111111111111111' is not valid", 'records' : [ ] })
+ 
+        # Get its password and salt
+        self._assert_req('/get/user', [ { '_id' : self.employee_id }, { 'password' : 1 } ], { 'error': "TSValidationError: Field 'password' is restricted for current user", 'records' : [ ] })
+        self._assert_req('/get/user', [ { '_id' : self.employee_id }, { 'salt' : 1 } ], { 'error': "TSValidationError: Field 'salt' is restricted for current user", 'records' : [ ] })
+ 
+        # Delete himself
+        self._assert_req('/remove/user', [ {  '_id' : self.employee_id } ], { 'error': "TSValidationError: Action 'remove' in 'user' is restricted for current user" })
+ 
+
+class DayAPIAsManager(TestCaseAsManager):
+    
+    def test_day_ok(self):
+        
+        # Get admin
+        self._assert_req('/get/user', [ { '_id' : '1'*24 }, { '_id' : 1 } ], { 'error': None, 'records' : [ { '_id' : ''} ] })
+        
+        # Get itself
+        self._assert_req('/get/user', [ { '_id' : self.manager_id }, { '_id' : 1 } ], { 'error': None, 'records' : [ { '_id' : '' } ] })
+ 
+        # Update itself
+        self._assert_req('/update/user', { '_id' : self.manager_id, 'email' : 'CHANGEDEMAIL' }, { 'error': None })
+        self._assert_req('/get/user', [ { '_id' : self.manager_id }, { 'email' : 1, '_id' : 0 } ], { 'error': None, 'records' : [ { 'email' : 'CHANGEDEMAIL' } ] })
+        self._assert_req('/update/user', { '_id' : self.manager_id, 'email' : 'EMAIL' }, { 'error': None })
+        
+ 
+    def test_day_ko(self):
+        
+        # Get its password and salt
+        self._assert_req('/get/user', [ { '_id' : self.manager_id }, { 'password' : 1 } ], { 'error': "TSValidationError: Field 'password' is restricted for current user", 'records' : [ ] })
+        self._assert_req('/get/user', [ { '_id' : self.manager_id }, { 'salt' : 1 } ], { 'error': "TSValidationError: Field 'salt' is restricted for current user", 'records' : [ ] })
+ 
+        # Delete himself
+        self._assert_req('/remove/user', [ {  '_id' : self.manager_id } ], { 'error': "TSValidationError: Action 'remove' in 'user' is restricted for current user" })
+ 
  

@@ -36,6 +36,9 @@ user:
       employee:
         - remove
         - add
+      project manager:
+        - remove
+        - add
 
 day:
 

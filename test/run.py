@@ -80,22 +80,6 @@ def main(admin_credentials):
     # Get the empty customers list
     _assert('/get/project', [ { 'employees._id' : '1'*24 }, { '_id' : 1 } ], { 'error': None, 'records' : [ ] })
 
-    # TEST UPDATE
-    
-    # Add one customer (return one id)
-    json_returned = _assert('/add/customer', [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC' } ], { 'error' : None, 'ids' : [ '' ] })
-    # Get the inserted customer by id
-    _assert('/get/customer', [ { '_id' : json_returned['ids'][0] }, { 'name' : 1 } ], { 'error': None, 'records' : [ {  'name' : 'CUSTOMERTEST', '_id' : ''  } ] })
-    # Update name
-    _assert('/update/customer', { '_id' : json_returned['ids'][0], 'name' : 'CUSTOMERNEWNAME', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC' }, { 'error': None })
-    # Check if the inserted customer by id is modified
-    _assert('/get/customer', [ { '_id' : json_returned['ids'][0] }, { '_id' : 1, 'name' : 1, 'address' : 1, 'phone' : 1, 'contact_person' : 1, 'vat_number' : 1, 'website' : 1, 'city' : 1, 'country' : 1, 'postal_code' : 1, 'email' : 1, 'description' : 1 } ], { 'error': None, 'records' : [ { '_id' : '', 'name' : 'CUSTOMERNEWNAME', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL', 'description' : 'CUSTODESC' } ] })
-    # Delete both user in one request
-    _assert('/remove/customer', [ { '_id' : json_returned['ids'][0]} ], { 'error' : None })
-    
-    # TEST SCHEMA OPTIONS CONSTRAINTS
-    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'WRONG_GROUP', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : "ValidationError: Error 'WRONG_GROUP' is not valid", 'ids' : [ ] })
-
 
     # TEST PERMISSIONS LIMITATIONS
     # GET admin password
@@ -116,14 +100,6 @@ def main(admin_credentials):
     _login({'username' : 'PERM_TEST', 'password' : 'mypassword' })
     _assert_page_contains('Timesheet login', False)
 
-    # GET his own password
-    _assert('/get/user', [ { '_id' : employee_json['ids'][0] }, { 'password' : 1} ], { 'error' : "TSValidationError: Field 'password' is restricted for current user", 'records' : [ ] })
-    # GET other employee surname
-    _assert('/get/user', [ { 'username' : admin_credentials['username'] }, { 'surname' : 1 } ], { 'error' : "ValidationError: Error '{u'username': u'usr'}' is not valid", 'records' : [ ] })
-    # REMOVE himself
-    _assert('/remove/user', [ { 'username' : 'PERM_TEST' } ], { 'error' : "TSValidationError: Action 'remove' in 'user' is restricted for current user" })
-    # Add new employee 
-    _assert('/add/user', [ { 'name' : 'NAME', 'surname' : 'SURNAME', 'username' : 'PERM_TEST2', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ], { 'error' : "TSValidationError: Action 'add' in 'user' is restricted for current user", 'ids' : [ ] })
     # Get projects of other users
     _assert('/get/project', [ { 'name' : 'NAME' }, { 'customer' : 1 } ], { 'error' : "ValidationError: Error '{u'name': u'NAME'}' is not valid", 'records' : [ ] })
     # Get explicitely admin projects 
