@@ -5,6 +5,17 @@ class DayAPIAsAdmin(TestClassBase):
     
     def test_day_ko(self):
         
+        # TODO: add data validation with format: data or regexp pattern
+        # Insert wrongly a day with wrong formatted data
+#         self._assert_req('/data/push_days', [ {'date': '200-01-01', 
+#                                       'users': [ 
+#                                                 { 'user_id' : '111111111111111111111111', 
+#                                                  'hours': []
+#                                                  }
+#                                                 ]
+#                                       }
+#                                     ], { 'error' : 'TSValidationError: ERRORE DATA' })
+        
         # Insert wrongly a day with multiple users
         self._assert_req('/data/push_days', [ {'date': '2000-01-01', 
                                       'users': [ 

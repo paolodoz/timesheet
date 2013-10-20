@@ -5,6 +5,7 @@ customer:
   properties: 
     name: 
       type: string
+      minLength: 1
     description:
       type: string
     address:
@@ -32,21 +33,22 @@ user:
   properties: 
     name: 
       type: string
+      minLength: 1
     surname:
       type: string
+      minLength: 1
     username:
       type: string
+      minLength: 1
     email:
       type: string
+      minLength: 1
     phone:
       type: string
-      blank: True
     mobile:
       type: string
-      blank: True
     city:
       type: string
-      blank: True
     group:
       type: string
       enum:
@@ -55,10 +57,9 @@ user:
         - project manager
     password: 
       type: string
-      blank: True
+      minLength: 1
     salt: 
       type: string
-      blank: True
     salary:
       type: array
       items:
@@ -77,18 +78,22 @@ project:
   properties:
     customer:
       type: string
+      minLength: 1
     type:
       type: string
     name: 
       type: string
+      minLength: 1
     description:
       type: string
     contact_person:
       type: string
     start:
       type: string
+      format: date
     end:
       type: string
+      format: date
     tasks:
       type: array
       items:
@@ -134,8 +139,10 @@ trip:
       type: string   
     start:
       type: string
+      format: date
     end:
       type: string
+      format: date
     country:
       type: string
     city:

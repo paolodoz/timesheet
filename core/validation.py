@@ -123,11 +123,8 @@ def validate_json_list(collection, list_in):
 def update_password_salt_user_list(collection, list_in):
     
     if collection == 'user':
-        for json_in in list_in:    
-            if 'password' in json_in and json_in['password']:
-                update_password_salt_user_json(json_in)
-            else:
-                raise TSValidationError('Expected nonempty password')
+        for json_in in list_in:
+            update_password_salt_user_json(json_in)
         
     return list_in
         
