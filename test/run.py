@@ -64,26 +64,6 @@ def main(admin_credentials):
     ## GET CURRENT INFORMATIONS
     _assert('/me', None, { 'username' : admin_credentials['username'], '_id' : '1'*24 })
 
-    ## API USER
-    # Remove already unexistant user
-    _assert('/remove/user', [ { 'name' : 'USERTEST'  } ], { 'error' : None  })
-    # Add one customer (return one id)
-    _assert('/add/user', [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ], { 'error' : None, 'ids' : [ '' ] })
-    # Add a double customer (UNIQ test)
-    _assert('/add/user', [ { 'name' : 'USERTEST', 'surname' : 'SURNAME2', 'username' : 'USERNAME', 'email' : 'EMAIL2', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
-    # Get the inserted customer (is only one because UNIQ)
-    _assert('/get/user', [ { 'name' : 'USERTEST' }, { 'surname' : 1, '_id' : 0 } ], { 'error': None, 'records' : [ { 'surname' : 'SURNAME'  } ] })
-    # Delete the one inserted
-    _assert('/remove/user', [ { 'name' : 'USERTEST'  } ], { 'error' : None })
-    # Get the empty customers list
-    _assert('/get/user', [ { 'name' : 'USERTEST' }, { '_id' : 1 } ], { 'error': None, 'records' : [ ] })
-    # Add two elements USERTEST1 and USERTEST2
-    _assert('/add/user', [ { 'name' : 'USERTEST1', 'surname' : 'SURNAME', 'username' : 'USERNAME1' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  }, { 'name' : 'USERTEST2', 'surname' : 'SURNAME', 'username' : 'USERNAME2' , 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'myotherpassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '', '' ] })
-    # Delete USERTEST1
-    _assert('/remove/user', [ { 'name' : 'USERTEST1'  }, { 'name' : 'USERTEST2'  } ], { 'error' : None })
-    # Check if USERTEST1 is deleted
-    _assert('/get/user', [ { 'name' : 'USERTEST1' }, { '_id' : 1 } ], { 'error': None, 'records' : [ ] })
-
     ## API PROJECTS
     # Remove already unexistant project
     _assert('/remove/project', [ { 'name' : 'PROJECTNAME'  } ], { 'error' : None  })
@@ -99,25 +79,7 @@ def main(admin_credentials):
     _assert('/remove/project', [ { 'employees._id' : '1'*24 } ], { 'error' : None })
     # Get the empty customers list
     _assert('/get/project', [ { 'employees._id' : '1'*24 }, { '_id' : 1 } ], { 'error': None, 'records' : [ ] })
-        
-    ## NEW USER LOGIN
-    # Add one user with password, should login
-    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
-    # Add user without password, should raise error
-    _assert('/add/user', [ { 'name' : 'NAME_USER_LOGIN_TEST', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT', 'salary' : []  } ], { 'error' : 'TSValidationError: Expected nonempty password', 'ids' : [ ] })
-    # Check if can't login with NEW_USER_WITH_NO_PWD
-    _login({'username' : 'NEW_USER_WITH_NO_PWD', 'password' : '' })
-    _assert_page_contains('Timesheet login', True)
-    # Check if can login with NEW_USER_WITH_PWD
-    _login({'username' : 'NEW_USER_WITH_PWD', 'password' : 'mypassword' })
-    _assert_page_contains('Timesheet login', False)
-    # Relogin as admin
-    _login(admin_credentials)
-    # Delete both user in one request
-    _assert('/remove/user', [ { 'name' : 'NAME_USER_LOGIN_TEST' } ], { 'error' : None })
-    # Check presence
-    _assert('/get/user', [ { 'name' : 'NAME_USER_LOGIN_TEST' }, { '_id' : 1 } ], { 'error': None, 'records' : [ ] })
-    
+
     # TEST UPDATE
     
     # Add one customer (return one id)
