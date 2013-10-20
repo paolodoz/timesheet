@@ -1,7 +1,6 @@
-import yaml, cherrypy, types
+import yaml, cherrypy, types, jsonschema
 from validation import TSValidationError, recursive_replace, ObjectId
 from config import restrictions_schema
-from jsonschema import validate
 
 def get_user_restrictions(schema_name):
     """Format restriction schemas. Saved on auth login to speedup following accesses"""
@@ -58,7 +57,7 @@ def check_criteria_permissions(collection, criteria):
         # If not, skip procedure
         return
     
-    validate(criteria, restrictions_criteria)
+    jsonschema.validate(criteria, restrictions_criteria, format_checker=jsonschema.FormatChecker())
    
 def check_insert_permissions(collection, document):
 
@@ -69,7 +68,7 @@ def check_insert_permissions(collection, document):
         # If not, skip procedure
         return
     
-    validate(document, restrictions_document)
+    jsonschema.validate(document, restrictions_document, format_checker=jsonschema.FormatChecker())
     
 def check_projection_permissions(collection, projections):    
     """Check if group user can access to the resource"""
