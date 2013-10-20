@@ -79,6 +79,7 @@ def update(collection, document):
         raise TSValidationError("Dict with '_id' field expected, not '%s'" % document.__class__.__name__)
     
     check_action_permissions('update', collection)
+    check_criteria_permissions(collection, document)
     
     # Sanify documents
     sanified_document = sanitize_objectify_json(document)
