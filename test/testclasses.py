@@ -1,7 +1,7 @@
 import urllib2, urllib, json, os, sys, types
 from cookielib import CookieJar
 from core.validation import recursive_replace
-import unittest
+import unittest, copy
 
 admin_credentials = { 'username' : 'usr', 'password' : 'pwd' }
 url = "https://localhost:9090"
@@ -47,7 +47,8 @@ class TestClassBase(unittest.TestCase):
         
     def _assert_req(self, uri, json_in, json_expected):
         json_out = self._request(uri, json_in)
-        self.assertEqual(clean_id(json_out.copy()), json_expected)
+        self.assertEqual(clean_id(copy.deepcopy(json_out)), json_expected)
+        
         return json_out
         
     def tearDown(self):
