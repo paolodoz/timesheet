@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-from core.validation import update_password_salt_user_json, sanitize_objectify_json
+from core.validation import update_password_salt_user_json, sanitize_objectify_json, validate_json_list
 try:
     from core.config import conf_auth_db, version, collections, conf_mongodb, conf_auth_ldap
     from core.auth_ldap import check_credentials
@@ -99,32 +99,45 @@ def _create_db_collections(connection):
 
 def _add_default_admin(db):
     
-    if '--add-admin-ldap' in sys.argv and '--ldap' in sys.argv and len(sys.argv) > sys.argv.index('--ldap') + 2:
+    if '--add-user-ldap' in sys.argv and len(sys.argv) > sys.argv.index('--add-user-ldap') + 1 and '--ldap' in sys.argv and len(sys.argv) > sys.argv.index('--ldap') + 2:
         arg_index = sys.argv.index('--ldap')
         username = sys.argv[arg_index+1]
         password = sys.argv[arg_index+2]
-        print 'OK!\n[+] Adding administrator credentials ' + username + ' for LDAP auth',
+        
+        arg_index = sys.argv.index('--add-user-ldap')
+        group = sys.argv[arg_index+1]
+        
+        print 'OK!\n[+] Adding credentials ' + username + ' in group ' + group + ' from LDAP',
         
         auth_err = None
         try:
-            auth_err = check_credentials(username, password, migrate=True, group_on_migration='administrator')
+            auth_err = check_credentials(username, password, migrate=True, group_on_migration=group)
         except Exception as e:
             auth_err = str(e)
         
-    elif '--add-admin' in sys.argv and len(sys.argv) > sys.argv.index('--add-admin') + 2:
-        arg_index = sys.argv.index('--add-admin')
+    elif '--add-user' in sys.argv and len(sys.argv) > sys.argv.index('--add-user') + 3:
+        arg_index = sys.argv.index('--add-user')
         username = sys.argv[arg_index+1]
         password = sys.argv[arg_index+2]
-        print 'OK!\n[+] Adding administrator credentials ' + username + ':' + password,
+        group = sys.argv[arg_index+3]
+        
+        print 'OK!\n[+] Adding credentials ' + username + ':' + password + ' in group ' + group,
     
-        json_user = { '_id' : '1'*24, 'password' : password, 'name' : 'Admin', 'surname' : 'Default', 'username': username, 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : 'administrator', 'salary' : []  }
+        json_user = { 'password' : password, 'name' : username, 'surname' : 'Default', 'username': username, 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : group, 'salary' : []  }
+        validate_json_list('user', [ json_user ])
+        
+        json_criteria = {}
+        if group == 'administrator':
+            json_criteria['_id'] = json_user['_id'] = '1'*24
     
         sanified_documents_list = sanitize_objectify_json(json_user)
         update_password_salt_user_json(sanified_documents_list)
         
-        db['user'].update( { '_id' : '1'*24 }, sanified_documents_list, True)
+
+        
+        db['user'].update( json_criteria , sanified_documents_list, True)
     else:
-        print 'OK!\n[-] Skipping admin insert, use \'--add-admin <usr> <pwd>\' or \'--ldap <usr> <pwd> --add-admin-ldap\''
+        print 'OK!\n[-] Skipping user insert, use \'--add-user <usr> <pwd> <group>\' or \'--ldap <usr> <pwd> --add-user-ldap <group>\''
 
 if __name__ == "__main__":
     
