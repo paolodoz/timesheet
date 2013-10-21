@@ -1,9 +1,8 @@
-from validation import update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
+from validation import validate_data_request, update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
 from permissions import check_action_permissions, check_criteria_permissions, check_projection_permissions, check_insert_permissions
 from bson.objectid import ObjectId
 from core.validation import TSValidationError
 from core.db import db
-import jsonschema
 
 def push_days(documents_list):
     
@@ -57,17 +56,7 @@ def search_days(criteria):
     Returns { 'error' : string, 'records' : [ { }, { }, .. ]  } 
     """
     
-    
-    jsonschema.validate(criteria, { 'type' : 'object', 
-                                   'additionalProperties' : False,
-                                   'properties' : { 
-                                                   'date_from' : {'type' : 'string', 
-                                                                  'format' : 'date' }, 
-                                                   'date_to' : { 'type' : 'string', 
-                                                                  'format' : 'date' }, 
-                                                   'user_id' : { 'type' : 'string'  } 
-                                                   } 
-                                   }, format_checker=jsonschema.FormatChecker())
+    validate_data_request('search_days', criteria)
     
     sanified_criteria = sanitize_objectify_json(criteria)
 

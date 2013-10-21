@@ -1,0 +1,38 @@
+
+report_users_hours:
+  type: object
+  additionalProperties: False
+  properties: 
+    date_from: 
+      type: string
+      format: date
+    date_to:
+      type: string
+      format: date
+    users:
+      type: array
+      items:
+        type: string
+    project:
+      type: string
+    hours_standard:
+      type: bool
+    hours_extra:
+      type: bool
+    tasks:
+      type: array
+      items:
+        type: number
+
+search_days:
+  type: object
+  additionalProperties: False
+  properties: 
+    date_from: 
+      type: string
+      format: date
+    date_to:
+      type: string
+      format: date
+    user_id:
+      type: string

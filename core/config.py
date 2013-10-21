@@ -23,6 +23,10 @@ collections = schema.keys()
 permissions_path = os.path.join(core_folder, 'permissions.yaml')
 restrictions_schema = yaml.load(file(permissions_path, 'r'))
 
+# Load requests schema from requests.yaml
+datamine_path = os.path.join(core_folder, 'datamine.yaml')
+datamine_schema = yaml.load(file(datamine_path, 'r'))
+
 # Load configuration from config.yaml
 conf_path = os.path.join(core_folder, 'config.yaml')
 conf = yaml.load(file(conf_path, 'r'))
