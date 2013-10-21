@@ -35,4 +35,6 @@ auth_ldap:
   # Search filter to retrieve {username} informations
   search_filter: uid={username}
   
-  
+logging:
+  error_log: NOTSET
+  access_log: NOTSET

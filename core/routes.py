@@ -1,4 +1,4 @@
-import cherrypy, os, traceback
+import cherrypy, os, traceback, logging
 from core.auth import AuthController, require, is_logged
 from core import db
 from config import views_folder, templates
@@ -70,17 +70,22 @@ class Routes:
         try:
             ids = db.add(collection, json_in)
         except ValidationError as e:
-            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)), 'ids' : []}
+            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            json_out = {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)), 'ids' : []}
         except TSValidationError as e:
-            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s: %s' % (type(e).__name__, str(e)), 'ids' : []}
+            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            json_out =  {'error' : '%s: %s' % (type(e).__name__, str(e)), 'ids' : []}
         except Exception as e:
-            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s internal exception' % (type(e).__name__), 'ids' : []}            
+            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            json_out = {'error' : '%s internal exception' % (type(e).__name__), 'ids' : []}            
         else:
-            return { 'error' : None, 'ids' : ids }
+            error_msg = None
+            json_out = { 'error' : None, 'ids' : ids }
         
+        if error_msg:
+            cherrypy.log('%s %s' % (cherrypy.request.path_info, error_msg), context = 'TS', severity = logging.ERROR)
+        
+        return json_out
 
     @cherrypy.expose
     @require(is_logged())
@@ -103,16 +108,22 @@ class Routes:
         try:
             records = db.get(collection, json_in)
         except ValidationError as e:
-            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)), 'records' : []}
+            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            json_out = {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)), 'records' : []}
         except TSValidationError as e:
-            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s: %s' % (type(e).__name__, str(e)), 'records' : []}
+            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            json_out = {'error' : '%s: %s' % (type(e).__name__, str(e)), 'records' : []}
         except Exception as e:
-            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s internal exception' % (type(e).__name__), 'records' : []}   
+            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            json_out = {'error' : '%s internal exception' % (type(e).__name__), 'records' : []}   
         else:
-            return { 'error' : None, 'records' : records }
+            error_msg = None
+            json_out = { 'error' : None, 'records' : records }
+        
+        if error_msg:
+            cherrypy.log('%s %s' % (cherrypy.request.path_info, error_msg), context = 'TS', severity = logging.ERROR)
+        
+        return json_out
      
     @cherrypy.expose
     @require(is_logged())
@@ -133,16 +144,22 @@ class Routes:
         try:
             ids = db.remove(collection, json_in)
         except ValidationError as e:
-            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)), 'ids' : []}
+            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            json_out = {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)), 'ids' : []}
         except TSValidationError as e:
-            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s: %s' % (type(e).__name__, str(e)) }
+            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            json_out = {'error' : '%s: %s' % (type(e).__name__, str(e)) }
         except Exception as e:
-            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s internal exception' % (type(e).__name__) }   
+            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            json_out = {'error' : '%s internal exception' % (type(e).__name__) }   
         else:
-            return { 'error' : None }
+            error_msg = None
+            json_out = { 'error' : None }
+        
+        if error_msg:
+          cherrypy.log('%s %s' % (cherrypy.request.path_info, error_msg), context = 'TS', severity = logging.ERROR)
+        
+        return json_out
             
     @cherrypy.expose
     @require(is_logged())
@@ -164,16 +181,23 @@ class Routes:
         try:
             db.update(collection, json_in)
         except ValidationError as e:
-            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)), 'ids' : []}
+            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            json_out = {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)), 'ids' : []}
         except TSValidationError as e:
-            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s: %s' % (type(e).__name__, str(e)) }
+            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            json_out = {'error' : '%s: %s' % (type(e).__name__, str(e)) }
         except Exception as e:
-            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s internal exception' % (type(e).__name__) }   
+            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            json_out = {'error' : '%s internal exception' % (type(e).__name__) }   
         else:
-            return { 'error' : None }
+            error_msg = None
+            json_out = { 'error' : None }
+
+        if error_msg:
+            cherrypy.log('%s %s' % (cherrypy.request.path_info, error_msg), context = 'TS', severity = logging.ERROR)
+        
+        return json_out
+        
 
     @cherrypy.expose
     @require(is_logged())
@@ -195,14 +219,20 @@ class Routes:
         try:
             returned_dict = getattr(datamine, action)(json_in)
         except ValidationError as e:
-            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)) }
+            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            json_out = {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)) }
         except TSValidationError as e:
-            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s: %s' % (type(e).__name__, str(e)) }
+            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            json_out = {'error' : '%s: %s' % (type(e).__name__, str(e)) }
         except Exception as e:
-            print '\n[TS_DEBUG] %s %s\n%s: %s\n%s\n' % (cherrypy.request.path_info, str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            return {'error' : '%s internal exception' % (type(e).__name__) }       
+            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            json_out = {'error' : '%s internal exception' % (type(e).__name__) }       
         else:
-            return dict({ 'error' : None }, **returned_dict)
+            error_msg = None
+            json_out = dict({ 'error' : None }, **returned_dict)
+        
+        if error_msg:
+            cherrypy.log('%s %s' % (cherrypy.request.path_info, error_msg), context = 'TS', severity = logging.ERROR)
+        
+        return json_out
         

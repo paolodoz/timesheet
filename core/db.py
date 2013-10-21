@@ -7,10 +7,12 @@ from validation import TSValidationError, recursive_merge, update_password_salt_
 from permissions import check_action_permissions, check_criteria_permissions, check_projection_permissions
 from bson.objectid import ObjectId
 from config import collections, conf_mongodb, conf_auth, conf_auth_db
-import string, hashlib, random, types
+import string, hashlib, random, types, cherrypy, logging
 
 connection = Connection(conf_mongodb['hostname'], conf_mongodb['port'])
 db = connection[conf_mongodb['db']]
+
+db_log_severity = logging.INFO
 
 def get(collection, criteria_projection):
     """Get selected records from collection, and return it as json
@@ -29,8 +31,10 @@ def get(collection, criteria_projection):
     # Sanify criteria (to match with sanified documents)
     sanified_criteria = sanitize_objectify_json(criteria)
     
+    cherrypy.log('%s' % (sanified_criteria), context = 'TS.GET.%s.criteria' % collection, severity = db_log_severity)
+    cherrypy.log('%s' % (projection), context = 'TS.GET.%s.projection' % collection, severity = db_log_severity)
+    
     # Request
-    print '[TS_DEBUG_CRITERIA] %s' % (sanified_criteria)
     return stringify_objectid_cursor(db[collection].find(sanified_criteria, projection))
 
 
@@ -44,10 +48,12 @@ def remove(collection, criterias = []):
         check_criteria_permissions(collection, criteria)
 
     # Sanify criteria (to match with sanified documents)
-    criterias = sanitize_objectify_json(criterias)
+    sanified_criterias = sanitize_objectify_json(criterias)
+    
+    cherrypy.log('%s' % (criterias), context = 'TS.REMOVE.%s.criteria' % collection, severity = db_log_severity)
     
     # Requests
-    for criteria in criterias:
+    for criteria in sanified_criterias:
         db[collection].remove(criteria)
             
 def add(collection, documents_list):
@@ -67,6 +73,8 @@ def add(collection, documents_list):
     # Eventually rewrite password and salt
     update_password_salt_user_list(collection, sanified_documents_list)
     
+    cherrypy.log('%s' % (sanified_documents_list), context = 'TS.ADD.%s.documents' % collection, severity = db_log_severity)
+    
     # Request
     return stringify_objectid_list(db[collection].insert(sanified_documents_list))
 
@@ -83,6 +91,8 @@ def update(collection, document):
     
     # Sanify documents
     sanified_document = sanitize_objectify_json(document)
+    
+    cherrypy.log('%s' % (document), context = 'TS.UPDATE.%s.document' % collection, severity = db_log_severity)
     
     db_collection = db[collection].find_one({ '_id' : sanified_document['_id'] })
     db[collection].update({ '_id' : sanified_document['_id'] }, recursive_merge(db_collection, sanified_document))

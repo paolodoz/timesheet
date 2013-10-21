@@ -1,4 +1,4 @@
-import ldap, sys
+import ldap, sys, logging
 from core.config import conf_auth_ldap
 from core.validation import validate_json_list, sanitize_objectify_json, update_password_salt_user_json
 from core.db import db
@@ -24,7 +24,7 @@ def check_credentials(username, password, migrate=True, group_on_migration = 'em
         if migrate and not _user_exists_in_db(username):
             id = _migrate_user_to_db(ldap_result_dict, password, group_on_migration)
             if not id:
-                print 'Some error occurred migrating user from LDAP to database, please check.'
+                cherrypy.log('Some error occurred migrating user from LDAP to database, please check.', context = 'TS.LDAP_AUTH', severity = logging.ERROR)
         
         return None
     else:
