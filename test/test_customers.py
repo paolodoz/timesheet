@@ -32,10 +32,6 @@ class CustomerAPIAsEmployee(TestCaseAsEmployee):
         
 class CustomerAPIAsManager(TestCaseAsManager):
     
-    def test_customer_ok(self):
-        self._assert_req('/get/customer', [ {  }, { 'address' : 1 }], { 'error': None, 'records' : [ ] })
-        
-    
     def test_customer_ko(self):
         # TODO: test /get/ 
         self._assert_req('/remove/customer', [ { 'name' : 'CUSTOMERTEST' } ], {u'error': u"TSValidationError: Action 'remove' in 'customer' is restricted for current user"})
