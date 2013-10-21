@@ -7,7 +7,7 @@ import sys
 import time
 import threading
 
-from cherrypy._cpcompat import basestring, get_daemon, get_thread_ident, ntob, set
+from cherrypy._cpcompat import basestring, get_daemon, get_thread_ident, ntob, set, Timer, SetDaemonProperty
 
 # _module__file__base is used by Autoreload to make
 # absolute any filenames retrieved from sys.modules which are not
@@ -421,13 +421,18 @@ class PIDFile(SimplePlugin):
             pass
 
 
-class PerpetualTimer(threading._Timer):
-    """A responsive subclass of threading._Timer whose run() method repeats.
+class PerpetualTimer(Timer):
+    """A responsive subclass of threading.Timer whose run() method repeats.
 
     Use this timer only when you really need a very interruptible timer;
     this checks its 'finished' condition up to 20 times a second, which can
     results in pretty high CPU usage
     """
+
+    def __init__(self, *args, **kwargs):
+        "Override parent constructor to allow 'bus' to be provided."
+        self.bus = kwargs.pop('bus', None)
+        super(PerpetualTimer, self).__init__(*args, **kwargs)
 
     def run(self):
         while True:
@@ -437,13 +442,15 @@ class PerpetualTimer(threading._Timer):
             try:
                 self.function(*self.args, **self.kwargs)
             except Exception:
-                self.bus.log("Error in perpetual timer thread function %r." %
-                             self.function, level=40, traceback=True)
+                if self.bus:
+                    self.bus.log(
+                        "Error in perpetual timer thread function %r." %
+                        self.function, level=40, traceback=True)
                 # Quit on first error to avoid massive logs.
                 raise
 
 
-class BackgroundTask(threading.Thread):
+class BackgroundTask(SetDaemonProperty, threading.Thread):
     """A subclass of threading.Thread whose run() method repeats.
 
     Use this class for most repeating tasks. It uses time.sleep() to wait
@@ -462,6 +469,9 @@ class BackgroundTask(threading.Thread):
         self.running = False
         self.bus = bus
 
+        # default to daemonic
+        self.daemon = True
+
     def cancel(self):
         self.running = False
 
@@ -479,9 +489,6 @@ class BackgroundTask(threading.Thread):
                                  % self.function, level=40, traceback=True)
                 # Quit on first error to avoid massive logs.
                 raise
-
-    def _set_daemon(self):
-        return True
 
 
 class Monitor(SimplePlugin):

@@ -54,10 +54,10 @@ with customized or extended components. The core API's are:
  * WSGI API
 
 These API's are described in the CherryPy specification:
-https://bitbucket.org/cherrypy/cherrypy/wiki/CherryPySpec
+http://www.cherrypy.org/wiki/CherryPySpec
 """
 
-__version__ = "3.2.2"
+__version__ = "3.2.3"
 
 from cherrypy._cpcompat import urljoin as _urljoin, urlencode as _urlencode
 from cherrypy._cpcompat import basestring, unicodestr, set
