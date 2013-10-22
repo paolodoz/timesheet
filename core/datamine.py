@@ -92,22 +92,28 @@ def report_users_hours(criteria):
     validate_data_request('report_users_hours', criteria)
     sanified_criteria = sanitize_objectify_json(criteria)
     
+    
     # Prepare the aggregation pipe
     
-    matches = { }
+    
+    matches_on_users = {}
+    if sanified_criteria['users_ids']:
+        matches_on_users['users_ids'] = { '$in' : sanified_criteria['users_ids'] }
+    
+    matches_on_users_hours = { }
     # Match optional projects filters
     if sanified_criteria['projects']:
-        matches['users.hours.project'] = { '$in' : sanified_criteria['projects'] }
+        matches_on_users_hours['users.hours.project'] = { '$in' : sanified_criteria['projects'] }
     
     # Match optional extra hours filter 
     if sanified_criteria['hours_standard'] == True and sanified_criteria['hours_extra'] == False:
-        matches['users.hours.isextra'] = True
+        matches_on_users_hours['users.hours.isextra'] = True
     elif sanified_criteria['hours_standard'] == False and sanified_criteria['hours_extra'] == True:
-        matches['users.hours.isextra'] = False
+        matches_on_users_hours['users.hours.isextra'] = False
         
     # Match optional task filter
     if sanified_criteria['tasks']:
-        matches['users.hours.task'] = { '$in' : sanified_criteria['tasks'] }
+        matches_on_users_hours['users.hours.task'] = { '$in' : sanified_criteria['tasks'] }
     
     aggregation_pipe = [ 
                         { '$match': 
@@ -116,13 +122,10 @@ def report_users_hours(criteria):
                            '$gte' : sanified_criteria['start'] } 
                           } }, 
                         { '$unwind' : '$users' }, 
-                        { '$match': 
-                         {  'users.user_id' : 
-                          { '$in' : sanified_criteria['users_ids'] } 
-                          } 
+                        { '$match': matches_on_users 
                          }, 
                         { '$unwind' : '$users.hours' }, 
-                        { '$match' : matches
+                        { '$match' : matches_on_users_hours
                          },
                          { '$group' : 
                           { '_id' : { 
