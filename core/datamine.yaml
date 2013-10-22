@@ -3,22 +3,24 @@ report_users_hours:
   type: object
   additionalProperties: False
   properties: 
-    date_from: 
+    start: 
       type: string
       format: date
-    date_to:
+    end:
       type: string
       format: date
-    users:
+    users_ids:
       type: array
       items:
         type: string
-    project:
-      type: string
+    projects:
+      type: array
+      items:
+        type: string
     hours_standard:
-      type: bool
+      type: boolean
     hours_extra:
-      type: bool
+      type: boolean
     tasks:
       type: array
       items:

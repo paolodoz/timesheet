@@ -12,7 +12,7 @@ def _function_clean_id(container):
             container['ids'] = ['']*len(container['ids'])
         else:
             for k, v in container.items():
-                if k == '_id' or k.endswith('._id'):
+                if (k == '_id' or k.endswith('._id')) and isinstance(container[k], types.StringTypes):
                     container[k] = ''
 
 def clean_id(json_in):
@@ -47,8 +47,8 @@ class TestClassBase(unittest.TestCase):
         
     def _assert_req(self, uri, json_in, json_expected):
         json_out = self._request(uri, json_in)
+        print json_out
         self.assertEqual(clean_id(copy.deepcopy(json_out)), json_expected)
-        
         return json_out
         
     def tearDown(self):

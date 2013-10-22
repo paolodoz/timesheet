@@ -3,6 +3,12 @@ from permissions import check_action_permissions, check_criteria_permissions, ch
 from bson.objectid import ObjectId
 from core.validation import TSValidationError
 from core.db import db
+import cherrypy, logging
+
+try:
+    from pymongo.objectid import ObjectId
+except ImportError as e:
+    from bson import ObjectId
 
 def push_days(documents_list):
     
@@ -52,7 +58,7 @@ def search_days(criteria):
     
     POST /data/search_days/
     
-    Expects a  { 'date_from' : 'date1', 'date_to' : 'date2', 'user_id' : 'user_id' } 
+    Expects a  { 'start' : 'date1', 'end' : 'date2', 'user_id' : 'user_id' } 
     Returns { 'error' : string, 'records' : [ { }, { }, .. ]  } 
     """
     
@@ -63,11 +69,75 @@ def search_days(criteria):
     user_id = sanified_criteria['user_id']
 
     # Prepare the criteria with date range && user_id
-    prepared_criteria = { "date" :  {"$gte": sanified_criteria['date_from'], "$lte": sanified_criteria['date_to']}, "users.user_id" : user_id }
+    prepared_criteria = { "date" :  {"$gte": sanified_criteria['start'], "$lte": sanified_criteria['end']}, "users.user_id" : user_id }
     check_criteria_permissions('day', prepared_criteria)
     
     # Prepare the projection to return only date and users.date where user id is correct
     projection = { 'date' : 1, 'users' : { '$elemMatch' : { 'user_id' : user_id }}}
 
     return { 'records' : stringify_objectid_cursor(db.day.find(prepared_criteria, projection)) }
+
+
+def report_users_hours(criteria):
+    
+    """
+    Get report grouped by users
+    
+    POST /data/search_days/
+    
+    Expects a  { 'start' : '', 'end' : '', 'users' : [], 'projects' : [], hours_standard : bool, hours_extra : bool, tasks : [] } 
+    Returns { 'error' : string, 'records' : [ { }, { }, .. ]  } 
+    """
+    
+    validate_data_request('report_users_hours', criteria)
+    sanified_criteria = sanitize_objectify_json(criteria)
+    
+    # Prepare the aggregation pipe
+    
+    matches = { }
+    # Match optional projects filters
+    if sanified_criteria['projects']:
+        matches['users.hours.project'] = { '$in' : sanified_criteria['projects'] }
+    
+    # Match optional extra hours filter 
+    if sanified_criteria['hours_standard'] == True and sanified_criteria['hours_extra'] == False:
+        matches['users.hours.isextra'] = True
+    elif sanified_criteria['hours_standard'] == False and sanified_criteria['hours_extra'] == True:
+        matches['users.hours.isextra'] = False
+        
+    # Match optional task filter
+    if sanified_criteria['tasks']:
+        matches['users.hours.task'] = { '$in' : sanified_criteria['tasks'] }
+    
+    aggregation_pipe = [ 
+                        { '$match': 
+                         { "date": 
+                          { '$lte' : sanified_criteria['end'], 
+                           '$gte' : sanified_criteria['start'] } 
+                          } }, 
+                        { '$unwind' : '$users' }, 
+                        { '$match': 
+                         {  'users.user_id' : 
+                          { '$in' : sanified_criteria['users_ids'] } 
+                          } 
+                         }, 
+                        { '$unwind' : '$users.hours' }, 
+                        { '$match' : matches
+                         },
+                         { '$group' : 
+                          { '_id' : { 
+                                     'user_id' : '$users.user_id', 
+                                     'date' : '$date' 
+                                     }, 
+                           'hours' : { '$push' : '$users.hours'  } 
+                           } 
+                          }, 
+                        { '$sort' : { '_id' : 1 } }
+                        ]
+                       
+    cherrypy.log(aggregation_pipe.__repr__(), context = 'TS.REPORT_USER_HOURS.aggregation', severity = logging.INFO)
+    
+    aggregation_result = db.day.aggregate(aggregation_pipe)
+    
+    return { 'records' : stringify_objectid_cursor(aggregation_result['result']) }
     
