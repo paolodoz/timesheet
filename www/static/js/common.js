@@ -429,6 +429,52 @@ var offer = {
   },
 }
 
+var report = {
+  load: function (form, callback) {
+    var report, url, hours, i;
+    report = {};
+    url = "/report_users_hours";
+    report.start = $("#reportstart").val();
+    report.end = $("#reportend").val();
+    report.project = $("#reportproject").val();
+    hours = $("label.active").children().attr("id").substr(5);
+    if(hours == "B") {
+      report.hours_standard = true;
+      report.hours_extra = true;
+    } else if(hours == "N") {
+      report.hours_standard = true;
+      report.hours_extra = false;
+    } else {
+      report.hours_standard = false;
+      report.hours_extra = true;
+    }
+    report.users = new Array();
+    i = 0;
+    $("#usersList li.active").each(function() {
+      report.users[i++] = $(this).attr("id");
+    });
+    report.tasks = new Array();
+    i = 0;
+    $("#reporttasks > option:selected").each(function() {
+      report.tasks[i++] = Number($(this).val());
+    });
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: JSON.stringify(report),
+      success: function(data) {
+        if(!data.error) {
+          callback(data);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
+}
+
 function showmessage(type, msg) {
   var box = $("#msgbox");
   box.removeClass();

@@ -16,6 +16,10 @@ $(document).ready(function() {
   $("#btnreset").click(function() {
     resetReportsForm();
   });
+  $("#reportForm").submit(function(event) {
+    event.preventDefault();
+    report.load("reportForm", loadReportResults);
+  });
 });
 
 function loadProjectsList(list) {
@@ -52,6 +56,10 @@ function loadProjects(data, container) {
     htmlselect += "<option value='" + data.records[i]._id + "'>" + data.records[i].name + "</option>";
   }
   $("#" + container).html(htmlselect);
+}
+
+function loadReportResults(data) {
+	alert(data);
 }
 
 //restore visibility for each element in list
