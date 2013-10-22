@@ -433,7 +433,7 @@ var report = {
   load: function (form, callback) {
     var report, url, hours, i;
     report = {};
-    url = "/report_users_hours";
+    url = "/data/report_users_hours";
     report.start = $("#reportstart").val();
     report.end = $("#reportend").val();
     report.project = $("#reportproject").val();
