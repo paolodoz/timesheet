@@ -16,6 +16,10 @@ $(document).ready(function() {
   $("#btnreset").click(function() {
     resetReportsForm();
   });
+  $("#reportForm").submit(function(event) {
+    event.preventDefault();
+    report.load("reportForm", loadReportResults);
+  });
 });
 
 function loadProjectsList(list) {
@@ -54,6 +58,10 @@ function loadProjects(data, container) {
   $("#" + container).html(htmlselect);
 }
 
+function loadReportResults(data) {
+	alert(data);
+}
+
 //restore visibility for each element in list
 function resetvisibility(elem) {
   $(elem).each(function () {
@@ -80,7 +88,7 @@ function filterlist(list, currenttext) {
       <input type="text" class="form-control rapidsearch" placeholder="Rapid Search" id="txtusers">
     </div>
     <p></p>
-    <ul class="list-group" id="usersList">
+    <ul class="list-group" id="usersList"></ul>
   </div>
   <div class="col-lg-5">
     <h3>Report Details</h3>
@@ -136,6 +144,5 @@ function filterlist(list, currenttext) {
     </div>
 </div>
     </form>
-  </div>
   </div>
 </div>
