@@ -478,7 +478,7 @@ var report = {
       data: JSON.stringify(report),
       success: function(data) {
         if(!data.error) {
-          callback(data);
+          callback(data.records);
         } else {
           showmessage("error", data.error);
         }
