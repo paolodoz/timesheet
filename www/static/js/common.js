@@ -1,4 +1,5 @@
 var user = {
+  usr: new Array(),
   load : function (filter, callback, target) {
     $.ajax({
       type: "POST",
@@ -6,6 +7,7 @@ var user = {
       data: JSON.stringify(filter),
       success: function(data) {
         if(!data.error) {
+          user.usr = data.records;
           callback(data, target);
         } else {
           showmessage("error", data.error);
@@ -57,6 +59,16 @@ var user = {
       },
       dataType: "json",
     });
+  },
+  getname : function(id) {
+    var i;
+    if(!this.usr)
+      return "error";
+    for(i = 0; i < this.usr.length; i++) {
+      if(this.usr[i]._id == id)
+        return this.usr[i].name + " " + this.usr[i].surname;
+    }
+    return "error";
   }
 }
 
