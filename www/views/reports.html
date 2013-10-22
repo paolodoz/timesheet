@@ -65,12 +65,10 @@ function loadReportResults(data) {
   var i, j, table="<table class='table table-condensed table-striped'>";
   for(i = 0; i < data.length; i++) {
     for(j = 0; j < data[i].hours.length; j++) {
-      table+="<tr><td>" + data[i]._id.date +  "</td><td>" + user.getname(data[i]._id.user_id) + "</td><td>" + project.getname(data[i].hours[j].project) + "</td><td>" + data[i].hours[j].amount + "h</td>";
+      table+="<tr><td>" + data[i]._id.date +  "</td><td>" + user.getname(data[i]._id.user_id) + "</td><td>" + project.getname(data[i].hours[j].project) + "</td><td>" + data[i].hours[j].amount + "h ";
       if(data[i].hours[j].isextra)
-        table += "<td>Extra hours</td>";
-      else
-        table += "<td></td>";
-      table += "</tr>";
+        table += "<span class='label label-danger'>Extra hour</span>";
+      table += "</td></tr>";
     }
   }
   table+="</table>";
