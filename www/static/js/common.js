@@ -449,10 +449,10 @@ var report = {
       report.hours_standard = false;
       report.hours_extra = true;
     }
-    report.users = new Array();
+    report.users_ids = new Array();
     i = 0;
     $("#usersList li.active").each(function() {
-      report.users[i++] = $(this).attr("id");
+      report.users_ids[i++] = $(this).attr("id");
     });
     report.tasks = new Array();
     i = 0;
