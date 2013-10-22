@@ -436,7 +436,8 @@ var report = {
     url = "/data/report_users_hours";
     report.start = $("#reportstart").val();
     report.end = $("#reportend").val();
-    report.project = $("#reportproject").val();
+    report.projects =  new Array();
+    report.projects[0] = $("#reportproject").val();
     hours = $("label.active").children().attr("id").substr(5);
     if(hours == "B") {
       report.hours_standard = true;
