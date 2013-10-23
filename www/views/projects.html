@@ -1,3 +1,5 @@
+<script src="/static/js/jquery.colorPicker.js"></script>
+<link href="/static/css/colorPicker.css" rel="stylesheet" media="screen">
 <script type="text/javascript">
 var isupdate = false;
 $(document).ready(function() {
@@ -27,6 +29,8 @@ $(document).ready(function() {
     project.update(isupdate, "projectForm", resetProjectsForm);
     loadProjectsList("projectsList");
   });
+  $("#projectbkgcolor").colorPicker({pickerDefault: '#008000'});
+  $("#projecttxtcolor").colorPicker({pickerDefault: '#FFFFFF'});
 });
 
 function loadProjectsList(list) {
@@ -115,6 +119,8 @@ function loadProjectDetails(data,container) {
   $("#usersForm h4 span").text(data.records[0].responsible.name);
   $("#responsibleid").val(data.records[0].responsible._id);
   setActiveUsers(data.records[0].employees);
+  $("#projectbkgcolor").prev("span").css("background-color",$("#projectbkgcolor").val());
+  $("#projecttxtcolor").prev("span").css("background-color",$("#projecttxtcolor").val());
   $(".btn-danger").removeClass("hidden");
   $("#btnsubmit").html("<span class='glyphicon glyphicon-edit'></span> Update");
 }
@@ -214,6 +220,22 @@ function filterlist(list, currenttext) {
       <input type="text" class="form-control datepicker" id="projectend" placeholder="2020-12-31">
     </div>
   </div>
+<div class="form-group">
+  <label for="projectbkgcolor" class="col-lg-4 control-label">Background Color</label>
+  <div class="col-lg-6">
+    <div class="input-group">
+      <input type="text" class="form-control color" id="projectbkgcolor" placeholder="#ffffff">
+    </div>
+  </div>
+</div>
+<div class="form-group">
+  <label for="projecttxtcolor" class="col-lg-4 control-label">Text Color</label>
+  <div class="col-lg-6">
+    <div class="input-group">
+      <input type="text" class="form-control color" id="projecttxtcolor" placeholder="#ffffff">
+    </div>
+  </div>
+</div>
 <div class="form-group">
   <label for="projecttasks" class="col-lg-4 control-label">Tasks</label>
   <div class="col-lg-6">

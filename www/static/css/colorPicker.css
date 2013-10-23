@@ -1,0 +1,59 @@
+.input-prepend .colorPicker-picker.add-on, .input-append .colorPicker-picker.add-on, .colorPicker-picker {
+  height: 28px;
+  width: 28px;
+  padding: 0 !important;
+  border: 1px solid #ccc;
+  cursor: pointer;
+  line-height: 20px;
+  display: inline-block;
+  box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
+  -moz-box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
+  -webkit-box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
+  -o-box-shadow: 0px 1px 1px rgba(0, 0, 0, 0.075) inset;
+}
+
+.colorPicker-palette, .colorPicker-palette.dropdown-menu {
+  width: 234px;
+  position: absolute;
+  background-color: white;
+  padding: 10px;
+  z-index: 9999;
+}
+
+.colorPicker-palette .colorPicker-swatch-container {
+  padding: 0;
+  margin: 0;
+  display: inline-block;
+}
+
+.colorPicker-palette .colorPicker-swatch-container a {
+  padding: 3px;
+  border-radius: 3px;
+  margin: 0;
+  line-height: 12px;
+}
+
+.colorPicker-palette .colorPicker-swatch {
+  height: 18px;
+  width: 18px;
+  display: inline-block;
+  border: 1px solid #666;
+  border-radius: 3px;
+  margin: 0;
+  cursor: pointer;
+  line-height: 12px;
+}
+
+.colorPicker-palette .colorPicker-addSwatchContainer {
+  margin-top: 10px;
+}
+
+.colorPicker-palette .colorPicker-addSwatchContainer .colorPicker-addSwatchInput {
+  margin-bottom: 0;
+}
+
+.colorPicker-palette .colorPicker-addSwatchContainer .colorPicker-addSwatchButton {
+  margin-left: 8px;
+  margin-bottom: 5px;
+  height: 28px;
+}

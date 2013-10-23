@@ -85,7 +85,7 @@ $(document).ready( function() {
 
 function userdata(data){
   me = data;
-  var filter = [ { 'employees._id' : me._id }, { name: 1, tasks : 1 } ];
+  var filter = [ { 'employees._id' : me._id }, { name: 1, tasks : 1, bkgcolor: 1, txtcolor:1 } ];
   project.load(filter,loadprojects,"");
 }
 
@@ -209,6 +209,8 @@ function loadCalendarHours(list) {
         singleentry = list[i].users[0].hours[j];
         event.id = list[i].date + "+" + singleentry.project + "+" + singleentry.isextra;
         event.title = project.getname(singleentry.project) + " " + singleentry.amount + "h";
+        event.backgroundColor = project.getbkgcolor(singleentry.project);
+        event.textColor = project.gettxtcolor(singleentry.project);
         event.start = list[i].date;
         event.end = list[i].date;
         event.note = singleentry.note;

@@ -164,6 +164,26 @@ var project = {
         return this.prj[i].name;
     }
     return "error";
+  },
+  getbkgcolor : function(id) {
+    var i;
+    if(!this.prj)
+      return "error";
+    for(i = 0; i < this.prj.length; i++) {
+      if(this.prj[i]._id == id)
+        return this.prj[i].bkgcolor;
+    }
+    return "error";
+  },
+  gettxtcolor : function(id) {
+    var i;
+    if(!this.prj)
+      return "error";
+    for(i = 0; i < this.prj.length; i++) {
+      if(this.prj[i]._id == id)
+        return this.prj[i].txtcolor;
+    }
+    return "error";
   }
 }
 
