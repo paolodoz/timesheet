@@ -114,9 +114,9 @@ def report_users_hours(criteria):
     
     # Match optional extra hours filter 
     if sanified_criteria['hours_standard'] == True and sanified_criteria['hours_extra'] == False:
-        match_users_projects_extras_tasks['users.hours.isextra'] = True
-    elif sanified_criteria['hours_standard'] == False and sanified_criteria['hours_extra'] == True:
         match_users_projects_extras_tasks['users.hours.isextra'] = False
+    elif sanified_criteria['hours_standard'] == False and sanified_criteria['hours_extra'] == True:
+        match_users_projects_extras_tasks['users.hours.isextra'] = True
         
     # Match optional task filter
     if sanified_criteria['tasks']:
