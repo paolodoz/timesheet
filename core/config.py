@@ -43,3 +43,15 @@ conf_auth_db = conf['auth_db']
 conf_auth_ldap = conf['auth_ldap']
 conf_mongodb = conf['mongodb']
 conf_logging = conf['logging']
+conf_uploads = conf['uploads']
+
+# Create configurations folders if do not exist
+paths =  [ conf_session['tools.sessions.storage_path'], conf_uploads['folder'] ]
+
+for path in paths:
+    if not os.path.isdir(path):
+        # TODO: check also folder permissions
+        try:
+            os.mkdir(path, 0700)
+        except Exception as e:
+            sys.exit('Can\'t create folder \'%s\'' % (path))

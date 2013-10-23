@@ -6,6 +6,7 @@ from glob import glob
 from core import datamine
 from jsonschema.exceptions import ValidationError
 from core.validation import TSValidationError
+from core import uploads
 
 
 # Set available views dictionary
@@ -13,17 +14,6 @@ views = {}
 for view_path in glob(os.path.join(views_folder, '*.html')):
     views[os.path.splitext(os.path.basename(view_path))[0]] = view_path
 
-
-# Create session folder if does not exist
-session_path = conf_session['tools.sessions.storage_path']
-if not os.path.isdir(session_path):
-    # TODO: check also folder permissions
-    try:
-        os.mkdir(session_path, 0700)
-    except Exception as e:
-        raise
-        sys.exit('Can\'t create session folder \'%s\'' % (session_path))
-    
 
 
 class Routes:
@@ -244,4 +234,31 @@ class Routes:
             cherrypy.log('%s %s' % (cherrypy.request.path_info, error_msg), context = 'TS', severity = logging.ERROR)
         
         return json_out
+     
+     
+    @cherrypy.expose
+    @require(is_logged())
+    @cherrypy.tools.allow(methods=['POST'])
+    @cherrypy.tools.json_out(on = True)
+    def upload(self, data):
+        """
+        Upload files. 
         
+        POST /upload/
+        
+        Returns { 'error' : string }
+        """
+        
+        try:
+            id_upload = uploads.upload(data)
+        except Exception as e:
+            error_msg = '%s %s\n%s %s\n' % (str(''), type(e).__name__, str(e), traceback.format_exc())
+            json_out = {'error' : '%s internal exception' % (type(e).__name__), 'id_upload' : '' }       
+        else:
+            error_msg = None
+            json_out = { 'error' : None, 'id_upload' : id_upload}
+        
+        if error_msg:
+            cherrypy.log('%s %s' % (cherrypy.request.path_info, error_msg), context = 'TS', severity = logging.ERROR)
+        
+        return json_out

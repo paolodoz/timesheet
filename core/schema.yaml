@@ -218,4 +218,14 @@ offer:
     upload_id:
       optional: True
       type: string
+      
+upload:
+  type: object
+  additionalProperties: False
+  properties:
+    name:
+      type: string
+    content_type:
+      type: string
+
 

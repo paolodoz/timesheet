@@ -45,3 +45,6 @@ auth_ldap:
 logging:
   error_log: NOTSET
   access_log: NOTSET
+
+uploads:
+  folder: uploads/
