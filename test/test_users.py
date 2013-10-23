@@ -26,7 +26,7 @@ class UserAPIAsAdmin(TestClassBase):
         # Add one customer (return one id)
         self._assert_req('/add/user', [ { 'name' : 'UNIQTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ], { 'error' : None, 'ids' : [ '' ] })
         # Add a double customer (UNIQ test)
-        self._assert_req('/add/user', [ { 'name' : 'UNIQTEST', 'surname' : 'SURNAME2', 'username' : 'USERNAME', 'email' : 'EMAIL2@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
+        self._assert_req('/add/user', [ { 'name' : 'UNIQTEST', 'surname' : 'SURNAME2', 'username' : 'USERNAME', 'email' : 'EMAIL2@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : "DuplicateKeyError internal exception", 'ids' : [ ] })
         # Get the inserted customer (is only one because UNIQ)
         self._assert_req('/get/user', [ { 'name' : 'UNIQTEST' }, { 'surname' : 1, '_id' : 0 } ], { 'error': None, 'records' : [ { 'surname' : 'SURNAME'  } ] })
          

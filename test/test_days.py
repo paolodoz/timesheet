@@ -67,13 +67,13 @@ class DayAPIAsAdmin(TestClassBase):
                                       }
                                     ], { 'error' : None })   
         # Get the day 2000-10-17 for user 0                                        
-        self._assert_req('/data/search_days', { 'date_from' : '2000-10-17', 'date_to' : '2000-10-17', 'user_id' : '0' }, {u'records': [{u'date': u'2000-10-17', u'_id': '', u'users': [{u'hours': [], u'user_id': u'0'}]}], u'error': None})
+        self._assert_req('/data/search_days', { 'start' : '2000-10-17', 'end' : '2000-10-17', 'user_id' : '0' }, {u'records': [{u'date': u'2000-10-17', u'_id': '', u'users': [{u'hours': [], u'user_id': u'0'}]}], u'error': None})
         # Get the years 2000-01-01 2003-01-01 for user 0
-        self._assert_req('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2003-01-01', 'user_id' : '0' }, {u'records': [{u'date': u'2000-10-17', u'_id': '', u'users': [{u'hours': [], u'user_id': u'0'}]}, {u'date': u'2001-02-02', u'_id': '', u'users': [{u'hours': [], u'user_id': u'0'}]}], u'error': None} )
+        self._assert_req('/data/search_days', { 'start' : '2000-01-01', 'end' : '2003-01-01', 'user_id' : '0' }, {u'records': [{u'date': u'2000-10-17', u'_id': '', u'users': [{u'hours': [], u'user_id': u'0'}]}, {u'date': u'2001-02-02', u'_id': '', u'users': [{u'hours': [], u'user_id': u'0'}]}], u'error': None} )
         # Get unexistant user 2
-        self._assert_req('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2003-01-01', 'user_id' : '2' }, {u'records': [ ], u'error': None} )
+        self._assert_req('/data/search_days', { 'start' : '2000-01-01', 'end' : '2003-01-01', 'user_id' : '2' }, {u'records': [ ], u'error': None} )
         # Get empty span 
-        self._assert_req('/data/search_days', { 'date_from' : '2010-01-01', 'date_to' : '2011-01-01', 'user_id' : '0' }, {u'records': [ ], u'error': None} )
+        self._assert_req('/data/search_days', { 'start' : '2010-01-01', 'end' : '2011-01-01', 'user_id' : '0' }, {u'records': [ ], u'error': None} )
         # Delete all inserted days
         self._assert_req('/remove/day', [ { "date" :  "2000-10-17" },  { "date" :  "2000-01-01" },  { "date" :  "2001-02-02" } ] , { 'error' : None })
         
@@ -85,9 +85,9 @@ class DayAPIAsEmployee(TestCaseAsEmployee):
         self._assert_req('/get/day', [ {  }, { 'date' : '2000-01-01' } ], {u'error': u"TSValidationError: Action 'get' in 'day' is restricted for current user", 'records' : [] } )
     
         # Get unexistant user 0
-        self._assert_req('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2003-01-01', 'user_id' : '0' }, {u'error': u"ValidationError: Error '0' is not valid"} )
+        self._assert_req('/data/search_days', { 'start' : '2000-01-01', 'end' : '2003-01-01', 'user_id' : '0' }, {u'error': u"ValidationError: Error '0' is not valid"} )
         # Get admin days 
-        self._assert_req('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2003-01-01', 'user_id' : '111111111111111111111111' }, {u'error': u"ValidationError: Error '111111111111111111111111' is not valid"} )
+        self._assert_req('/data/search_days', { 'start' : '2000-01-01', 'end' : '2003-01-01', 'user_id' : '111111111111111111111111' }, {u'error': u"ValidationError: Error '111111111111111111111111' is not valid"} )
         # TODO: add search days per project
         
         
@@ -105,9 +105,9 @@ class DayAPIAsManager(TestCaseAsManager):
         
         
         # Get wrong user_id 0
-        self._assert_req('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2003-01-01', 'user_id' : '0' }, {u'error': u"ValidationError: Error '0' is not valid"} )
+        self._assert_req('/data/search_days', { 'start' : '2000-01-01', 'end' : '2003-01-01', 'user_id' : '0' }, {u'error': u"ValidationError: Error '0' is not valid"} )
         # Get admin days 
-        self._assert_req('/data/search_days', { 'date_from' : '2000-01-01', 'date_to' : '2003-01-01', 'user_id' : '111111111111111111111111' }, {u'error': u"ValidationError: Error '111111111111111111111111' is not valid"} )
+        self._assert_req('/data/search_days', { 'start' : '2000-01-01', 'end' : '2003-01-01', 'user_id' : '111111111111111111111111' }, {u'error': u"ValidationError: Error '111111111111111111111111' is not valid"} )
         
         # Insert day with wrong user_id
         self._assert_req('/data/push_days', [ {'date': '2001-02-02', 
