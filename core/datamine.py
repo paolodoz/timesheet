@@ -96,9 +96,14 @@ def report_users_hours(criteria):
     # Prepare the aggregation pipe
     
     
-    matches_on_users = {}
+    matches_on_dates_and_user = { "date": { 
+                                           '$lte' : sanified_criteria['end'], 
+                                           '$gte' : sanified_criteria['start'] 
+                                           }
+                                 }
+    
     if sanified_criteria['users_ids']:
-        matches_on_users['users_ids'] = { '$in' : sanified_criteria['users_ids'] }
+        matches_on_dates_and_user.update({ 'users.user_id': { '$in' : sanified_criteria['users_ids'] } })
     
     matches_on_users_hours = { }
     # Match optional projects filters
@@ -116,17 +121,10 @@ def report_users_hours(criteria):
         matches_on_users_hours['users.hours.task'] = { '$in' : sanified_criteria['tasks'] }
     
     aggregation_pipe = [ 
-                        { '$match': 
-                         { "date": 
-                          { '$lte' : sanified_criteria['end'], 
-                           '$gte' : sanified_criteria['start'] } 
-                          } }, 
+                        { '$match': matches_on_dates_and_user },
                         { '$unwind' : '$users' }, 
-                        { '$match': matches_on_users 
-                         }, 
                         { '$unwind' : '$users.hours' }, 
-                        { '$match' : matches_on_users_hours
-                         },
+                        { '$match' : matches_on_users_hours },
                          { '$group' : 
                           { '_id' : { 
                                      'user_id' : '$users.user_id', 
