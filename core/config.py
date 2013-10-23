@@ -1,5 +1,4 @@
-import yaml
-import os
+import yaml, os
 from mako.lookup import TemplateLookup
 
 version = '0.1'
@@ -34,11 +33,11 @@ conf = yaml.load(file(conf_path, 'r'))
 # Adding static root dir absolute path
 conf['static']['/'] = {}
 conf['static']['/']['tools.staticdir.root'] = root_folder
-# conf['static']['tools.staticdir.dir'] = os.path.abspath(path.join())
 
 # Save conf as accessible dicts
 conf_server = conf['server']
 conf_static = conf['static']
+conf_session = conf['session']
 conf_auth = conf['auth']
 conf_auth_db = conf['auth_db']
 conf_auth_ldap = conf['auth_ldap']

@@ -1,7 +1,7 @@
-import cherrypy, os, traceback, logging
+import cherrypy, os, traceback, logging, sys
 from core.auth import AuthController, require, is_logged
 from core import db
-from config import views_folder, templates
+from config import views_folder, templates, conf_session
 from glob import glob
 from core import datamine
 from jsonschema.exceptions import ValidationError
@@ -13,14 +13,23 @@ views = {}
 for view_path in glob(os.path.join(views_folder, '*.html')):
     views[os.path.splitext(os.path.basename(view_path))[0]] = view_path
 
+
+# Create session folder if does not exist
+session_path = conf_session['tools.sessions.storage_path']
+if not os.path.isdir(session_path):
+    # TODO: check also folder permissions
+    try:
+        os.mkdir(session_path, 0700)
+    except Exception as e:
+        raise
+        sys.exit('Can\'t create session folder \'%s\'' % (session_path))
+    
+
+
 class Routes:
     
-    # Set authorization controller options
-    _cp_config = {
-        'tools.sessions.on': True,
-        'tools.auth.on': True,
-        'tools.sessions.name' : 'name'
-    }
+    # Set authorization and sessions options
+    _cp_config = conf_session
     auth = AuthController()
     
     @cherrypy.expose

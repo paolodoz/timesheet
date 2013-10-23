@@ -11,6 +11,13 @@ static:
     tools.staticdir.dir: www/static
     tools.staticdir.on: true
 
+session:
+  tools.sessions.on: true
+  tools.auth.on: true
+  tools.sessions.storage_type: file
+  tools.sessions.storage_path: /tmp/.ts_sessions
+  tools.sessions.timeout: 60
+
 mongodb:
   hostname: localhost
   port: 27017

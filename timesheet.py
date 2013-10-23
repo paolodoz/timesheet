@@ -14,7 +14,6 @@ if __name__ == '__main__':
         cherrypy_log = getattr(cherrypy.log, logname)
         cherrypy_log.setLevel(logging_level)
     
-
     routes = Routes()
     
     cherrypy.quickstart(routes, '/', config=conf_static)
