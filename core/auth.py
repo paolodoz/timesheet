@@ -135,6 +135,7 @@ class AuthController(object):
         
     def on_logout(self, username):
         """Called on logout"""
+        cherrypy.lib.sessions.expire()
     
     def get_loginform(self, username, msg="", from_page="/"):
         return templates.get_template('auth.tpl').render(message=msg)
