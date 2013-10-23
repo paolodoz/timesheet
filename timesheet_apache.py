@@ -2,9 +2,15 @@
 
 import cherrypy, logging
 import sys, os
-sys.path.insert(0, os.path.abspath(__file__))
+
+installation_path = ''
+
+if not installation_path:
+    sys.exit('Please set in \'timesheet_apache.py\' \'installation_path\' variable absolute folder path')
+
+sys.path.insert(0, installation_path)
 from core.routes import Routes
-from core.config import conf_server, conf_static, conf_logging
+from core.config import conf_server, conf_cherry, conf_logging
 
 # Update configurations
 cherrypy.config.update(conf_server)
@@ -20,6 +26,4 @@ for logname, loglevel in conf_logging.items():
     cherrypy_log.setLevel(logging_level)
 
 routes = Routes()
-
-#cherrypy.quickstart(routes, '/', config=conf_static)
-application = cherrypy.Application(routes, script_name=None, config=None)
+application = cherrypy.Application(routes, config=conf_cherry)
