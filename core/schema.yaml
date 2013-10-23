@@ -215,4 +215,7 @@ offer:
     pdf:
       optional: True
       type: string
+    upload_id:
+      optional: True
+      type: string
 
