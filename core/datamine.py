@@ -39,14 +39,23 @@ def push_days(documents_list):
         if len(users) > 1:
             raise TSValidationError("Push only one user per day")
 
-        if found and users and 'user_id' in sanified_document['users'][0]:
+        # If the date is already present and an user is specified
+        if found and users:
                                      
             user_id = users[0]['user_id']
             
+            # Drop old user data
             db.day.update({'date': date }, {'$pull': {'users': {'user_id': user_id }}})
+            # Push new one
             db.day.update({'date': date }, {'$push': {'users': {'user_id': user_id, 'hours' : users[0]['hours'] }}})
-        else:
+        
+        # If the data does not already exist and there are new users data, insert it
+        elif not found and users:
             db.day.insert(sanified_document)
+            
+        # If there is already the date but no new user data, skip it
+        else:
+            pass
 
     return { }
 
