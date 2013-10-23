@@ -89,6 +89,10 @@ project:
       type: string
     contact_person:
       type: string
+    bkgcolor:
+      type: string
+    txtcolor:
+      type: string
     start:
       type: string
       format: date
