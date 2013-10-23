@@ -135,7 +135,7 @@ def report_users_hours(criteria):
                            'hours' : { '$push' : '$users.hours'  } 
                            } 
                           }, 
-                        { '$sort' : { '_id.user_id' : 1 } }
+                        { '$sort' : { '_id.user_id' : 1, '_id.date' : 1 } }
                         ]
                        
     cherrypy.log(aggregation_pipe.__repr__(), context = 'TS.REPORT_USER_HOURS.aggregation', severity = logging.INFO)
