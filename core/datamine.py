@@ -96,35 +96,37 @@ def report_users_hours(criteria):
     # Prepare the aggregation pipe
     
     
-    matches_on_dates_and_user = { "date": { 
-                                           '$lte' : sanified_criteria['end'], 
-                                           '$gte' : sanified_criteria['start'] 
-                                           }
-                                 }
+    dates_match = { "date": { 
+                           '$lte' : sanified_criteria['end'], 
+                           '$gte' : sanified_criteria['start'] 
+                           }
+                 }
     
+    
+    match_users_projects_extras_tasks = { }
+    # Match optional users
     if sanified_criteria['users_ids']:
-        matches_on_dates_and_user.update({ 'users.user_id': { '$in' : sanified_criteria['users_ids'] } })
+        match_users_projects_extras_tasks['users.user_id'] = { '$in' : sanified_criteria['users_ids'] } 
     
-    matches_on_users_hours = { }
     # Match optional projects filters
     if sanified_criteria['projects']:
-        matches_on_users_hours['users.hours.project'] = { '$in' : sanified_criteria['projects'] }
+        match_users_projects_extras_tasks['users.hours.project'] = { '$in' : sanified_criteria['projects'] }
     
     # Match optional extra hours filter 
     if sanified_criteria['hours_standard'] == True and sanified_criteria['hours_extra'] == False:
-        matches_on_users_hours['users.hours.isextra'] = True
+        match_users_projects_extras_tasks['users.hours.isextra'] = True
     elif sanified_criteria['hours_standard'] == False and sanified_criteria['hours_extra'] == True:
-        matches_on_users_hours['users.hours.isextra'] = False
+        match_users_projects_extras_tasks['users.hours.isextra'] = False
         
     # Match optional task filter
     if sanified_criteria['tasks']:
-        matches_on_users_hours['users.hours.task'] = { '$in' : sanified_criteria['tasks'] }
+        match_users_projects_extras_tasks['users.hours.task'] = { '$in' : sanified_criteria['tasks'] }
     
     aggregation_pipe = [ 
-                        { '$match': matches_on_dates_and_user },
+                        { '$match': dates_match },
                         { '$unwind' : '$users' }, 
                         { '$unwind' : '$users.hours' }, 
-                        { '$match' : matches_on_users_hours },
+                        { '$match' : match_users_projects_extras_tasks },
                          { '$group' : 
                           { '_id' : { 
                                      'user_id' : '$users.user_id', 
