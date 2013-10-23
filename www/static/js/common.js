@@ -434,6 +434,8 @@ var offer = {
       var value, property = $(this).attr("id").substr(5);
       if (property == "_id" && !isupdate)
         return;
+      if (property == "pdf")
+        return;
       if($(this).is(':checkbox')) {
         offer[property] = $(this).is(':checked') ? true : false;
       } else {
