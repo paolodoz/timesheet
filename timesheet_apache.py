@@ -10,7 +10,7 @@ if not installation_path:
 
 sys.path.insert(0, installation_path)
 from core.routes import Routes
-from core.config import conf_server, conf_cherry, conf_logging
+from core.config import conf_server, conf_static, conf_logging
 
 # Update configurations
 cherrypy.config.update(conf_server)
@@ -26,4 +26,4 @@ for logname, loglevel in conf_logging.items():
     cherrypy_log.setLevel(logging_level)
 
 routes = Routes()
-application = cherrypy.Application(routes, config=conf_cherry)
+application = cherrypy.Application(routes, config=conf_static)
