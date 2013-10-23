@@ -15,6 +15,7 @@ def upload(file_uploading):
                 break
             uploaded_temp.write(data)
     
+        uploaded_temp.flush()
         file_id = str(db.upload.insert({ 'name' : str(file_uploading.name), 'content_type' : str(file_uploading.content_type) }))
         
         uploaded_temp_path = os.path.join(conf_uploads['folder'], uploaded_temp.name)
