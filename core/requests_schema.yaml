@@ -38,3 +38,9 @@ search_days:
       format: date
     user_id:
       type: string
+
+file_upload:
+  type: object
+  additionalProperties: False
+  properties: 
+    data: {}

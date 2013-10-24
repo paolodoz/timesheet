@@ -1,4 +1,4 @@
-from validation import validate_data_request, update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
+from validation import validate_request, update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
 from permissions import check_action_permissions, check_criteria_permissions, check_projection_permissions, check_insert_permissions
 from bson.objectid import ObjectId
 from core.validation import TSValidationError
@@ -71,7 +71,7 @@ def search_days(criteria):
     Returns { 'error' : string, 'records' : [ { }, { }, .. ]  } 
     """
     
-    validate_data_request('search_days', criteria)
+    validate_request('search_days', criteria)
     
     sanified_criteria = sanitize_objectify_json(criteria)
 
@@ -98,7 +98,7 @@ def report_users_hours(criteria):
     Returns { 'error' : string, 'records' : [ { }, { }, .. ]  } 
     """
     
-    validate_data_request('report_users_hours', criteria)
+    validate_request('report_users_hours', criteria)
     sanified_criteria = sanitize_objectify_json(criteria)
     
     
