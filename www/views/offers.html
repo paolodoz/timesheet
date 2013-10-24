@@ -24,7 +24,30 @@ $(document).ready(function() {
     offer.update(isupdate, "offerForm", resetOfferForm);
     loadOffersList("offersList");
   });
+  $("#fileupload").click(function() {
+    var value = $("#offerpdf").val();
+    if(value != "")
+      uploadFile();
+  });
 });
+
+function uploadFile() {
+  var xhr = new XMLHttpRequest();
+  var fd = new FormData();
+  fd.append("data", document.getElementById('offerpdf').files[0]);
+  xhr.addEventListener("load", uploadComplete, false);
+  xhr.addEventListener("error", uploadFailed, false);
+  xhr.open("POST", "/upload");
+  xhr.send(fd);
+}
+
+function uploadComplete(data) {
+  var response = jQuery.parseJSON( data.target.responseText )
+  $('offerupload_id').val(response.id_upload);
+}
+function uploadFailed(evt) {
+  alert("There was an error attempting to upload the file.");
+}
 
 function loadOffersList(list) {
   var filter = [{},{name:1}];
@@ -186,7 +209,9 @@ function filterlist(list, currenttext) {
 <div class="form-group">
     <label for="offerpdf" class="col-lg-4 control-label">Upload pdf file</label>
     <div class="col-lg-6">
-      <input type="file" id="offerpdf">
+<input type="hidden" id="offerupload_id" value="0">
+      <input type="file" name="data" id="offerpdf">
+<button type="button" class="btn btn-default" id="fileupload">Upload</button>
 <p id="offerpdftxt" class="form-control-static"></p>
     </div>
   </div>
