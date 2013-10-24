@@ -27,7 +27,7 @@ def push_days(documents_list):
     
     for sanified_document in sanified_documents_list:
 
-        check_insert_permissions('day', sanified_document)
+        check_insert_permissions('push_days', sanified_document)
 
         date = sanified_document['date']
         
@@ -79,7 +79,7 @@ def search_days(criteria):
 
     # Prepare the criteria with date range && user_id
     prepared_criteria = { "date" :  {"$gte": sanified_criteria['start'], "$lte": sanified_criteria['end']}, "users.user_id" : user_id }
-    check_criteria_permissions('day', prepared_criteria)
+    check_criteria_permissions('search_days', prepared_criteria)
     
     # Prepare the projection to return only date and users.date where user id is correct
     projection = { 'date' : 1, 'users' : { '$elemMatch' : { 'user_id' : user_id }}}
@@ -92,7 +92,7 @@ def report_users_hours(criteria):
     """
     Get report grouped by users
     
-    POST /data/search_days/
+    POST /data/report_users_hours/
     
     Expects a  { 'start' : '', 'end' : '', 'users' : [], 'projects' : [], hours_standard : bool, hours_extra : bool, tasks : [] } 
     Returns { 'error' : string, 'records' : [ { }, { }, .. ]  } 
@@ -103,7 +103,6 @@ def report_users_hours(criteria):
     
     
     # Prepare the aggregation pipe
-    
     
     dates_match = { "date": { 
                            '$lte' : sanified_criteria['end'], 
@@ -120,6 +119,8 @@ def report_users_hours(criteria):
     # Match optional projects filters
     if sanified_criteria['projects']:
         match_users_projects_extras_tasks['users.hours.project'] = { '$in' : sanified_criteria['projects'] }
+    
+    check_projection_permissions('day', match_users_projects_extras_tasks)
     
     # Match optional extra hours filter 
     if sanified_criteria['hours_standard'] == True and sanified_criteria['hours_extra'] == False:

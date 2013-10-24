@@ -49,9 +49,8 @@ user:
         - remove
         - add
 
+# Only administrator can call /*/day directly
 day:
-
-    # Only administrator can call /*/day directly
     action_restrictions:
       employee:
         - get
@@ -64,6 +63,7 @@ day:
         - add
         - update
 
+search_days:
     criteria_restrictions_schema:
       employee:
         type: object
@@ -79,7 +79,10 @@ day:
           users.user_id: 
             type: string
             pattern: '%%_id%%'
-            
+        required: 
+          - users.user_id   
+          
+push_days:            
     insert_restrictions_schema:
       employee:
         type: object
