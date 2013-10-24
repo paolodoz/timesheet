@@ -212,12 +212,11 @@ offer:
       type: integer
     customerref:
       type: string
-    pdf:
+    upload_ids:
       optional: True
-      type: string
-    upload_id:
-      optional: True
-      type: string
+      type: array
+      items:
+        type: string
       
 upload:
   type: object
@@ -227,5 +226,9 @@ upload:
       type: string
     content_type:
       type: string
+    uploader:
+      type: string
+    time:
+      type: date-time
 
 

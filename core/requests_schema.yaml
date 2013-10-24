@@ -44,3 +44,10 @@ file_upload:
   additionalProperties: False
   properties: 
     data: {}
+    
+file_download:
+  type: object
+  additionalProperties: False
+  properties: 
+    upload_id:
+      type: string

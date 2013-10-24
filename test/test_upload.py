@@ -85,13 +85,28 @@ class Upload(TestClassBase):
         
     
     def _assert_upload(self, filepath):
-        json_upload = json.loads(self.opener.open('https://localhost:9090/upload', { 'data': open(filepath, 'rb') }, timeout=36000).read())
+        json_upload = json.loads(self.opener.open('https://localhost:9090/file/upload', { 'data': open(filepath, 'rb') }, timeout=36000).read())
         
-        self.assertEqual(json_upload.keys(), ['id_upload', 'error'])
+        self.assertEqual(json_upload.keys(), ['upload_id', 'error'])
         self.assertIsNone(json_upload['error'])
-    
-    def test_upload(self):
-    
-        # Upload file
-        self._assert_upload('/etc/motd')
         
+        return json_upload
+    
+    def _assert_download(self, upload_id, localfilepath):
+        
+        data_download = self.opener.open('https://localhost:9090/file/download', { 'upload_id' : upload_id  }, timeout=36000).read()
+        data_local = open(localfilepath, 'rb').read()
+        
+        self.assertEqual(data_download, data_local)
+        
+    
+    def test_text(self):
+        json_upload = self._assert_upload('/etc/motd')
+        self._assert_download(json_upload['upload_id'], '/etc/motd')
+        
+    def test_binary(self):
+         
+        json_upload = self._assert_upload('/usr/bin/yes')
+        self._assert_download(json_upload['upload_id'], '/usr/bin/yes')
+        
+            

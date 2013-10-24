@@ -144,3 +144,10 @@ project:
         - remove
         - add
 
+file:
+    action_restrictions:
+      employee:
+        - remove
+        - add
+        - update
+        - get  
