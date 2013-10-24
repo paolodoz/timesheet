@@ -13,7 +13,7 @@ class DayAPIAsAdmin(TestClassBase):
                                                  }
                                                 ]
                                       }
-                                    ], { 'error' : "ValidationError: Error '-01-01' is not valid" })
+                                    ], { 'error' : "ValidationError: u'-01-01' is not a 'date'" })
         
         # Insert wrongly a day with multiple users
         self._assert_req('/data/push_days', [ {'date': '2000-01-01', 
@@ -85,16 +85,16 @@ class DayAPIAsEmployee(TestCaseAsEmployee):
         self._assert_req('/get/day', [ {  }, { 'date' : '2000-01-01' } ], {u'error': u"TSValidationError: Action 'get' in 'day' is restricted for current user", 'records' : [] } )
     
         # Get unexistant user 0
-        self._assert_req('/data/search_days', { 'start' : '2000-01-01', 'end' : '2003-01-01', 'user_id' : '0' }, {u'error': u"ValidationError: Error '0' is not valid"} )
+        self._assert_req('/data/search_days', { 'start' : '2000-01-01', 'end' : '2003-01-01', 'user_id' : '0' }, {u'error': u"ValidationError: u'0' does not match '^%s$'" % (self.employee_id)} )
         # Get admin days 
-        self._assert_req('/data/search_days', { 'start' : '2000-01-01', 'end' : '2003-01-01', 'user_id' : '111111111111111111111111' }, {u'error': u"ValidationError: Error '111111111111111111111111' is not valid"} )
+        self._assert_req('/data/search_days', { 'start' : '2000-01-01', 'end' : '2003-01-01', 'user_id' : '111111111111111111111111' }, {u'error': u"ValidationError: u'111111111111111111111111' does not match '^%s$'" % (self.employee_id)} )
         # TODO: add search days per project
         
         
         # Insert a day without user
         self._assert_req('/data/push_days', [ {'date': '2000-01-01' } ], { 'error' : None })   
         # Insert a day with the user_id of admin
-        self._assert_req('/data/push_days', [ {'date': '2000-10-17', 'users': [ { 'user_id' : '111111111111111111111111', 'hours': [] } ] } ], {u'error': u"ValidationError: Error '111111111111111111111111' is not valid"})    
+        self._assert_req('/data/push_days', [ {'date': '2000-10-17', 'users': [ { 'user_id' : '111111111111111111111111', 'hours': [] } ] } ], {u'error': u"ValidationError: u'111111111111111111111111' does not match '^%s$'" % (self.employee_id)})    
         
         
 class DayAPIAsManager(TestCaseAsManager):
@@ -105,9 +105,9 @@ class DayAPIAsManager(TestCaseAsManager):
         
         
         # Get wrong user_id 0
-        self._assert_req('/data/search_days', { 'start' : '2000-01-01', 'end' : '2003-01-01', 'user_id' : '0' }, {u'error': u"ValidationError: Error '0' is not valid"} )
+        self._assert_req('/data/search_days', { 'start' : '2000-01-01', 'end' : '2003-01-01', 'user_id' : '0' }, {u'error': u"ValidationError: u'0' does not match '^%s$'" % (self.manager_id)} )
         # Get admin days 
-        self._assert_req('/data/search_days', { 'start' : '2000-01-01', 'end' : '2003-01-01', 'user_id' : '111111111111111111111111' }, {u'error': u"ValidationError: Error '111111111111111111111111' is not valid"} )
+        self._assert_req('/data/search_days', { 'start' : '2000-01-01', 'end' : '2003-01-01', 'user_id' : '111111111111111111111111' }, {u'error': u"ValidationError: u'111111111111111111111111' does not match '^%s$'" % (self.manager_id)} )
         
         # Insert day with wrong user_id
         self._assert_req('/data/push_days', [ {'date': '2001-02-02', 
@@ -117,7 +117,7 @@ class DayAPIAsManager(TestCaseAsManager):
                                          }
                                         ]
                               }
-                            ], { u'error': u"ValidationError: Error '0' is not valid" })  
+                            ], { u'error': u"ValidationError: u'0' does not match '^%s$'" % (self.manager_id) })  
            
         # Insert day with right userid but random project
         self._assert_req('/data/push_days', [ {'date': '2000-10-17', 
@@ -129,7 +129,7 @@ class DayAPIAsManager(TestCaseAsManager):
                                                  }
                                                 ]
                                       }
-                                    ], {u'error': u"ValidationError: Error '%s' is not valid" % ('7'*24)})   
+                                    ], {u'error': u"ValidationError: u'777777777777777777777777' is not one of %s" % (str([ s.encode('utf8') for s in self.managed_projects ]))})   
            
                 
     def test_day_ok(self):

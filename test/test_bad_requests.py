@@ -10,9 +10,9 @@ class BadRequest(TestClassBase):
         # Add unexistant collection
         self._assert_req('/add/wrong', [ { 'wrong': 'param' } ], {'error' : "KeyError internal exception", 'ids' : [] })
         # Add user with unsupported param 
-        self._assert_req('/add/user', [ { 'wrong': 'param' } ], {u'error': u"ValidationError: Error '{u'wrong': u'param'}' is not valid", 'ids' : []  })
+        self._assert_req('/add/user', [ { 'wrong': 'param' } ], {u'error': u"ValidationError: Additional properties are not allowed (u'wrong' was unexpected)", 'ids' : []  })
         # Get badly formatted
-        self._assert_req('/add/day', [ {u'date': u'2000-10-17', u'UZERZ': [{u'hours': [], u'user_id': u'0'}]} ], { 'error': "ValidationError: Error '{u'date': u'2000-10-17', u'UZERZ': [{u'hours': [], u'user_id': u'0'}]}' is not valid", 'ids' : [] })
+        self._assert_req('/add/day', [ {u'date': u'2000-10-17', u'UZERZ': [{u'hours': [], u'user_id': u'0'}]} ], { 'error': "ValidationError: Additional properties are not allowed (u'UZERZ' was unexpected)", 'ids' : [] })
         
     def test_bad_get(self):
         # Get without a valid projection

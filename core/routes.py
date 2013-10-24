@@ -1,4 +1,4 @@
-import cherrypy, os, traceback, logging, sys
+import cherrypy, os, traceback, logging, sys, cgi
 from core.auth import AuthController, require, is_logged
 from core import db
 from config import views_folder, templates, conf_session
@@ -14,6 +14,8 @@ from cherrypy.lib.static import serve_file
 views = {}
 for view_path in glob(os.path.join(views_folder, '*.html')):
     views[os.path.splitext(os.path.basename(view_path))[0]] = view_path
+
+
 
 class FileRoutes:
     
@@ -55,6 +57,13 @@ class FileRoutes:
         
         try:
             upload_id = uploads.upload()
+            
+        except ValidationError as e:
+            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            json_out = {'error' : '%s: %s' % (type(e).__name__, cgi.escape(e.message)), 'upload_id' : ''}
+        except TSValidationError as e:
+            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            json_out = {'error' : '%s: %s' % (type(e).__name__, cgi.escape(str(e))), 'upload_id' : '' }
         except Exception as e:      
             error_msg = '%s %s\n%s %s\n' % (str(''), type(e).__name__, str(e), traceback.format_exc())
             json_out = {'error' : '%s internal exception' % (type(e).__name__), 'upload_id' : '' } 
@@ -91,10 +100,10 @@ class DatamineRoutes:
             returned_dict = getattr(datamine, action)(json_in)
         except ValidationError as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            json_out = {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)) }
+            json_out = {'error' : '%s: %s' % (type(e).__name__, cgi.escape(e.message)) }
         except TSValidationError as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            json_out = {'error' : '%s: %s' % (type(e).__name__, str(e)) }
+            json_out = {'error' : '%s: %s' % (type(e).__name__, cgi.escape(str(e))) }
         except Exception as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
             json_out = {'error' : '%s internal exception' % (type(e).__name__) }       
@@ -164,10 +173,10 @@ class Routes:
             ids = db.add(collection, json_in)
         except ValidationError as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            json_out = {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)), 'ids' : []}
+            json_out = {'error' : '%s: %s' % (type(e).__name__, cgi.escape(e.message)), 'ids' : []}
         except TSValidationError as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            json_out =  {'error' : '%s: %s' % (type(e).__name__, str(e)), 'ids' : []}
+            json_out =  {'error' : '%s: %s' % (type(e).__name__, cgi.escape(str(e))), 'ids' : []}
         except Exception as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
             json_out = {'error' : '%s internal exception' % (type(e).__name__), 'ids' : []}            
@@ -202,9 +211,9 @@ class Routes:
             records = db.get(collection, json_in)
         except ValidationError as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            json_out = {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)), 'records' : []}
+            json_out = {'error' : '%s: %s' % (type(e).__name__, cgi.escape(e.message)), 'records' : []}
         except TSValidationError as e:
-            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, cgi.escape(str(e)), traceback.format_exc())
             json_out = {'error' : '%s: %s' % (type(e).__name__, str(e)), 'records' : []}
         except Exception as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
@@ -238,10 +247,10 @@ class Routes:
             ids = db.remove(collection, json_in)
         except ValidationError as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            json_out = {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)), 'ids' : []}
+            json_out = {'error' : '%s: %s' % (type(e).__name__, cgi.escape(e.message)), 'ids' : []}
         except TSValidationError as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            json_out = {'error' : '%s: %s' % (type(e).__name__, str(e)) }
+            json_out = {'error' : '%s: %s' % (type(e).__name__, cgi.escape(str(e))) }
         except Exception as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
             json_out = {'error' : '%s internal exception' % (type(e).__name__) }   
@@ -275,10 +284,10 @@ class Routes:
             db.update(collection, json_in)
         except ValidationError as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            json_out = {'error' : '%s: Error \'%s\' is not valid' % (type(e).__name__, str(e.instance)), 'ids' : []}
+            json_out = {'error' : '%s: %s' % (type(e).__name__, cgi.escape(e.message)), 'ids' : []}
         except TSValidationError as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            json_out = {'error' : '%s: %s' % (type(e).__name__, str(e)) }
+            json_out = {'error' : '%s: %s' % (type(e).__name__, cgi.escape(str(e))) }
         except Exception as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
             json_out = {'error' : '%s internal exception' % (type(e).__name__) }   
@@ -291,6 +300,7 @@ class Routes:
         
         return json_out
         
+
 
 
      

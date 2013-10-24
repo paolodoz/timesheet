@@ -18,7 +18,7 @@ class UserAPIAsAdmin(TestClassBase):
         self.execOnTearDown.append(('/remove/user', [ { 'name' : 'USERTEST2'  } ], { 'error' : None }))
  
         # Add one user with unknown group
-        self._assert_req('/add/user', [ { 'name' : 'NEW_USER_NOGROUP', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'EMPLOIERZ', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT', 'salary' : []  } ], { 'error' : "ValidationError: Error 'EMPLOIERZ' is not valid", 'ids' : [ ] })
+        self._assert_req('/add/user', [ { 'name' : 'NEW_USER_NOGROUP', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'EMPLOIERZ', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT', 'salary' : []  } ], { 'error' : "ValidationError: u'EMPLOIERZ' is not one of ['administrator', 'employee', 'project manager']", 'ids' : [ ] })
         
  
     def test_username_uniqueness(self):
@@ -41,7 +41,7 @@ class UserAPIAsAdmin(TestClassBase):
         id_user_pwd = json_user_pwd['ids'][0]
         
         # Add user without password, should raise error
-        self._assert_req('/add/user', [ { 'name' : 'NEW_USER_WITH_NO_PWD', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT', 'salary' : []  } ], { 'error' : "ValidationError: Error '' is not valid", 'ids' : [ ] })
+        self._assert_req('/add/user', [ { 'name' : 'NEW_USER_WITH_NO_PWD', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT', 'salary' : []  } ], { 'error' : "ValidationError: u'' is too short", 'ids' : [ ] })
         
         # Check if can't login with NEW_USER_WITH_NO_PWD
         credentials = {'username' : 'NEW_USER_WITH_NO_PWD', 'password' : '' }
@@ -73,7 +73,7 @@ class DayAPIAsEmployee(TestCaseAsEmployee):
     def test_day_ko(self):
  
         # Get admin
-        self._assert_req('/get/user', [ { '_id' : '1'*24 }, { '_id' : 1 } ], { 'error': "ValidationError: Error '111111111111111111111111' is not valid", 'records' : [ ] })
+        self._assert_req('/get/user', [ { '_id' : '1'*24 }, { '_id' : 1 } ], { 'error': "ValidationError: u'111111111111111111111111' does not match '^%s$'" % (self.employee_id), 'records' : [ ] })
  
         # Get its password and salt
         self._assert_req('/get/user', [ { '_id' : self.employee_id }, { 'password' : 1 } ], { 'error': "TSValidationError: Field 'password' is restricted for current user", 'records' : [ ] })
@@ -100,7 +100,7 @@ class DayAPIAsManager(TestCaseAsManager):
         
         
         # Get admin
-        self._assert_req('/get/user', [ { '_id' : '1'*24 }, { '_id' : 1 } ], { 'error': "ValidationError: Error '111111111111111111111111' is not valid", 'records' : [ ] })
+        self._assert_req('/get/user', [ { '_id' : '1'*24 }, { '_id' : 1 } ], { 'error': "ValidationError: u'111111111111111111111111' does not match '^%s$'" % (self.manager_id), 'records' : [ ] })
         
         
         # Get its password and salt

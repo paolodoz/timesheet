@@ -68,14 +68,13 @@ class TestCaseAsEmployee(TestClassBase):
         TestClassBase.setUp(self)
         
         uri = '/add/user'
-        json_in = [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ]
+        json_in = [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'EMPNAME', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ]
         
         employee_json = self._assert_req(uri, json_in, { 'error' : None, 'ids' : [ '' ] })
         self.employee_id = employee_json['ids'][0]
         self.execOnTearDown.append(('/remove/user', [ { '_id' : self.employee_id } ], { 'error' : None }))
         
-        
-        employee_credentials = { 'username' : 'USERNAME', 'password' : 'mypassword' }
+        employee_credentials = { 'username' : 'EMPNAME', 'password' : 'mypassword' }
         self._login(employee_credentials)
         self._assert_logged(employee_credentials)
 
