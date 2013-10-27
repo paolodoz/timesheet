@@ -64,6 +64,8 @@ function loadUsersList(list) {
 function resetReportsForm()
 {
   $("#usersList li").removeClass("active");
+  $("div.results").hide();
+  $("#real").html("");
 }
 
 function loadUsers(data, container) {
