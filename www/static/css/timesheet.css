@@ -41,5 +41,10 @@ form .error {
 }
 
 #reportForm .btn-group .active {
-  z-index:1;
+  z-index: 1;
+}
+
+#usersList {
+  height: 400px;
+  overflow: auto;
 }
