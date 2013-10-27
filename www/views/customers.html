@@ -1,9 +1,11 @@
 <script type="text/javascript">
-var isupdate = false;
+var validator, isupdate = false;
 $(document).ready(function() {
   loadCustomersList("custList");
   $("#custForm").submit(function(event) {
     event.preventDefault();
+    if(!validator.form())
+      return;
     customer.update(isupdate, "custForm", resetCustomerForm);
     loadCustomersList("custList");
   });
@@ -14,6 +16,59 @@ $(document).ready(function() {
   $("#btnremove").click(function() {
     customer.remove($("#cust_id").val(),resetform);
     loadCustomersList("custList");
+  });
+  validator = $("#custForm").validate({
+    rules: {
+      custname:{
+        required: true
+      },
+      custaddress:{
+        required: true
+      },
+      custcity:{
+        required: true
+      },
+      custpostal_code:{
+        required: true
+      },
+      custcountry:{
+        required: true
+      },
+      custvat_number:{
+        required: true,
+        digits: true
+      },
+      custwebsite:{
+        required: true,
+        url: true
+      },
+      custcontact_person:{
+        required: true
+      },
+      custphone:{
+	required: function(element) {
+            if($("#custemail").val() != "")
+              return false;
+            else
+              return true;
+        },
+      },
+      custemail:{
+	required: function(element) {
+            if($("#custphone").val() != "")
+              return false;
+            else
+              return true;
+        },
+        email: true
+      },
+    },
+    highlight: function (element) {
+      $(element).closest('.form-group').addClass('has-error');
+    },
+    unhighlight: function (element) {
+      $(element).closest('.form-group').removeClass('has-error');
+    }
   });
 });
 
@@ -87,69 +142,69 @@ function loadCustomerDetails(data,container) {
   <div class="form-group">
     <label for="custname" class="col-lg-4 control-label">Name</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control" id="custname" placeholder="Name">
+      <input type="text" class="form-control" id="custname" name="custname" placeholder="Name">
     </div>
   </div>
 
   <div class="form-group">
     <label for="custdescription" class="col-lg-4 control-label">Description</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control" id="custdescription" placeholder="Description">
+      <textarea class="form-control" id="custdescription" name="custdescription" rows="3" placeholder="Description"></textarea>
     </div>
   </div>
 
 <div class="form-group">
     <label for="custaddress" class="col-lg-4 control-label">Address</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control" id="custaddress" placeholder="Address">
+      <input type="text" class="form-control" id="custaddress" name="custaddress" placeholder="Address">
     </div>
   </div>
 <div class="form-group">
     <label for="custcity" class="col-lg-4 control-label">City</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control" id="custcity" placeholder="City">
+      <input type="text" class="form-control" id="custcity" name="custcity" placeholder="City">
     </div>
   </div>
 <div class="form-group">
     <label for="custpostal_code" class="col-lg-4 control-label">Postal Code</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control" id="custpostal_code" placeholder="Postal Code">
+      <input type="text" class="form-control" id="custpostal_code" name="custpostal_code" placeholder="Postal Code">
     </div>
   </div>
 <div class="form-group">
     <label for="custcountry" class="col-lg-4 control-label">Country</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control" id="custcountry" placeholder="Country">
+      <input type="text" class="form-control" id="custcountry" name="custcountry" placeholder="Country">
     </div>
   </div>
 <div class="form-group">
     <label for="custvat_number" class="col-lg-4 control-label">VAT</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control" id="custvat_number" placeholder="VAT">
+      <input type="text" class="form-control" id="custvat_number" name="custvat_number" placeholder="0123456789">
     </div>
   </div>
 <div class="form-group">
     <label for="custwebsite" class="col-lg-4 control-label">Website</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control" id="custwebsite" placeholder="Website">
+      <input type="text" class="form-control" id="custwebsite" name="custwebsite" placeholder="http://www.example.com">
     </div>
   </div>
 <div class="form-group">
     <label for="custcontact_person" class="col-lg-4 control-label">Contact Person</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control" id="custcontact_person" placeholder="Contact Person">
+      <input type="text" class="form-control" id="custcontact_person" name="custcontact_person" placeholder="Contact Person">
     </div>
   </div>
 <div class="form-group">
     <label for="custphone" class="col-lg-4 control-label">Phone</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control" id="custphone" placeholder="Phone">
+      <input type="text" class="form-control" id="custphone" name="custphone" placeholder="Phone">
     </div>
   </div>
 <div class="form-group">
     <label for="custemail" class="col-lg-4 control-label">Email</label>
     <div class="col-lg-6">
-      <input type="email" class="form-control" id="custemail" placeholder="Email">
+      <input type="email" class="form-control" id="custemail" name="custemail" placeholder="Email">
     </div>
   </div>
   <div class="form-group">
