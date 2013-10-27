@@ -114,9 +114,11 @@ function loadReportResults(data) {
 }
 
 function printtotalhours(hours, extra) {
-  var row = "<tr><td></td><td></td><td>";
-  var rows = row;
-  rows += "<strong>Total hours</strong></td><td><strong>" + hours + "h</strong></td><td></td></tr>";
+  var rows, row = "<tr><td></td><td></td><td>";
+  if (hours != 0) {
+    rows = row;
+    rows += "<strong>Total hours</strong></td><td><strong>" + hours + "h</strong></td><td></td></tr>";
+  }
   if(extra != 0) {
     rows += row;
     rows += "<strong>Total extra hours</strong></td><td><strong>" + extra + "h</strong></td><td></td></tr>";
