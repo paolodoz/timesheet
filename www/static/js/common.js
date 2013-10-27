@@ -546,6 +546,11 @@ function simpleDate(date) {
   return date.getFullYear() + "-" + month + "-" + day;
 }
 
+var tasks = ["","Office","Away"];
+function getTaskName(id) {
+  return tasks[id];
+}
+
 String.prototype.bool = function() {
     return (/^true$/i).test(this);
 };
