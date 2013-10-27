@@ -1,4 +1,5 @@
 <script type="text/javascript">
+var validator;
 $(document).ready(function() {
   loadProjectsList("reportproject");
   loadUsersList("usersList");
@@ -14,14 +15,39 @@ $(document).ready(function() {
     }
     filterlist($('#' + list + 'List li'), currenttext);
   });
+  $("#reportstart").change(function() {
+    var firstday = new Date($(this).val());
+    var lastday = new Date(firstday.getFullYear(), firstday.getMonth() + 1,0);
+    $("#reportend").val(simpleDate(lastday));
+  });
   $("#btnreset").click(function() {
     resetReportsForm();
   });
   $("#reportForm").submit(function(event) {
     event.preventDefault();
+    if(!validator.form())
+      return;
     $('#reportwait').modal('show');
     $("div.results").show();
     report.load("reportForm", loadReportResults);
+  });
+  validator = $("#reportForm").validate({
+    rules: {
+      reportstart: {
+        required: true,
+        dateISO: true
+      },
+      reportend: {
+        required: true,
+        dateISO: true
+      }
+    },
+    highlight: function (element) {
+      $(element).closest('.form-group').addClass('has-error');
+    },
+    unhighlight: function (element) {
+      $(element).closest('.form-group').removeClass('has-error');
+    }
   });
 });
 
@@ -110,13 +136,13 @@ function filterlist(list, currenttext) {
 <div class="form-group">
     <label for="reportstart" class="col-lg-4 control-label">Date start</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control datepicker" id="reportstart" placeholder="2013-01-01">
+      <input type="text" class="form-control datepicker" id="reportstart" name="reportstart" placeholder="2013-01-01">
     </div>
   </div>
 <div class="form-group">
     <label for="reportend" class="col-lg-4 control-label">Date end</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control datepicker" id="reportend" placeholder="2020-12-31">
+      <input type="text" class="form-control datepicker" id="reportend" name="reportend" placeholder="2020-12-31">
     </div>
   </div>
 <div class="form-group">
