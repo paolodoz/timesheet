@@ -514,6 +514,7 @@ var report = {
         if(!data.error) {
           callback(data.records);
         } else {
+          $('#reportwait').modal('hide');
           showmessage("error", data.error);
         }
       },
