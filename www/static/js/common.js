@@ -420,7 +420,7 @@ var offer = {
     });
   },
   update : function (isupdate, form, callback) {
-    var offer, _off, url;
+    var offer, _off, url, i;
     if(isupdate) {
       _off = {};
       offer = _off;
@@ -434,7 +434,7 @@ var offer = {
       var value, property = $(this).attr("id").substr(5);
       if (property == "_id" && !isupdate)
         return;
-      if (property == "pdf")
+      if (property == "file")
         return;
       if($(this).is(':checkbox')) {
         offer[property] = $(this).is(':checked') ? true : false;
@@ -445,6 +445,14 @@ var offer = {
         else
           offer[property] = value;
       }
+    });
+    offer.upload_files = new Array();
+    i = 0;
+    $("#offerfiles li").each(function () {
+      offer.upload_files[i] = {};
+      offer.upload_files[i].id = $(this).attr("id");
+      offer.upload_files[i].name = $(this).text();
+      i++;
     });
     $.ajax({
       type: "POST",

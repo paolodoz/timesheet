@@ -212,11 +212,15 @@ offer:
       type: integer
     customerref:
       type: string
-    upload_ids:
+    upload_files:
       optional: True
       type: array
       items:
-        type: string
+        properties:
+          id:
+            type: string
+          name:
+            type: string
       
 upload:
   type: object

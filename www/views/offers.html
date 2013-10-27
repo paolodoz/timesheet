@@ -25,7 +25,7 @@ $(document).ready(function() {
     loadOffersList("offersList");
   });
   $("#fileupload").click(function() {
-    var value = $("#offerpdf").val();
+    var value = $("#offerfile").val();
     if(value != "")
       uploadFile();
   });
@@ -34,10 +34,10 @@ $(document).ready(function() {
 function uploadFile() {
   var xhr = new XMLHttpRequest();
   var fd = new FormData();
-  fd.append("data", document.getElementById('offerpdf').files[0]);
+  fd.append("data", document.getElementById('offerfile').files[0]);
   xhr.addEventListener("load", uploadComplete, false);
   xhr.addEventListener("error", uploadFailed, false);
-  xhr.open("POST", "/upload");
+  xhr.open("POST", "/file/upload");
   xhr.send(fd);
 }
 
@@ -45,9 +45,9 @@ function uploadComplete(data) {
   var response = jQuery.parseJSON( data.target.responseText )
   $('offerupload_id').val(response.id_upload);
   //create element inside list
-  $('#offerfiles').append('<li id="' + response.id_upload + '" class="list-group-item">' + $("#offerpdf").val() + '</li>');
+  $('#offerfiles').append('<li id="' + response.upload_id + '" class="list-group-item">' + $("#offerfile").val() + '</li>');
   //clear files input
-  $("#offerpdf").val("");
+  $("#offerfile").val("");
 }
 function uploadFailed(evt) {
   alert("There was an error attempting to upload the file.");
@@ -67,10 +67,11 @@ function createFilterForm(container) {
   var filter = [{},{}];
   $("#" + container + " input, #" + container + " select, #" + container + " textarea").each(function (){
     var property = $(this).attr("id").substr(5);
-    if (property == "_id")
+    if (property == "_id" || property == "file")
       return;
     filter[1][property] = 1;
   });
+  filter[1].upload_files = 1;
   return filter;
 }
 function resetOfferForm()
@@ -78,9 +79,9 @@ function resetOfferForm()
   isupdate = false;
   $("#offerForm")[0].reset();
   $("#offer_id").val(0);
-  $("#offerpdf").removeClass("hidden");
-  $("#offerpdftxt").text("");
+  $("#offerfiletxt").text("");
   $("#btnremove").addClass("hidden");
+  $("#offerfiles").html("");
   $("#offersList li").removeClass("active");
   $("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
 }
@@ -116,15 +117,18 @@ function loadOffers(data, container) {
 }
 
 function loadOfferDetails(data,container) {
+  var i, htmlli;
   for(var key in data.records[0]) {
     if(data.records[0][key] == true || data.records[0][key] == false) {
       $("#offer" + key).prop('checked',data.records[0][key]);
     } else {
-      if(key != "pdf") {
+      if(key != "upload_files") {
         $("#offer" + key).val(data.records[0][key]);
       } else {
-        $("#offer" + key).addClass("hidden");
-        $("#offer" + key + "txt").html("<a href='#'>" +data.records[0][key] + "</a>");
+        for(i = 0; i < data.records[0][key].length; i++) {
+          htmlli = '<li id="' + data.records[0][key][i].id + '" class="list-group-item">' + data.records[0][key][i].name + '</li>';
+          $("#offerfiles").append(htmlli);
+        }
       }
     }
   }
@@ -211,16 +215,15 @@ function filterlist(list, currenttext) {
     </div>
   </div>
 <div class="form-group">
-    <label for="offerpdf" class="col-lg-4 control-label">Upload a file</label>
+    <label for="offerfile" class="col-lg-4 control-label">Upload a file</label>
     <div class="col-lg-6">
-<input type="hidden" id="offerupload_id" value="0">
-      <input type="file" name="data" id="offerpdf">
+      <input type="file" name="data" id="offerfile">
 <button type="button" class="btn btn-default" id="fileupload">Upload</button>
-<p id="offerpdftxt" class="form-control-static"></p>
+<p id="offerfiletxt" class="form-control-static"></p>
     </div>
   </div>
 <div class="form-group">
-  <label for="offerpdf" class="col-lg-4 control-label">List of uploaded files</label>
+  <label class="col-lg-4 control-label">List of uploaded files</label>
   <div class="col-lg-6">
     <ul class="list-group" id="offerfiles"></ul>
   </div>
