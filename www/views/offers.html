@@ -21,6 +21,8 @@ $(document).ready(function() {
   });
   $("#offerForm").submit(function(event) {
     event.preventDefault();
+    if(!validator.form())
+      return;
     offer.update(isupdate, "offerForm", resetOfferForm);
     loadOffersList("offersList");
   });
@@ -28,6 +30,24 @@ $(document).ready(function() {
     var value = $("#offerfile").val();
     if(value != "")
       uploadFile();
+  });
+  validator = $("#offerForm").validate({
+    rules: {
+      offeramount: {
+        required: true,
+        min: 0
+      },
+      offerpaydelay: {
+        required: true,
+        min: 1
+      },
+    },
+    highlight: function (element) {
+      $(element).closest('.form-group').addClass('has-error');
+    },
+    unhighlight: function (element) {
+      $(element).closest('.form-group').removeClass('has-error');
+    }
   });
 });
 
@@ -44,11 +64,10 @@ function uploadFile() {
 function uploadComplete(data) {
   var response = jQuery.parseJSON( data.target.responseText )
   $('offerupload_id').val(response.id_upload);
-  //create element inside list
   $('#offerfiles').append('<li id="' + response.upload_id + '" class="list-group-item">' + $("#offerfile").val() + '</li>');
-  //clear files input
   $("#offerfile").val("");
 }
+
 function uploadFailed(evt) {
   alert("There was an error attempting to upload the file.");
 }
@@ -171,27 +190,27 @@ function filterlist(list, currenttext) {
 <div class="form-group">
     <label for="offerproject" class="col-lg-4 control-label">Project</label>
     <div class="col-lg-6">
-      <select class="form-control" id="offerproject">
+      <select class="form-control" id="offerproject" name="offerproject" required>
       </select>
     </div>
   </div>
 <div class="form-group">
     <label for="offername" class="col-lg-4 control-label">Name</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control" id="offername" placeholder="Name">
+      <input type="text" class="form-control" id="offername" name="offername" placeholder="Name" required>
     </div>
   </div>
 <div class="form-group">
     <label for="offerdescription" class="col-lg-4 control-label">Description</label>
     <div class="col-lg-6">
-      <textarea class="form-control" id="offerdescription" rows="3" placeholder="Description"></textarea>
+      <textarea class="form-control" id="offerdescription" name="offerdescription" rows="3" placeholder="Description" required></textarea>
     </div>
   </div>
 <div class="form-group">
     <label for="offeramount" class="col-lg-4 control-label">Amount</label>
     <div class="col-lg-6">
       <div class="input-group">
-        <input type="text" class="form-control" id="offeramount" placeholder="10.000">
+        <input type="text" class="form-control" id="offeramount" name="offeramount" placeholder="10.000">
         <span class="input-group-addon">&euro;</span>
       </div>
     </div>
@@ -205,7 +224,7 @@ function filterlist(list, currenttext) {
 <div class="form-group">
     <label for="offerpaydelay" class="col-lg-4 control-label">Payment Delay</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control" id="offerpaydelay" placeholder="60">
+      <input type="text" class="form-control" id="offerpaydelay" name="offerpaydelay" placeholder="60">
     </div>
   </div>
 <div class="form-group">
@@ -218,7 +237,7 @@ function filterlist(list, currenttext) {
     <label for="offerfile" class="col-lg-4 control-label">Upload a file</label>
     <div class="col-lg-6">
       <input type="file" name="data" id="offerfile">
-<button type="button" class="btn btn-default" id="fileupload">Upload</button>
+<button type="button" class="btn btn-default" id="fileupload"><span class="glyphicon glyphicon-upload"></span> Upload</button>
 <p id="offerfiletxt" class="form-control-static"></p>
     </div>
   </div>
