@@ -10,11 +10,11 @@ $(document).ready(function() {
     loadCustomersList("custList");
   });
   $("#btnreset").click(function() {
-    resetform();
+    resetCustomerForm();
     isupdate = false;
   });
   $("#btnremove").click(function() {
-    customer.remove($("#cust_id").val(),resetform);
+    customer.remove($("#cust_id").val(),resetCustomerForm);
     loadCustomersList("custList");
   });
   validator = $("#custForm").validate({
