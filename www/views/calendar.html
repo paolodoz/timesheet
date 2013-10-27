@@ -1,7 +1,6 @@
 <link rel='stylesheet' type='text/css' href='/static/css/fullcalendar.css' />
 <script type="text/javascript">
 var me, myprj, validator, datestart, dateend, cevent, calendar, firstday, lastday, myhours = new Array();
-var tasks = ["","Office","Away"];
 $(document).ready( function() {
   calendar = $('#calendar').fullCalendar({
     firstDay:1,
@@ -133,7 +132,7 @@ function loadprojects(data, target) {
       if (myprj[i]._id == $(this).val())  {
         for(j = 0; j < myprj[i].tasks.length; j++) {
           index = myprj[i].tasks[j];
-          htmlselect += "<option value='" + index + "'>" + tasks[index] + "</option>";
+          htmlselect += "<option value='" + index + "'>" + getTaskName(index) + "</option>";
         }
         break;
       }
