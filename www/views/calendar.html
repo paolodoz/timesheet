@@ -209,6 +209,7 @@ function loadCalendarHours(list) {
         event.id = list[i].date + "+" + singleentry.project + "+" + singleentry.isextra;
         event.title = project.getname(singleentry.project) + " " + singleentry.amount + "h";
         event.backgroundColor = project.getbkgcolor(singleentry.project);
+        event.borderColor = project.getbkgcolor(singleentry.project);
         event.textColor = project.gettxtcolor(singleentry.project);
         event.start = list[i].date;
         event.end = list[i].date;
