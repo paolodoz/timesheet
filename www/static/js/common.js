@@ -132,6 +132,10 @@ var project = {
       project.tasks[i] = Number(project.tasks[i]);
     }
     project.responsible = {};
+    if($("#responsibleid").val() == "0") {
+      showmessage("error", "Select the responsible for the project");
+      return;
+    }
     project.responsible._id = $("#responsibleid").val();
     project.responsible.name  = $("#usersForm h4 span").text().trim();
     project.employees = new Array();
