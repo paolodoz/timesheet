@@ -1,7 +1,7 @@
 <script src="/static/js/jquery.colorPicker.js"></script>
 <link href="/static/css/colorPicker.css" rel="stylesheet" media="screen">
 <script type="text/javascript">
-var isupdate = false;
+var validator,isupdate = false;
 $(document).ready(function() {
   loadProjectsList("projectsList");
   loadCustomersList("projectcustomer");
@@ -26,11 +26,46 @@ $(document).ready(function() {
   });
   $("#projectForm").submit(function(event) {
     event.preventDefault();
+    if(!validator.form())
+      return;
     project.update(isupdate, "projectForm", resetProjectsForm);
     loadProjectsList("projectsList");
   });
   $("#projectbkgcolor").colorPicker({pickerDefault: '#008000'});
   $("#projecttxtcolor").colorPicker({pickerDefault: '#FFFFFF'});
+  validator = $("#projectForm").validate({
+    rules: {
+      projectcustomer: {
+        required: true
+      },
+      projectname: {
+        required: true
+      },
+      projectdescription: {
+        required: true
+      },
+      projectcontact_person: {
+        required: true
+      },
+      projectstart: {
+        required: true,
+        dateISO: true
+      },
+      projectend: {
+        required: true,
+        dateISO: true
+      },
+      projecttasks: {
+        required: true
+      }
+    },
+    highlight: function (element) {
+      $(element).closest('.form-group').addClass('has-error');
+    },
+    unhighlight: function (element) {
+      $(element).closest('.form-group').removeClass('has-error');
+    }
+  });
 });
 
 function loadProjectsList(list) {
@@ -176,7 +211,7 @@ function filterlist(list, currenttext) {
 <div class="form-group">
     <label for="projectcustomer" class="col-lg-4 control-label">Customer</label>
     <div class="col-lg-6">
-      <select class="form-control" id="projectcustomer">
+      <select class="form-control" id="projectcustomer" name="projectcustomer">
       </select>
     </div>
   </div>
@@ -193,31 +228,31 @@ function filterlist(list, currenttext) {
 <div class="form-group">
     <label for="projectname" class="col-lg-4 control-label">Name</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control" id="projectname" placeholder="Name">
+      <input type="text" class="form-control" id="projectname" name="projectname" placeholder="Name">
     </div>
   </div>
 <div class="form-group">
     <label for="projectname" class="col-lg-4 control-label">Description</label>
     <div class="col-lg-6">
-      <textarea class="form-control" id="projectdescription" rows="3" placeholder="Description"></textarea>
+      <textarea class="form-control" id="projectdescription" name="projectdescription" rows="3" placeholder="Description"></textarea>
     </div>
   </div>
 <div class="form-group">
     <label for="projectcontact_person" class="col-lg-4 control-label">Contact Person</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control" id="projectcontact_person" placeholder="Contact Person">
+      <input type="text" class="form-control" id="projectcontact_person" name="projectcontact_person" placeholder="Contact Person">
     </div>
 </div>
 <div class="form-group">
     <label for="projectstart" class="col-lg-4 control-label">Date start</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control datepicker" id="projectstart" placeholder="2013-1-1">
+      <input type="text" class="form-control datepicker" id="projectstart" name="projectstart" placeholder="2013-1-1">
     </div>
   </div>
 <div class="form-group">
     <label for="projectend" class="col-lg-4 control-label">Date end</label>
     <div class="col-lg-6">
-      <input type="text" class="form-control datepicker" id="projectend" placeholder="2020-12-31">
+      <input type="text" class="form-control datepicker" id="projectend" name="projectend" placeholder="2020-12-31">
     </div>
   </div>
 <div class="form-group">
@@ -239,7 +274,7 @@ function filterlist(list, currenttext) {
 <div class="form-group">
   <label for="projecttasks" class="col-lg-4 control-label">Tasks</label>
   <div class="col-lg-6">
-    <select multiple class="form-control" id="projecttasks">
+    <select multiple class="form-control" id="projecttasks" name="projecttasks">
       <option value="1">Office</option>
       <option value="2">Away</option>
     </select>
