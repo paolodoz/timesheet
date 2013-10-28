@@ -444,7 +444,7 @@ var offer = {
         offer[property] = $(this).is(':checked') ? true : false;
       } else {
         value = Number($(this).val());
-        if(isNaN(value))
+        if(isNaN(value) || value == 0)
           offer[property] = $(this).val();
         else
           offer[property] = value;

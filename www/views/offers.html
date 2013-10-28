@@ -16,7 +16,7 @@ $(document).ready(function() {
     resetOfferForm();
   });
   $("#btnremove").click(function() {
-    offer.remove($("offer_id").val(),resetOfferForm);
+    offer.remove($("#offer_id").val(),resetOfferForm);
     loadOffersList("offersList");
   });
   $("#offerForm").submit(function(event) {
