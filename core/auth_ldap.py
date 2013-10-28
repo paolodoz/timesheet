@@ -52,7 +52,10 @@ def _migrate_user_to_db(ldap_result_dict, password, group):
                  'salt' : ''
                  }
     
-    validate_json_list('user', [ user_dict ])
+    # Copy user_dict with a fake password to permit correct validation
+    user_dict_copy = user_dict.copy()
+    user_dict_copy['password'] = 'fakepwd'
+    validate_json_list('user', [ user_dict_copy ])
     
     sanified_user_dict = sanitize_objectify_json(user_dict)
     
