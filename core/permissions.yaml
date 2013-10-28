@@ -115,6 +115,28 @@ push_days:
                     properties:
                       project:
                         enum : '%%managed_projects%%'
+
+                    
+report_users_hours:    
+    criteria_restrictions_schema:     
+      project manager:
+        type: object
+        properties:
+          users.hours.project:
+            type: object
+            properties: 
+              '$in':
+                type: array
+                items:
+                  oneOf:
+                    - type:
+                        object
+                      properties:
+                        type:
+                          type: string
+                          enum: '%%managed_projects%%'
+        required: 
+          - users.hours.project
                   
 project:
     criteria_restrictions_schema:

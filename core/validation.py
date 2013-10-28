@@ -120,7 +120,9 @@ def validate_json_list(collection, list_in):
         jsonschema.validate(json_in, schema[collection], format_checker=jsonschema.FormatChecker())
    
 def validate_request(collection, json_in):
-    jsonschema.validate(json_in, requests_schema[collection], format_checker=jsonschema.FormatChecker())
+    
+    if collection in requests_schema:
+        jsonschema.validate(json_in, requests_schema[collection], format_checker=jsonschema.FormatChecker())
    
    
 def update_password_salt_user_list(collection, list_in):

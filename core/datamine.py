@@ -120,8 +120,6 @@ def report_users_hours(criteria):
     if sanified_criteria['projects']:
         match_users_projects_extras_tasks['users.hours.project'] = { '$in' : sanified_criteria['projects'] }
     
-    check_projection_permissions('day', match_users_projects_extras_tasks)
-    
     # Match optional extra hours filter 
     if sanified_criteria['hours_standard'] == True and sanified_criteria['hours_extra'] == False:
         match_users_projects_extras_tasks['users.hours.isextra'] = False
@@ -131,6 +129,8 @@ def report_users_hours(criteria):
     # Match optional task filter
     if sanified_criteria['tasks']:
         match_users_projects_extras_tasks['users.hours.task'] = { '$in' : sanified_criteria['tasks'] }
+    
+    check_criteria_permissions('report_users_hours', match_users_projects_extras_tasks)
     
     aggregation_pipe = [ 
                         { '$match': dates_match },

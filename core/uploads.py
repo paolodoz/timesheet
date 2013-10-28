@@ -1,8 +1,11 @@
 import tempfile, os, shutil, cherrypy, time
 from core.config import conf_uploads
 from core.db import db
-from core.validation import TSValidationError, validate_request, cgi, ObjectId
-from core.permissions import check_action_permissions
+from core.validation import TSValidationError, validate_request, cgi, ObjectId, sanitize_objectify_json
+from core.permissions import check_action_permissions, check_criteria_permissions
+import logging
+
+db_log_severity = logging.INFO
 
 def upload():
     
@@ -24,6 +27,8 @@ def upload():
     
         uploaded_temp.close()
         upload_id = str(db.upload.insert({ 'name' : str(file_uploading.filename), 'content_type' : cgi.escape(str(file_uploading.content_type)), 'owner' : cherrypy.session['_ts_user']['username'], 'date' :  time.strftime("%Y-%m-%d%H:%M:%S", time.gmtime()) }))
+
+        cherrypy.log('%s %s' % (str(file_uploading.filename), str(file_uploading.content_type)) , context = 'TS.FILE.UPLOAD', severity = db_log_severity)
         
         uploaded_temp_path = os.path.join(conf_uploads['folder'], uploaded_temp.name)
         uploaded_path = os.path.join(conf_uploads['folder'], upload_id)
@@ -47,7 +52,43 @@ def download(upload_id):
     json_found = db.upload.find_one({ '_id' : upload_id }, { 'content_type' : 1})
     file_path = os.path.abspath(os.path.join(conf_uploads['folder'], str(upload_id)))
     
+    cherrypy.log('%s' % (upload_id), context = 'TS.FILE.DOWNLOAD.upload_id', severity = db_log_severity)
+    
     if not json_found:
         raise TSValidationError("File id not found")
     
     return file_path, json_found['content_type']
+
+
+def remove(upload_ids):
+
+    # Check permissions before requests  
+    check_action_permissions('remove', 'file')
+    validate_request('file_remove', cherrypy.request.params)
+    
+    for upload_id in upload_ids:
+        check_criteria_permissions('file_remove', upload_id)
+
+    # Sanify upload_id (to match with sanified documents)
+    # TODO: check why does not objectify lists
+    #upload_ids = sanitize_objectify_json(upload_ids)
+    
+    cherrypy.log('%s' % (str(upload_ids)), context = 'TS.FILE.REMOVE.upload_ids', severity = db_log_severity)
+    
+    # Requests
+    for upload_id in upload_ids:
+        
+        db.upload.remove({ '_id' : ObjectId(upload_id) })
+        
+        file_path = os.path.abspath(os.path.join(conf_uploads['folder'], str(upload_id)))
+        
+        if os.path.isfile(file_path):
+            try:
+                os.remove(file_path)
+            except:
+                pass
+            else:
+                continue
+            
+        cherrypy.log('Error removing file \'%s\'' % (file_path), context = 'TS.FILE.REMOVE.file_path', severity = db_log_severity)
+            

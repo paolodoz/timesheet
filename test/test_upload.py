@@ -95,7 +95,11 @@ class Upload(TestClassBase):
     def _assert_download(self, upload_id, localfilepath):
         
         data_download = self.opener.open('https://localhost:9090/file/download', { 'upload_id' : upload_id  }, timeout=36000).read()
-        data_local = open(localfilepath, 'rb').read()
+
+        if localfilepath:
+            data_local = open(localfilepath, 'rb').read()
+        else:
+            data_local = ''
         
         self.assertEqual(data_download, data_local)
         
@@ -104,9 +108,21 @@ class Upload(TestClassBase):
         json_upload = self._assert_upload('/etc/motd')
         self._assert_download(json_upload['upload_id'], '/etc/motd')
         
+        self._assert_req('/file/remove', [ json_upload['upload_id'] ] , { 'error' : None })
+        self._assert_download(json_upload['upload_id'], '')
+        
+        
     def test_binary(self):
-         
         json_upload = self._assert_upload('/usr/bin/yes')
         self._assert_download(json_upload['upload_id'], '/usr/bin/yes')
         
+        # Delete
+        self.execOnTearDown.append(('/file/remove', [ json_upload['upload_id'] ] , { 'error' : None }))
+        
+    def test_big_binary(self):
+        json_upload = self._assert_upload('/bin/bash')
+        self._assert_download(json_upload['upload_id'], '/bin/bash')
+        
+        # Delete
+        self.execOnTearDown.append(('/file/remove', [ json_upload['upload_id'] ] , { 'error' : None }))
             

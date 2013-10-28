@@ -32,7 +32,7 @@ def get_user_restrictions(schema_name):
             pass
         else:
             formatted_schemas[collection_name] = recursive_replace(schema, _replace_function_permissions_schema)
-
+            
     return formatted_schemas
 
     
@@ -58,6 +58,7 @@ def check_criteria_permissions(collection, criteria):
         return
     
     jsonschema.validate(criteria, restrictions_criteria, format_checker=jsonschema.FormatChecker())
+
    
 def check_insert_permissions(collection, document):
 
