@@ -54,7 +54,9 @@ def remove(collection, criterias = []):
     
     # Requests
     for criteria in sanified_criterias:
-        db[collection].remove(criteria)
+        # Skip empty criteria to avoid database flush
+        if criteria:
+            db[collection].remove(criteria)
             
 def add(collection, documents_list):
     """Insert new record list to collection
