@@ -64,8 +64,30 @@ function uploadFile() {
 function uploadComplete(data) {
   var response = jQuery.parseJSON( data.target.responseText )
   $('offerupload_id').val(response.id_upload);
-  $('#offerfiles').append('<li id="' + response.upload_id + '" class="list-group-item">' + $("#offerfile").val() + '</li>');
+  $('#offerfiles').append(generateFileEntry(response.upload_id,$("#offerfile").val()));
   $("#offerfile").val("");
+  $('#offerfiles li:last span').click(function() {
+    deleteFile($(this).parent(), $(this).parent().attr("id"));
+  });
+}
+
+function deleteFile(li, id) {
+  var filter = [{}];
+  filter[0]._id = id;
+  $.ajax({
+    type: "POST",
+    url: "/file/remove",
+    data: JSON.stringify(filter),
+    success: function(data) {
+      if(!data.error) {
+        $(li).remove();
+      } else {
+        showmessage("error", data.error);
+      }
+    },
+    contentType: 'application/json; charset=utf-8',
+    dataType: "json",
+  });
 }
 
 function uploadFailed(evt) {
@@ -135,8 +157,12 @@ function loadOffers(data, container) {
   });
 }
 
+function generateFileEntry(id, name) {
+  return '<li id="' + id + '" class="list-group-item"><a href="/file/download/'+ id + '">' + name + '</a> <span class="glyphicon glyphicon-trash"></span></li>'
+}
+
 function loadOfferDetails(data,container) {
-  var i, htmlli;
+  var i, htmlli = "";
   for(var key in data.records[0]) {
     if(data.records[0][key] == true || data.records[0][key] == false) {
       $("#offer" + key).prop('checked',data.records[0][key]);
@@ -145,9 +171,12 @@ function loadOfferDetails(data,container) {
         $("#offer" + key).val(data.records[0][key]);
       } else {
         for(i = 0; i < data.records[0][key].length; i++) {
-          htmlli = '<li id="' + data.records[0][key][i].id + '" class="list-group-item">' + data.records[0][key][i].name + '</li>';
-          $("#offerfiles").append(htmlli);
+          htmlli += generateFileEntry(data.records[0][key][i].id, data.records[0][key][i].name);
         }
+        $("#offerfiles").append(htmlli);
+        $('#offerfiles li span').click(function() {
+          deleteFile($(this).parent(), $(this).parent().attr("id"));
+        });
       }
     }
   }

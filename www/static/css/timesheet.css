@@ -48,3 +48,8 @@ form .error {
   height: 400px;
   overflow: auto;
 }
+
+#offerfiles li span {
+  float: right;
+  cursor: pointer;
+}
