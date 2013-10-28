@@ -1,5 +1,5 @@
 <script type="text/javascript">
-var cur_user;
+var cur_user, validator;
 $(document).ready(function() {
   loadUsersList("usersList");
   $(".datepicker").datepicker();
@@ -21,7 +21,37 @@ $(document).ready(function() {
   });
   $("#userForm").submit(function(event) {
     event.preventDefault();
+    if(!validator.form())
+      return;
     user.update(cur_user, "userForm",resetUsersForm);
+  });
+  validator = $("#userForm").validate({
+    rules: {
+      usernewsalary: {
+        required: function(element) {
+            if($("#userstart").val() == "")
+              return false;
+            else
+              return true;
+        },
+        number: true
+      },
+      userstart: {
+        required: function(element) {
+            if($("#usernewsalary").val() == "")
+              return false;
+            else
+              return true;
+        },
+        dateISO: true
+      },
+    },
+    highlight: function (element) {
+      $(element).closest('.form-group').addClass('has-error');
+    },
+    unhighlight: function (element) {
+      $(element).closest('.form-group').removeClass('has-error');
+    }
   });
 });
 
@@ -145,7 +175,7 @@ function filterlist(list, currenttext) {
   <label for="usernewsalary" class="col-lg-4 control-label">New hour cost</label>
   <div class="col-lg-6">
     <div class="input-group">
-      <input type="text" class="form-control" id="usernewsalary" placeholder="20">
+      <input type="text" class="form-control" id="usernewsalary" name="usernewsalary" placeholder="20">
       <span class="input-group-addon">&euro;/h</span>
     </div>
   </div>
@@ -153,7 +183,7 @@ function filterlist(list, currenttext) {
 <div class="form-group">
   <label for="userstart" class="col-lg-4 control-label">From date</label>
   <div class="col-lg-6">
-    <input type="text" class="form-control datepicker" id="userstart" placeholder="2012-03-01">
+    <input type="text" class="form-control datepicker" id="userstart" name="userstart" placeholder="2012-03-01">
   </div>
 </div>
 <div class="form-group">
