@@ -3,10 +3,7 @@
 import cherrypy, logging
 import sys, os
 
-installation_path = ''
-
-if not installation_path:
-    sys.exit('Please set in \'timesheet_apache.py\' \'installation_path\' variable absolute folder path')
+installation_path = os.path.dirname(__file__)
 
 sys.path.insert(0, installation_path)
 from core.routes import Routes
