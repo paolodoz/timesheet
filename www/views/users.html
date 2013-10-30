@@ -97,23 +97,43 @@ function loadUsers(data, container) {
 }
 
 function loadUserDetails(data,container) {
-  var i, temp, htmllist = "";
   cur_user = data.records[0];
   $("#username").text(data.records[0].name + " " + data.records[0].surname);
   $("#usergroup").val(data.records[0].group);
-  if(data.records[0].salary) {
-    for(i = 0; i < data.records[0].salary.length; i ++) {
-      temp = data.records[0].salary[i];
-      htmllist += "<li class='list-group-item' id='entry" + i + "'><b>" + temp.cost + " &euro;/h </b>  <span>" + temp.from + "</span> -- <span>";
-      if(temp.to == "2099-12-31")
+  $("#userhistory").html(generateSalary(data.records[0].salary));
+  addDeleteSalaryEvent();
+  $("#btnsubmit, #btnreset").removeClass("hidden");
+}
+
+function addDeleteSalaryEvent() {
+  $("#userhistory li span:last-child").click(function () {
+    var index = $(this).parent().index();
+    if (cur_user.salary.length != 1) {
+      if(index == 0) {
+        cur_user.salary[index + 1].from = cur_user.salary[index].to;
+      } else {
+        cur_user.salary[index - 1].to = cur_user.salary[index].to;
+      }
+    }
+    cur_user.salary.splice(index,1);
+    $("#userhistory").html(generateSalary(cur_user.salary));
+    addDeleteSalaryEvent();
+  });
+}
+
+function generateSalary(salary) {
+  var i, htmllist = "";
+  if(salary) {
+    for(i = 0; i < salary.length; i ++) {
+      htmllist += "<li class='list-group-item' id='entry" + i + "'><b>" + salary[i].cost + " &euro;/h </b>  <span>" + salary[i].from + "</span> -- <span>";
+      if(salary[i].to == "2099-12-31")
         htmllist += "Now";
       else
-        htmllist += temp.to;
-      htmllist += "</span></li>"
+        htmllist += salary[i].to;
+      htmllist += "</span><span class='glyphicon glyphicon-trash'></span></li>"
     }
   }
-  $("#userhistory").html(htmllist);
-  $("#btnsubmit, #btnreset").removeClass("hidden");
+  return htmllist;
 }
 
 //restore visibility for each element in list
@@ -190,7 +210,6 @@ function filterlist(list, currenttext) {
     <div class="col-lg-offset-4 col-lg-7">
       <button type="submit" class="btn btn-primary hidden" id="btnsubmit"><span class="glyphicon glyphicon-edit"></span> Update</button>
       <button type="reset" class="btn hidden" id="btnreset"> Reset</button>
-<!--      <button type="button" class="btn btn-danger hidden" id="btnremove"><span class="glyphicon glyphicon-trash"></span> Remove</button>-->
     </div>
 </div>
     </form>
