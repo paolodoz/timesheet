@@ -128,13 +128,7 @@ report_users_hours:
               '$in':
                 type: array
                 items:
-                  oneOf:
-                    - type:
-                        object
-                      properties:
-                        type:
-                          type: string
-                          enum: '%%managed_projects%%'
+                  enum: '%%managed_projects%%'
         required: 
           - users.hours.project
                   

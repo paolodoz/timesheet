@@ -1,9 +1,8 @@
 from testclasses import TestClassBase, TestCaseAsEmployee, TestCaseAsManager
 
-class ReportUsersHoursClassBase(TestClassBase):
+class ModuleData:
 
-    def setUp(self):
-        TestClassBase.setUp(self)
+    def _add_module_data(self, current_id):
         
         # Add two elements USERTEST1 and USERTEST2
         users_json = self._assert_req('/add/user', [ 
@@ -11,13 +10,13 @@ class ReportUsersHoursClassBase(TestClassBase):
                                                     { 'name' : 'USERTEST2', 'surname' : 'SURNAME', 'username' : 'USERNAME2' , 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER2', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'myotherpassword', 'salt' : '', 'salary' : []  }, 
                                                     { 'name' : 'USERTEST3', 'surname' : 'SURNAME', 'username' : 'USERNAME3' , 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER3', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'myotherpassword', 'salt' : '', 'salary' : []  } 
                                                     ], { 'error' : None, 'ids' : [ '', '', '' ] })
-        self.users_ids = users_json['ids']
+        self.users_ids = users_json['ids'] 
         self.execOnTearDown.append(('/remove/user', [ { '_id' : self.users_ids[0]  }, { '_id' : self.users_ids[1]  }, { '_id' : self.users_ids[2] } ], { 'error' : None }))
         
-        # Add one project
+        # Add projects
         projects_json = self._assert_req('/add/project', [ 
-                                 { 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2000-01-02', 'end' : '2001-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : self.users_ids[0], 'name' : 'Manag1'}, 'employees' : [ { '_id' : self.users_ids[1], 'name' : 'Emp1'} ] },
-                                 { 'customer' : 'CUSTOMER1', 'type' : 'TYPE', 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2004-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : self.users_ids[1], 'name' : 'Manag2'}, 'employees' : [ { '_id' : self.users_ids[0], 'name' : 'Emp2'} ] } 
+                                 { 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2000-01-02', 'end' : '2001-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag1'}, 'employees' : [ { '_id' : self.users_ids[1], 'name' : 'Emp1'} ] },
+                                 { 'customer' : 'CUSTOMER1', 'type' : 'TYPE', 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2004-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag2'}, 'employees' : [ { '_id' : self.users_ids[0], 'name' : 'Emp2'} ] } 
                                  ], 
                 { 'error' : None, 'ids' : [ '', '' ] }
                 )
@@ -66,13 +65,14 @@ class ReportUsersHoursClassBase(TestClassBase):
     
 
 
-class ReportUsersHoursAPIAsManager(ReportUsersHoursClassBase, TestCaseAsManager):
+class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
     
-    def setUp(self):
-        ReportUsersHoursClassBase.setUp(self)
-        TestCaseAsManager.setUp(self)
+    def setUp(self):        
+        TestClassBase.setUp(self)
+        self._add_user_data()
+        ModuleData._add_module_data(self, self.manager_id)
+        self._log_as_user()
         
-    
     def test_day_ko(self):
         # Search only one user
         self._assert_req('/data/report_users_hours', {
@@ -86,7 +86,7 @@ class ReportUsersHoursAPIAsManager(ReportUsersHoursClassBase, TestCaseAsManager)
                                       }
                                     , { 'error': "ValidationError: 'users.hours.project' is a required property"}
                                     )        
-
+ 
         # Search only one user
         self._assert_req('/data/report_users_hours', {
                                                       'start': '2000-01-01', 
@@ -97,13 +97,14 @@ class ReportUsersHoursAPIAsManager(ReportUsersHoursClassBase, TestCaseAsManager)
                                                       'hours_extra' : False,
                                                       'tasks' : []
                                       }
-                                    , { 'error': "ValidationError: u'PROJEZ' is not valid under any of the given schemas"}
+                                    , { 'error': "ValidationError: u'PROJEZ' is not one of %s" % ([ str(p) for p in self.projects_ids ])}
                                     )           
 
+
     def test_day_ok(self):
-         
+          
         self.maxDiff = None
-         
+          
         # Search only one user
         self._assert_req('/data/report_users_hours', {
                                                       'start': '2000-01-01', 

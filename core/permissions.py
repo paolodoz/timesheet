@@ -57,6 +57,9 @@ def check_criteria_permissions(collection, criteria):
         # If not, skip procedure
         return
     
+    print 'VALIDO', criteria
+    print 'CONTRO', restrictions_criteria
+
     jsonschema.validate(criteria, restrictions_criteria, format_checker=jsonschema.FormatChecker())
 
    

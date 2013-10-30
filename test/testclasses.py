@@ -66,7 +66,12 @@ class TestClassBase(unittest.TestCase):
 class TestCaseAsEmployee(TestClassBase):
     def setUp(self):
         TestClassBase.setUp(self)
-        
+        self._add_user_data()
+        self._log_as_user()
+
+
+    def _add_user_data(self):
+                
         uri = '/add/user'
         json_in = [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'EMPNAME', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ]
         
@@ -74,15 +79,18 @@ class TestCaseAsEmployee(TestClassBase):
         self.employee_id = employee_json['ids'][0]
         self.execOnTearDown.append(('/remove/user', [ { '_id' : self.employee_id } ], { 'error' : None }))
         
+    def _log_as_user(self):     
         employee_credentials = { 'username' : 'EMPNAME', 'password' : 'mypassword' }
         self._login(employee_credentials)
         self._assert_logged(employee_credentials)
-
     
 class TestCaseAsManager(TestClassBase):
     def setUp(self):
         TestClassBase.setUp(self)
+        self._add_user_data()
+        self._log_as_user()
         
+    def _add_user_data(self):        
         # Add manager user
         uri = '/add/user'
         json_in = [ { 'name' : 'MANAGER', 'surname' : 'MANAGERSURNAME', 'username' : 'MANAGER', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'project manager', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ]
@@ -91,19 +99,21 @@ class TestCaseAsManager(TestClassBase):
         self.manager_id = manager_json['ids'][0]
         
         self.execOnTearDown.append(('/remove/user', [ { '_id' : self.manager_id } ], { 'error' : None }))
-        
-        # Add managed projects
-        uri = '/add/project'
-        json_in = [
-                    { 'name' : 'MANAGEDPROJECT1', 'customer' : 'CUSTOMER1', 'type' : 'TYPE1', 'description' : 'description1', 'contact_person' : 'contact_person1', 'start' : '2000-01-02', 'end' : '2000-01-03', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : self.manager_id, 'name' : 'The manager'}, 'employees' : [ { '_id' : '1'*24, 'name' : 'The employed administrator'} ] }, 
-                    { 'name' : 'MANAGEDPROJECT2', 'customer' : 'CUSTOMER2', 'type' : 'TYPE2', 'description' : 'description2', 'contact_person' : 'contact_person2', 'start' : '2000-01-01', 'end' : '2000-01-05', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : self.manager_id, 'name' : 'The manager'}, 'employees' : [ { '_id' : '7'*24, 'name' : 'Another employee'} ] } 
-                    ]
-        
-        
-        projects_json = self._assert_req(uri, json_in, { 'error' : None, 'ids' : [ '', '' ] })
-        self.managed_projects = projects_json['ids']
-
-        self.execOnTearDown.append(('/remove/project', [ { '_id' : self.managed_projects[0] }, { '_id' : self.managed_projects[1] } ], { 'error' : None }))
+#         
+#         # Add managed projects
+#         uri = '/add/project'
+#         json_in = [
+#                     { 'name' : 'MANAGEDPROJECT1', 'customer' : 'CUSTOMER1', 'type' : 'TYPE1', 'description' : 'description1', 'contact_person' : 'contact_person1', 'start' : '2000-01-02', 'end' : '2000-01-03', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : self.manager_id, 'name' : 'The manager'}, 'employees' : [ { '_id' : '1'*24, 'name' : 'The employed administrator'} ] }, 
+#                     { 'name' : 'MANAGEDPROJECT2', 'customer' : 'CUSTOMER2', 'type' : 'TYPE2', 'description' : 'description2', 'contact_person' : 'contact_person2', 'start' : '2000-01-01', 'end' : '2000-01-05', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : self.manager_id, 'name' : 'The manager'}, 'employees' : [ { '_id' : '7'*24, 'name' : 'Another employee'} ] } 
+#                     ]
+#         
+#         
+#         projects_json = self._assert_req(uri, json_in, { 'error' : None, 'ids' : [ '', '' ] })
+#         self.managed_projects = projects_json['ids']
+# 
+#         self.execOnTearDown.append(('/remove/project', [ { '_id' : self.managed_projects[0] }, { '_id' : self.managed_projects[1] } ], { 'error' : None }))
+#         
+    def _log_as_user(self):
         
         employee_credentials = { 'username' : 'MANAGER', 'password' : 'mypassword' }
         self._login(employee_credentials)
