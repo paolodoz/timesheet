@@ -163,14 +163,14 @@ def report_projects(criteria):
     """
     Get projects report
     
-    POST /data/c/
+    POST /data/report_projects/
     
-    Expects a  { 'start' : '', 'end' : '', 'customer' : '', 'projects' : [] } 
+    Expects { 'start' : '', 'end' : '', 'customer' : '', 'projects' : [] } 
     Returns { 'error' : string, 'records' : [ [ 'YYYY-MM', 2 ], [ 'YYYY-MM', 4 ], .. ]  } 
     """
     
     
-    def _days_by_customers(sanified_criteria):
+    def _find_days_from_customers(sanified_criteria):
             
         # Get projects by customer
         customer_input = sanified_criteria.get('customer')
@@ -211,31 +211,27 @@ def report_projects(criteria):
                               } 
                             ]
                            
-        cherrypy.log(aggregation_pipe.__repr__(), context = 'TS.REPORT_PROJECTS.aggregation', severity = logging.INFO)
+        cherrypy.log(aggregation_pipe.__repr__(), context = 'TS.REPORT_PROJECTS.days_aggregation', severity = logging.INFO)
         
         return db.day.aggregate(aggregation_pipe)
+
+    def _find_salaries_from_date_users(days_ids_list, end, start):
+        # TODO: misure if _id filter now is superflous due to filter check during merge
+        aggregation_pipe = [ { '$match' : { 'salary.cost' : { '$gt' : 0 }, '_id' : { '$in' : days_ids_list } } }, { '$project' : { 'salary.from' : 1, 'salary.to' : 1, 'salary.cost' : 1, '_id' : 1 } } ]
+        cherrypy.log(aggregation_pipe.__repr__(), context = 'TS.REPORT_PROJECTS.salaries_aggregation', severity = logging.INFO)
+        return db.user.aggregate(aggregation_pipe)
+
 
     validate_request('report_projects', criteria)
     sanified_criteria = sanitize_objectify_json(criteria)
     
+    # Day mining
+    days_result = _find_days_from_customers(sanified_criteria)['result'] 
+    days_ids_list = [ ObjectId(r['_id']['user_id']) for r in days_result ]
     
-    ### DAY SEARCH
-    days_result = _days_by_customers(sanified_criteria)['result'] 
-    
-    ### USERS FIRST SEARCH
-    salary_result = {}
-    salary_query = { 'salary.from' : { '$lt' : sanified_criteria['end'] }, 'salary.to' : { '$gt' : sanified_criteria['start'] }, 'salary.cost' : { '$gt' : 0 } }
-    salary_cursor = db.user.find(salary_query, { 'salary.from' : 1, 'salary.to' : 1, 'salary.cost' : 1, '_id' : 1 })
-    for salary_record in salary_cursor:
-        
-        salary_id = str(salary_record['_id'])
-        
-        if not salary_id in salary_result.keys():
-            salary_result[salary_id] = []
-
-        salary_result[salary_id].append( ( salary_record['salary'][0]['from'],
-                                           salary_record['salary'][0]['to'],
-                                           salary_record['salary'][0]['cost'] ) )
+    # Salary mining
+    salaries_result = _find_salaries_from_date_users(days_ids_list, sanified_criteria['end'], sanified_criteria['start'])['result']
+    users_ids_list = [ r['_id'] for r in salaries_result ]
 
     ### MERGE
     costs_dict = {}
@@ -246,15 +242,9 @@ def report_projects(criteria):
         user_date = user_record.get('date')
         user_YM = '-'.join(user_date.split('-')[:2])
         
-        cost = 0
-        # Search cost of time span
-        if user_id in salary_result.keys():
-            cost = next((rec[2] for rec in salary_result[user_id] if rec[0] < user_date and rec[1] > user_date ), 0)
-            
-        if not cost:
-            pass
-            #cherrypy.log('Can\'t find salary for user %s at date %s' % (user_id, user_date), context = 'TS.REPORT_PROJECTS.merge', severity = logging.INFO)
-        else:
+        cost = next((sal['salary'][0]['cost'] for sal in salaries_result if sal['_id'] == ObjectId(user_id) and sal['salary'][0]['from'] <= user_date and sal['salary'][0]['to'] >= user_date ), 0)
+        
+        if cost:
             costs_dict[user_YM] = cost + costs_dict.get(user_YM, 0)
              
     ## ORDER
