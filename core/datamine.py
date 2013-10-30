@@ -99,6 +99,7 @@ def report_users_hours(criteria):
     Returns { 'error' : string, 'records' : [ { }, { }, .. ]  } 
     """
     
+    check_action_permissions('report_users_hours', 'report_users_hours')
     validate_request('report_users_hours', criteria)
     sanified_criteria = sanitize_objectify_json(criteria)
     

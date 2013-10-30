@@ -131,6 +131,11 @@ report_users_hours:
                   enum: '%%managed_projects%%'
         required: 
           - users.hours.project
+
+    action_restrictions:
+      employee:
+        - report_users_hours
+        
                   
 project:
     criteria_restrictions_schema:
