@@ -26,6 +26,23 @@ report_users_hours:
       items:
         type: number
 
+report_projects:
+  type: object
+  additionalProperties: False
+  properties: 
+    start: 
+      type: string
+      format: date
+    end:
+      type: string
+      format: date
+    projects:
+      type: array
+      items:
+        type: string
+    customer:
+      type: string
+
 search_days:
   type: object
   additionalProperties: False

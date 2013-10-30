@@ -3,6 +3,7 @@ from permissions import check_action_permissions, check_criteria_permissions, ch
 from bson.objectid import ObjectId
 from core.validation import TSValidationError
 from core.db import db
+from collections import OrderedDict
 import cherrypy, logging
 
 try:
@@ -153,4 +154,113 @@ def report_users_hours(criteria):
     aggregation_result = db.day.aggregate(aggregation_pipe)
     
     return { 'records' : stringify_objectid_cursor(aggregation_result['result']) }
+    
+    
+    
+
+def report_projects(criteria):
+    
+    """
+    Get projects report
+    
+    POST /data/c/
+    
+    Expects a  { 'start' : '', 'end' : '', 'customer' : '', 'projects' : [] } 
+    Returns { 'error' : string, 'records' : [ [ 'YYYY-MM', 2 ], [ 'YYYY-MM', 4 ], .. ]  } 
+    """
+    
+    
+    def _days_by_customers(sanified_criteria):
+            
+        # Get projects by customer
+        customer_input = sanified_criteria.get('customer')
+        if customer_input:
+            projects_input = db.find( { 'customer' : customer_input }, { '_id' : 1 })
+        else:
+            projects_input = sanified_criteria.get('projects', [])
+        
+        
+        # Prepare the aggregation pipe
+        
+        dates_match = { "date": { 
+                               '$lte' : sanified_criteria['end'], 
+                               '$gte' : sanified_criteria['start'] 
+                               }
+                     }
+        
+        match_projects = { }
+        
+        # Match optional projects filters
+        if sanified_criteria['projects']:
+            match_projects['users.hours.project'] = { '$in' : projects_input }
+        
+        check_criteria_permissions('report_projects', match_projects)
+        
+        aggregation_pipe = [ 
+                            { '$match': dates_match },
+                            { '$unwind' : '$users' }, 
+                            { '$unwind' : '$users.hours' }, 
+                            { '$match' : match_projects },
+                             { '$group' : 
+                              { '_id' : { 
+                                         'user_id' : '$users.user_id', 
+                                         'date' : '$date' 
+                                         }, 
+                               'hours' : { '$sum' : '$users.hours.amount'  } 
+                               } 
+                              } 
+                            ]
+                           
+        cherrypy.log(aggregation_pipe.__repr__(), context = 'TS.REPORT_PROJECTS.aggregation', severity = logging.INFO)
+        
+        return db.day.aggregate(aggregation_pipe)
+
+    validate_request('report_projects', criteria)
+    sanified_criteria = sanitize_objectify_json(criteria)
+    
+    
+    ### DAY SEARCH
+    days_result = _days_by_customers(sanified_criteria)['result'] 
+    
+    ### USERS FIRST SEARCH
+    salary_result = {}
+    salary_query = { 'salary.from' : { '$lt' : sanified_criteria['end'] }, 'salary.to' : { '$gt' : sanified_criteria['start'] }, 'salary.cost' : { '$gt' : 0 } }
+    salary_cursor = db.user.find(salary_query, { 'salary.from' : 1, 'salary.to' : 1, 'salary.cost' : 1, '_id' : 1 })
+    for salary_record in salary_cursor:
+        
+        salary_id = str(salary_record['_id'])
+        
+        if not salary_id in salary_result.keys():
+            salary_result[salary_id] = []
+
+        salary_result[salary_id].append( ( salary_record['salary'][0]['from'],
+                                           salary_record['salary'][0]['to'],
+                                           salary_record['salary'][0]['cost'] ) )
+
+    ### MERGE
+    costs_dict = {}
+    for day in days_result:
+        
+        user_record = day.get('_id',{})
+        user_id = user_record.get('user_id')
+        user_date = user_record.get('date')
+        user_YM = '-'.join(user_date.split('-')[:2])
+        
+        cost = 0
+        # Search cost of time span
+        if user_id in salary_result.keys():
+            cost = next((rec[2] for rec in salary_result[user_id] if rec[0] < user_date and rec[1] > user_date ), 0)
+            
+        if not cost:
+            pass
+            #cherrypy.log('Can\'t find salary for user %s at date %s' % (user_id, user_date), context = 'TS.REPORT_PROJECTS.merge', severity = logging.INFO)
+        else:
+            costs_dict[user_YM] = cost + costs_dict.get(user_YM, 0)
+             
+    ## ORDER
+    costs_list = []
+    for ym in sorted(costs_dict.keys()):
+        costs_list.append( (ym, costs_dict[ym]) )
+                
+    return { 'records' : stringify_objectid_cursor(costs_list) }
     
