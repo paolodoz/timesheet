@@ -53,3 +53,8 @@ form .error {
   float: right;
   cursor: pointer;
 }
+
+#userhistory li span:last-child {
+  float: right;
+  cursor: pointer;
+}
