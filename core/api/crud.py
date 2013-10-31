@@ -4,7 +4,7 @@ except ImportError as e:
     from pymongo import Connection
 
 from core.validation.validation import TSValidationError, recursive_merge, update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
-from core.validation.permissions import check_action_permissions, check_criteria_permissions, check_projection_permissions
+from core.validation.permissions import check_insert_permissions, check_action_permissions, check_criteria_permissions, check_projection_permissions
 from bson.objectid import ObjectId
 from core.config import collections, conf_mongodb, conf_auth, conf_auth_db
 import string, hashlib, random, types, cherrypy, logging
@@ -62,15 +62,19 @@ def add(collection, documents_list):
     """Insert new record list to collection
     Called by POST /add/<collection>/"""
     
-    
     # Check permission
     if not isinstance(documents_list, list):
         raise TSValidationError("List expected, not '%s'" % documents_list.__class__.__name__)
+    
     check_action_permissions('add', collection)
     validate_json_list(collection, documents_list)
     
     # Sanify documents
     sanified_documents_list = sanitize_objectify_json(documents_list)
+    
+#     # Check insertion permissions
+#     for document in documents_list:
+#         check_insert_permissions(collection, document)
     
     # Eventually rewrite password and salt
     update_password_salt_user_list(collection, sanified_documents_list)
@@ -89,7 +93,7 @@ def update(collection, document):
         raise TSValidationError("Dict with '_id' field expected, not '%s'" % document.__class__.__name__)
     
     check_action_permissions('update', collection)
-    check_criteria_permissions(collection, document)
+    check_insert_permissions(collection, document)
     
     # Sanify documents
     sanified_document = sanitize_objectify_json(document)
