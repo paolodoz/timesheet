@@ -54,7 +54,7 @@ class UserAPIAsAdmin(TestClassBase):
         self._assert_logged(credentials)
         
         # Delete the inserted user
-        self.execOnTearDown.append(('/remove/user', [ { '_id' :  json_user_pwd } ], { 'error' : None }))
+        self.execOnTearDown.append(('/remove/user', [ { '_id' :  id_user_pwd } ], { 'error' : None }))
         
 
 class DayAPIAsEmployee(TestCaseAsEmployee):
