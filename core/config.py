@@ -5,6 +5,7 @@ version = '0.1'
 
 # Define common paths based on current file position
 core_folder = os.path.dirname(__file__)
+schemas_folder = os.path.abspath(os.path.join(core_folder,'schemas'))
 root_folder = os.path.abspath(os.path.join(core_folder,'..'))
 www_folder = os.path.abspath(os.path.join(root_folder,'www'))
 templates_folder = os.path.abspath(os.path.join(www_folder,'templates'))
@@ -13,17 +14,17 @@ views_folder = os.path.abspath(os.path.join(www_folder,'views'))
 # Set template engine
 templates = TemplateLookup(directories=[templates_folder])
 
-# Load database schema validation from schema.yaml
-schema_path = os.path.join(core_folder, 'schema.yaml')
+# Load database schema validation from database.yaml
+schema_path = os.path.join(schemas_folder, 'database.yaml')
 schema = yaml.load(file(schema_path, 'r'))
 collections = schema.keys()
 
 # Load permissions schema from permissions.yaml
-permissions_path = os.path.join(core_folder, 'permissions.yaml')
+permissions_path = os.path.join(schemas_folder, 'permissions.yaml')
 restrictions_schema = yaml.load(file(permissions_path, 'r'))
 
 # Load requests schema from requests.yaml
-requests_schema_path = os.path.join(core_folder, 'requests_schema.yaml')
+requests_schema_path = os.path.join(schemas_folder, 'requests.yaml')
 requests_schema = yaml.load(file(requests_schema_path, 'r'))
 
 # Load configuration from config.yaml

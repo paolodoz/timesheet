@@ -1,6 +1,6 @@
 import cherrypy, os, traceback, logging, sys, cgi
 from core.auth.auth import AuthController, require, is_logged
-from core import db, uploads, datamine
+from core.api import crud, uploads, datamine
 from config import views_folder, templates, conf_session
 from glob import glob
 from jsonschema.exceptions import ValidationError
@@ -204,7 +204,7 @@ class Routes:
         
         json_in = cherrypy.request.json 
         try:
-            ids = db.add(collection, json_in)
+            ids = crud.add(collection, json_in)
         except ValidationError as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
             json_out = {'error' : '%s: %s' % (type(e).__name__, cgi.escape(e.message)), 'ids' : []}
@@ -242,7 +242,7 @@ class Routes:
         json_in = cherrypy.request.json 
         
         try:
-            records = db.get(collection, json_in)
+            records = crud.get(collection, json_in)
         except ValidationError as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
             json_out = {'error' : '%s: %s' % (type(e).__name__, cgi.escape(e.message)), 'records' : []}
@@ -278,7 +278,7 @@ class Routes:
 
         json_in = cherrypy.request.json 
         try:
-            ids = db.remove(collection, json_in)
+            ids = crud.remove(collection, json_in)
         except ValidationError as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
             json_out = {'error' : '%s: %s' % (type(e).__name__, cgi.escape(e.message)), 'ids' : []}
@@ -315,7 +315,7 @@ class Routes:
 
         json_in = cherrypy.request.json 
         try:
-            db.update(collection, json_in)
+            crud.update(collection, json_in)
         except ValidationError as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
             json_out = {'error' : '%s: %s' % (type(e).__name__, cgi.escape(e.message))}
