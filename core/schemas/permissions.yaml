@@ -135,7 +135,26 @@ report_users_hours:
     action_restrictions:
       employee:
         - report_users_hours
-        
+      
+  
+report_projects:
+    criteria_restrictions_schema:     
+      project manager:
+        type: object
+        required : [ 'users.hours.project' ]
+        properties:
+          users.hours.project:
+            type: object
+            required: [ '$in' ]
+            properties: 
+              '$in':
+                type: array
+                items:
+                  enum: '%%managed_projects%%'
+
+    action_restrictions:
+      employee:
+        - report_projects        
                   
 project:
     criteria_restrictions_schema:
