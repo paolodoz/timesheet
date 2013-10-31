@@ -8,7 +8,7 @@ import cherrypy
 from core.config import conf_auth, conf_auth_db, conf_auth_ldap, templates
 from core.permissions import get_user_restrictions
 from core.db import db
-
+from core import auth
 
 def check_credentials(username, password):
     """Verifies credentials for username and password.
@@ -17,8 +17,7 @@ def check_credentials(username, password):
     # Try login with core/auth_*.py functions specified in config.yaml auth section
     auth_providers = conf_auth['providers']    
     for provider in auth_providers:
-        auth_module_package = __import__('core.auth_%s' % provider)
-        auth_module = getattr(auth_module_package, 'auth_%s' % provider)
+        auth_module = __import__('core.auth.auth_%s' % provider, fromlist=["*"])
         
         try:
             auth_error = auth_module.check_credentials(username, password)

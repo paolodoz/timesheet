@@ -1,12 +1,10 @@
 import cherrypy, os, traceback, logging, sys, cgi
-from core.auth import AuthController, require, is_logged
-from core import db
+from core.auth.auth import AuthController, require, is_logged
+from core import db, uploads, datamine
 from config import views_folder, templates, conf_session
 from glob import glob
-from core import datamine
 from jsonschema.exceptions import ValidationError
 from core.validation import TSValidationError
-from core import uploads
 from cherrypy.lib.static import serve_file
 
 
