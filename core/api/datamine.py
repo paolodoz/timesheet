@@ -240,11 +240,12 @@ def report_projects(criteria):
         user_id = user_record.get('user_id')
         user_date = user_record.get('date')
         user_YM = '-'.join(user_date.split('-')[:2])
-        
+        user_hours = day.get('hours', 0)
+
         cost = next((sal['salary'][0]['cost'] for sal in salaries_result if sal['_id'] == ObjectId(user_id) and sal['salary'][0]['from'] <= user_date and sal['salary'][0]['to'] >= user_date ), 0)
         
         if cost:
-            costs_dict[user_YM] = cost + costs_dict.get(user_YM, 0)
+            costs_dict[user_YM] = costs_dict.get(user_YM, 0)  + ( cost * user_hours )
              
     ## ORDER
     costs_list = []
