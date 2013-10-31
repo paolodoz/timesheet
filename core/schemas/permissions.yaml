@@ -167,7 +167,11 @@ project:
       employee:
         - remove
         - add
-
+        - update
+      project manager:
+        - remove
+        - add
+        
 file:
     action_restrictions:
       employee:
