@@ -68,8 +68,7 @@ def _replace_function_sanitize_objectify_json(container):
     if isinstance(container, types.DictType):
         
         # Objectify '_id' and dot-notation 'object._id' strings. Assume there is only one per dictionary.
-        id_key = next((k for k in container.keys() if isinstance(container[k],basestring) and (k == '_id' or k.endswith('._id'))), None)
-        if id_key:
+        for id_key in (k for k in container.keys() if isinstance(container[k],basestring) and (k == '_id' or k.endswith('._id'))):
             container[id_key] = ObjectId(container[id_key])
         
         t = container.__class__
