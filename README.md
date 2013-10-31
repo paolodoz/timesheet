@@ -21,7 +21,7 @@ Setup
 
   5. If required, customize the configuration file _core/config.yaml_.
 
-  6. Point your browser to the web interface, by default: [http://localhost:9090](http://localhost:9090)
+  6. Point your browser to the web interface, by default: [https://localhost:9090](https://localhost:9090)
   
   7. Make profits :)
 
