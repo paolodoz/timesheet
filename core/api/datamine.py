@@ -2,7 +2,6 @@ from core.validation.validation import TSValidationError, validate_request, upda
 from core.validation.permissions import check_action_permissions, check_criteria_permissions, check_projection_permissions, check_insert_permissions
 from bson.objectid import ObjectId
 from core.api.crud import db
-from collections import OrderedDict
 import cherrypy, logging
 
 try:
