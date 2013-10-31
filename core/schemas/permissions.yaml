@@ -162,6 +162,15 @@ project:
               responsible._id:
                 type: string
                 pattern: '%%_id%%'
+ 
+    insert_restrictions_schema:
+      project manager:
+        type: object
+        properties:
+          _id:
+            type: string
+            enum: '%%managed_projects%%'
+
     
     action_restrictions:
       employee:
