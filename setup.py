@@ -14,11 +14,12 @@ def _check_libs():
     print '[+] Checking libraries.. ',
     
     libraries = { 
-               'cherrypy' : 'Missing some cherrypy dependencies',
-               'yaml' : "Missing 'python-yaml' ptyhon package", 
-               'pymongo' : "Missing 'pymongo' ptyhon package", 
-               'bson' : "Missing 'python-bson' python package",
-               'mako' : "Missing 'python-mako' python package",
+               'cherrypy' : "Install cherrypy running 'sudo pip install cherrypy'",
+               'yaml' : "Install yaml running 'sudo pip install yaml'", 
+               'pymongo' : "Install pymongo running 'sudo pip install pymongo'", 
+               'bson' : "Install bson running 'sudo pip install bson'",
+               'mako' : "Install mako running 'sudo pip install mako'",
+               'jsonschema' : "Install jsonschema running 'sudo pip install jsonschema'",
                }
     
     for lib, message in libraries.items():
