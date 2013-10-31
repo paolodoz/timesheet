@@ -1,6 +1,6 @@
 import ldap, sys, logging
 from core.config import conf_auth_ldap
-from core.validation import validate_json_list, sanitize_objectify_json, update_password_salt_user_json
+from core.validation.validation import validate_json_list, sanitize_objectify_json, update_password_salt_user_json
 from core.db import db
 
 

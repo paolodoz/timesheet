@@ -1,6 +1,6 @@
 import yaml, cherrypy, types, jsonschema
-from validation import TSValidationError, recursive_replace, ObjectId
-from config import restrictions_schema
+from core.validation.validation import TSValidationError, recursive_replace, ObjectId
+from core.config import restrictions_schema
 
 def get_user_restrictions(schema_name):
     """Format restriction schemas. Saved on auth login to speedup following accesses"""

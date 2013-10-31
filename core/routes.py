@@ -4,7 +4,7 @@ from core import db, uploads, datamine
 from config import views_folder, templates, conf_session
 from glob import glob
 from jsonschema.exceptions import ValidationError
-from core.validation import TSValidationError
+from core.validation.validation import TSValidationError
 from cherrypy.lib.static import serve_file
 
 

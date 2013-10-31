@@ -1,6 +1,6 @@
 import urllib2, urllib, json, os, sys, types
 from cookielib import CookieJar
-from core.validation import recursive_replace
+from core.validation.validation import recursive_replace
 import unittest, copy
 
 admin_credentials = { 'username' : 'usr', 'password' : 'pwd' }

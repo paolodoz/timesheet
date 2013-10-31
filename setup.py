@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import sys
-from core.validation import update_password_salt_user_json, sanitize_objectify_json, validate_json_list
+from core.validation.validation import update_password_salt_user_json, sanitize_objectify_json, validate_json_list
 try:
     from core.config import conf_auth_db, version, collections, conf_mongodb, conf_auth_ldap
     from core.auth.auth_ldap import check_credentials

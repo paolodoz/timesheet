@@ -3,8 +3,8 @@ try:
 except ImportError as e:
     from pymongo import Connection
 
-from validation import TSValidationError, recursive_merge, update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
-from permissions import check_action_permissions, check_criteria_permissions, check_projection_permissions
+from core.validation.validation import TSValidationError, recursive_merge, update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
+from core.validation.permissions import check_action_permissions, check_criteria_permissions, check_projection_permissions
 from bson.objectid import ObjectId
 from config import collections, conf_mongodb, conf_auth, conf_auth_db
 import string, hashlib, random, types, cherrypy, logging
