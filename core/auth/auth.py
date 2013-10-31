@@ -7,7 +7,7 @@
 import cherrypy
 from core.config import conf_auth, conf_auth_db, conf_auth_ldap, templates
 from core.validation.permissions import get_user_restrictions
-from core.db import db
+from core.api.crud import db
 from core import auth
 
 def check_credentials(username, password):

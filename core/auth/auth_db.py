@@ -1,5 +1,5 @@
 import hashlib
-from core.db import db
+from core.api.crud import db
 
 def check_credentials(username, password_in):
     """User authentication based on database user collection"""

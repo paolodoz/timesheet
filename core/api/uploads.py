@@ -1,6 +1,6 @@
 import tempfile, os, shutil, cherrypy, time
 from core.config import conf_uploads
-from core.db import db
+from core.api.crud import db
 from core.validation.validation import TSValidationError, validate_request, cgi, ObjectId, sanitize_objectify_json
 from core.validation.permissions import check_action_permissions, check_criteria_permissions
 import logging
