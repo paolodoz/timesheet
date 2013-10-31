@@ -174,10 +174,12 @@ def report_projects(criteria):
         # Get projects by customer
         customer_input = sanified_criteria.get('customer')
         if customer_input:
-            projects_input = db.find( { 'customer' : customer_input }, { '_id' : 1 })
+            projects_input = []
+            customer_projects = db.project.find( { 'customer' : customer_input }, { '_id' : 1 })
+            for project in customer_projects:
+                projects_input.append(str(project['_id'])) 
         else:
             projects_input = sanified_criteria.get('projects', [])
-        
         
         # Prepare the aggregation pipe
         
@@ -190,7 +192,7 @@ def report_projects(criteria):
         match_projects = { }
         
         # Match optional projects filters
-        if sanified_criteria['projects']:
+        if projects_input:
             match_projects['users.hours.project'] = { '$in' : projects_input }
         
         check_criteria_permissions('report_projects', match_projects)
@@ -221,8 +223,10 @@ def report_projects(criteria):
         return db.user.aggregate(aggregation_pipe)
 
 
+    check_action_permissions('report_projects', 'report_projects')
     validate_request('report_projects', criteria)
     sanified_criteria = sanitize_objectify_json(criteria)
+        
     
     # Day mining
     days_result = _find_days_from_customers(sanified_criteria)['result'] 
