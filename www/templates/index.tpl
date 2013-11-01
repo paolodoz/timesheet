@@ -5,9 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <!-- Bootstrap -->
     <link rel="icon" href="/static/images/favicon.ico" />
-    <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen">
+    <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen" />
     <link rel='stylesheet' type='text/css' href='/static/css/redmond/jquery-ui-1.10.3.custom.min.css' />
-    <link href="/static/css/timesheet.css" rel="stylesheet" media="screen">
+    <link href="/static/css/timesheet.css" rel="stylesheet" media="screen" />
     <!-- JavaScript plugins (requires jQuery) -->
     <script src="/static/js/jquery-1.10.2.js"></script>
     <script src="/static/js/json2.js"></script>
@@ -44,10 +44,8 @@
 	    <li class="divider" role="presentation"></li>
             <li role="presentation"><a href="/index/trips" tabindex="-1" role="menuitem">Elenco</a></li>
         </ul>
-
-    </a>
-  </li>
-<li class="${'active' if view == 'expences' else ''}">
+      </li>
+    <li class="${'active' if view == 'expences' else ''}">
     <a href="#">
       Note spese
     </a>
@@ -59,7 +57,7 @@
 % if group == 'administrator':
 	
 	<li><hr></li>
-	 <li class="${'active' if view == 'report' else ''} dropdown">
+	 <li class="${'active' if view == 'reports' else 'active' if view == 'reports_prj' else ''} dropdown">
 	    <a href="#" data-toggle="dropdown" role="button">Report<b class="caret"></b></a>
 		<ul aria-labelledby="drop4" role="menu" class="dropdown-menu" id="menurep">
 	            <li role="presentation"><a href="/index/reports" tabindex="-1" role="menuitem">By user</a></li>
@@ -72,17 +70,15 @@
 	  <li class="${'active' if view == 'customers' else ''} dropdown">
 	    <a href="#" data-toggle="dropdown" role="button">Customers<b class="caret"></b></a>
 		<ul aria-labelledby="drop4" role="menu" class="dropdown-menu" id="menucust">
-	            <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Aggiungi</a></li>
-	            <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Elimina</a></li>
-	            <li class="divider" role="presentation"></li>
 	            <li role="presentation"><a href="/index/customers" tabindex="-1" role="menuitem">List</a></li>
 	        </ul>
 	  </li>
-	<li class="${'active' if view == 'projects' else 'active' if view == 'offers' else ''} dropdown">
+	<li class="${'active' if view == 'projects' else 'active' if view == 'offers' else 'active' if view == 'production' else ''} dropdown">
 	    <a href="#" data-toggle="dropdown" role="button">Projects<b class="caret"></b></a>
 		<ul aria-labelledby="drop4" role="menu" class="dropdown-menu" id="menucust">
 	            <li role="presentation"><a href="/index/projects" tabindex="-1" role="menuitem">List</a></li>
 	            <li role="presentation"><a href="/index/offers" tabindex="-1" role="menuitem">Offers</a></li>
+	            <li role="presentation"><a href="/index/production" tabindex="-1" role="menuitem">Production</a></li>
 	        </ul>
 	  </li>
 	<li class="${'active' if view == 'users' else ''}">
