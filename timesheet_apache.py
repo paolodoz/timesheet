@@ -6,7 +6,7 @@ import sys, os
 installation_path = os.path.dirname(__file__)
 
 sys.path.insert(0, installation_path)
-from core.routes import Routes
+from core.routes.routes import Routes
 from core.config import conf_server, conf_static, conf_logging
 
 # Update configurations

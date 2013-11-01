@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
 import cherrypy, logging
-from core.routes import Routes
+from core.routes.routes import Routes
 from core.config import conf_server, conf_static, conf_logging
 
 if __name__ == '__main__':
