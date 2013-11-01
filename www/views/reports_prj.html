@@ -1,0 +1,181 @@
+<script type="text/javascript">
+var validator;
+$(document).ready(function() {
+  loadProjectsList("projectsList");
+  loadCustomersList("reportcustomer");
+  $("div.results").hide();
+  $(".datepicker").datepicker();
+  $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
+  $('.rapidsearch').keyup(function () {
+    var list = this.id.substr(3);
+    var currenttext = $(this).val().toLowerCase();
+    if (currenttext == "") {
+      resetvisibility($('#' + list + 'List li'));
+      return;
+    }
+    filterlist($('#' + list + 'List li'), currenttext);
+  });
+  $("#reportstart").change(function() {
+    var firstday = new Date($(this).val());
+    var lastday = new Date(firstday.getFullYear(), firstday.getMonth() + 1,0);
+    $("#reportend").val(simpleDate(lastday));
+  });
+  $("#btnreset").click(function() {
+    resetReportsForm();
+  });
+  $("#reportForm").submit(function(event) {
+    event.preventDefault();
+    if(!validator.form())
+      return;
+    $('#reportwait').modal('show');
+    $("div.results").show();
+    report.byproject("reportForm", loadReportResults);
+  });
+  validator = $("#reportForm").validate({
+    rules: {
+      reportstart: {
+        required: true,
+        dateISO: true
+      },
+      reportend: {
+        required: true,
+        dateISO: true
+      }
+    },
+    highlight: function (element) {
+      $(element).closest('.form-group').addClass('has-error');
+    },
+    unhighlight: function (element) {
+      $(element).closest('.form-group').removeClass('has-error');
+    }
+  });
+});
+
+function loadProjectsList(list) {
+  var filter = [{},{name:1}];
+  project.load(filter, loadProjects, list);
+}
+
+function loadCustomersList(list) {
+  var filter = [{},{name:1}];
+  customer.load(filter, loadCustomers, list);
+}
+
+function resetReportsForm()
+{
+  $("#projectsList li").removeClass("active");
+  $("div.results").hide();
+  $("#real").html("");
+}
+
+function loadProjects(data, container) {
+  var i;
+  var htmllist = "";
+  for(i=0;i < data.records.length; i++) {
+    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data.records[i].name + "</li>";
+  }
+  $("#" + container).html(htmllist);
+  $("#" + container + " .list-group-item").click(function() {
+    $(this).toggleClass("active");
+  });
+}
+
+function loadCustomers(data, container) {
+  var i;
+  var htmlselect = "<option value=''></option>";
+  for(i=0;i < data.records.length; i++) {
+    htmlselect += "<option value='" + data.records[i]._id + "'>" + data.records[i].name + "</option>";
+  }
+  $("#" + container).html(htmlselect);
+}
+
+
+function loadReportResults(data) {
+  $("#real").html("mese: " + data[0][0] + " euro: " + data[0][1]);
+  $('#reportwait').modal('hide');
+}
+
+//restore visibility for each element in list
+function resetvisibility(elem) {
+  $(elem).each(function () {
+    $(this).removeClass("hidden");
+  });
+}
+
+function filterlist(list, currenttext) {
+  $(list).each(function () {
+    var elemname = $(this).text().toLowerCase();
+    if (elemname.indexOf(currenttext) != -1)
+      $(this).removeClass("hidden");
+    else
+      $(this).addClass("hidden");
+  });
+}
+</script>
+<h2>Reports</h2>
+<div class="row">
+  <div class="col-lg-3">
+    <h3>Projects list</h3>
+    <div class="input-group">
+      <span class="input-group-addon glyphicon glyphicon-search"></span>
+      <input type="text" class="form-control rapidsearch" placeholder="Rapid Search" id="txtprojects">
+    </div>
+    <p></p>
+    <ul class="list-group" id="projectsList"></ul>
+  </div>
+  <div class="col-lg-5">
+    <h3>Report Details</h3>
+    <form class="form-horizontal" role="form" id="reportForm" method="post" action="/index/reports_prj">
+<div class="form-group">
+    <label for="reportstart" class="col-lg-4 control-label">Date start</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control datepicker" id="reportstart" name="reportstart" placeholder="2013-01-01">
+    </div>
+  </div>
+<div class="form-group">
+    <label for="reportend" class="col-lg-4 control-label">Date end</label>
+    <div class="col-lg-6">
+      <input type="text" class="form-control datepicker" id="reportend" name="reportend" placeholder="2020-12-31">
+    </div>
+  </div>
+<div class="form-group">
+    <label for="reportproject" class="col-lg-4 control-label">Customer</label>
+    <div class="col-lg-6">
+      <select class="form-control" id="reportcustomer">
+      </select>
+    </div>
+  </div>
+<div class="form-group">
+    <div class="col-lg-offset-4 col-lg-7">
+      <button type="submit" class="btn btn-primary" id="btnsubmit"><span class="glyphicon glyphicon-search"></span> Generate</button>
+      <button type="reset" class="btn" id="btnreset"> Reset</button>
+    </div>
+</div>
+    </form>
+  </div>
+</div>
+<div class="row results">
+<div class="panel panel-default">
+  <!-- Default panel contents -->
+  <div class="panel-heading">Report results</div>
+<div id="real"></div>
+
+
+</div>
+</div>
+
+<div class="modal fade" id="reportwait" data-backdrop="static" data-keyboard="false">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h1>Processing...</h1>
+      </div>
+      <div class="modal-body">
+        <div class="progress progress-striped active">
+  <div class="progress-bar"  role="progressbar" aria-valuenow="100" aria-valuemin="0" aria-valuemax="100" style="width: 100%">
+  </div>
+</div>
+      </div>
+    </div>
+  </div>
+</div>

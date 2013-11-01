@@ -524,6 +524,34 @@ var report = {
       dataType: "json",
     });
   },
+  byproject: function (form, callback) {
+    var report, url, hours, i;
+    report = {};
+    url = "/data/report_projects";
+    report.start = $("#reportstart").val();
+    report.end = $("#reportend").val();
+    report.projects =  new Array();
+    i = 0;
+    $("#projectsList li.active").each(function() {
+      report.projects[i++] = $(this).attr("id");
+    });
+    report.customer= $("#reportcustomer").val();
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: JSON.stringify(report),
+      success: function(data) {
+        if(!data.error) {
+          callback(data.records);
+        } else {
+          $('#reportwait').modal('hide');
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
 }
 
 function showmessage(type, msg) {
