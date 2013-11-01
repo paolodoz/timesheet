@@ -26,7 +26,7 @@ class Routes:
         GET /index/<view>
         """
         
-        view_page = views.get_template('%s.html' % view).render(csrf_token = cherrypy.session['_ts_user'])
+        view_page = views.get_template('%s.html' % view).render(csrf_token = cherrypy.session['_csrf_token'])
         return templates.get_template('index.tpl').render(view = view, view_page=view_page, **cherrypy.session['_ts_user'])
         
     @cherrypy.expose
