@@ -1,5 +1,5 @@
 import cherrypy, os, traceback, logging, cgi
-from core.auth.auth import AuthController, require, is_logged, check_csrf
+from core.auth.auth import AuthController, require, is_logged
 from core.api import crud
 from core.routes.uploads import UploadsRoutes
 from core.routes.datamine import DatamineRoutes
@@ -26,7 +26,7 @@ class Routes:
         GET /index/<view>
         """
         
-        view_page = views.get_template('%s.html' % view).render(csrf_token = cherrypy.session['_csrf_token'])
+        view_page = views.get_template('%s.html' % view).render(csrf_token = cherrypy.session.get('_csrf_token',''))
         return templates.get_template('index.tpl').render(view = view, view_page=view_page, **cherrypy.session['_ts_user'])
         
     @cherrypy.expose
