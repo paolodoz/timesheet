@@ -478,7 +478,7 @@ var offer = {
 }
 
 var report = {
-  load: function (form, callback) {
+  byuser: function (form, callback) {
     var report, url, hours, i;
     report = {};
     url = "/data/report_users_hours";

@@ -29,7 +29,7 @@ $(document).ready(function() {
       return;
     $('#reportwait').modal('show');
     $("div.results").show();
-    report.load("reportForm", loadReportResults);
+    report.byuser("reportForm", loadReportResults);
   });
   validator = $("#reportForm").validate({
     rules: {
