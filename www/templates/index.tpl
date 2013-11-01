@@ -62,8 +62,8 @@
 	 <li class="${'active' if view == 'report' else ''} dropdown">
 	    <a href="#" data-toggle="dropdown" role="button">Report<b class="caret"></b></a>
 		<ul aria-labelledby="drop4" role="menu" class="dropdown-menu" id="menurep">
-	            <li role="presentation"><a href="/index/reports" tabindex="-1" role="menuitem">Per utente</a></li>
-	            <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Per commessa</a></li>
+	            <li role="presentation"><a href="/index/reports" tabindex="-1" role="menuitem">By user</a></li>
+	            <li role="presentation"><a href="/index/reports_prj" tabindex="-1" role="menuitem">By project</a></li>
 	            <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Per cliente</a></li>
 	            <li class="divider" role="presentation"></li>
 	            <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Totale mese</a></li>
