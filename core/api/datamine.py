@@ -205,7 +205,8 @@ def report_projects(criteria):
                              { '$group' : 
                               { '_id' : { 
                                          'user_id' : '$users.user_id', 
-                                         'date' : '$date' 
+                                         'date' : '$date',
+                                         'project' : '$users.hours.project'
                                          }, 
                                'hours' : { '$sum' : '$users.hours.amount'  } 
                                } 
@@ -222,11 +223,74 @@ def report_projects(criteria):
         cherrypy.log(aggregation_pipe.__repr__(), context = 'TS.REPORT_PROJECTS.salaries_aggregation', severity = logging.INFO)
         return db.user.aggregate(aggregation_pipe)
 
+    def _merge_total(days_result, salaries_result):
+        
+        total_costs = {}
+        
+        for day in days_result:
+            
+            user_record = day.get('_id',{})
+            user_id = user_record.get('user_id')
+            user_date = user_record.get('date')
+            user_YM = '-'.join(user_date.split('-')[:2])
+            user_hours = day.get('hours', 0)
+    
+            cost = next((sal['salary'][0]['cost'] for sal in salaries_result if sal['_id'] == ObjectId(user_id) and sal['salary'][0]['from'] <= user_date and sal['salary'][0]['to'] >= user_date ), 0)
+            
+            if cost:
+               total_costs[user_YM] = total_costs.get(user_YM, 0)  + ( cost * user_hours )
+                 
+        ## ORDER
+        
+        output_costs_list = []
+        
+        for ym in sorted(total_costs.keys()):
+            output_costs_list.append( (ym, total_costs[ym]) )
+                
+        return output_costs_list
+
+    def _merge_by_project(days_result, salaries_result):
+    
+        ### MERGE
+        project_costs = {}
+        
+        for day in days_result:
+            
+            user_record = day.get('_id',{})
+            user_id = user_record.get('user_id')
+            project = user_record.get('project')
+            user_date = user_record.get('date')
+            user_YM = '-'.join(user_date.split('-')[:2])
+            user_hours = day.get('hours', 0)
+    
+            cost = next((sal['salary'][0]['cost'] for sal in salaries_result if sal['_id'] == ObjectId(user_id) and sal['salary'][0]['from'] <= user_date and sal['salary'][0]['to'] >= user_date ), 0)
+            
+            if cost:
+                    
+                if not project in project_costs:
+                    project_costs[project] = {}
+
+                project_costs[project][user_YM] = project_costs[project].get(user_YM, 0)  + ( cost * user_hours )
+             
+        ## ORDER
+        print 'AAAAAAAAAAAAAAAAAAAAAAAAAAA', project_costs
+        
+        output_costs_dict = {}
+        
+        for project in project_costs.keys():
+            output_costs_dict[project] = []
+            
+            for ym in sorted(project_costs[project].keys()):
+                output_costs_dict[project].append( (ym, project_costs[project][ym]) )    
+          
+        return output_costs_dict
+            
 
     check_action_permissions('report_projects', 'report_projects')
     validate_request('report_projects', criteria)
     sanified_criteria = sanitize_objectify_json(criteria)
         
+    aggregation_mode = sanified_criteria.get('mode', 'total')  
     
     # Day mining
     days_result = _find_days_from_customers(sanified_criteria)['result'] 
@@ -234,27 +298,9 @@ def report_projects(criteria):
     
     # Salary mining
     salaries_result = _find_salaries_from_date_users(days_ids_list, sanified_criteria['end'], sanified_criteria['start'])['result']
-    users_ids_list = [ r['_id'] for r in salaries_result ]
 
-    ### MERGE
-    costs_dict = {}
-    for day in days_result:
-        
-        user_record = day.get('_id',{})
-        user_id = user_record.get('user_id')
-        user_date = user_record.get('date')
-        user_YM = '-'.join(user_date.split('-')[:2])
-        user_hours = day.get('hours', 0)
-
-        cost = next((sal['salary'][0]['cost'] for sal in salaries_result if sal['_id'] == ObjectId(user_id) and sal['salary'][0]['from'] <= user_date and sal['salary'][0]['to'] >= user_date ), 0)
-        
-        if cost:
-            costs_dict[user_YM] = costs_dict.get(user_YM, 0)  + ( cost * user_hours )
-             
-    ## ORDER
-    costs_list = []
-    for ym in sorted(costs_dict.keys()):
-        costs_list.append( (ym, costs_dict[ym]) )
-                
-    return { 'records' : stringify_objectid_cursor(costs_list) }
+    if aggregation_mode == 'total':
+        return { 'records' : _merge_total(days_result, salaries_result) }
     
+    elif aggregation_mode == 'project':
+        return { 'records' : _merge_by_project(days_result, salaries_result) }    

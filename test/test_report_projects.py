@@ -43,6 +43,46 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                     )
 
 
+    def test_report_project_modeproject_ok(self):
+          
+        self.maxDiff = None
+        
+        self._assert_req('/data/report_projects', {
+                                                      'start': '1999-01-01', 
+                                                      'end' : '2020-02-02',
+                                                      'projects' : [],
+                                                      'customer' : '',
+                                                      'mode' : 'project'
+                                      }
+                                    , {u'error': None, u'records': { self.projects_ids[0] : [[u'2005-10', 20], [u'2009-10', 800]], self.projects_ids[1]: [[u'2005-10', 20]]}}
+                                    )
+        
+        # Restrict time span             
+        self._assert_req('/data/report_projects', {
+                                                      'start': '1999-01-01', 
+                                                      'end' : '2006-02-02',
+                                                      'projects' : [],
+                                                      'customer' : '',
+                                                      'mode' : 'project'
+                                      }
+                                    , {u'error': None,  u'records': { self.projects_ids[0] : [[u'2005-10', 20]], self.projects_ids[1]: [[u'2005-10', 20]]}}
+                                    )
+
+        # Restrict projects
+        self._assert_req('/data/report_projects', {
+                                                      'start': '1999-01-01', 
+                                                      'end' : '2020-02-02',
+                                                      'projects' : [ self.projects_ids[0] ],
+                                                      'customer' : '',
+                                                      'mode' : 'project'
+                                      }
+                                    , {u'error': None, u'records': { self.projects_ids[0] : [[u'2005-10', 20], [u'2009-10', 800]] } }
+                                    )
+
+
+
+
+
 
 class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
     

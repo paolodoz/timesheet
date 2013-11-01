@@ -42,6 +42,11 @@ report_projects:
         type: string
     customer:
       type: string
+    mode:
+      type: string
+      enum:
+        - total
+        - project
 
 search_days:
   type: object
