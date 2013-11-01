@@ -13,6 +13,7 @@ views_folder = os.path.abspath(os.path.join(www_folder,'views'))
 
 # Set template engine
 templates = TemplateLookup(directories=[templates_folder])
+views = TemplateLookup(directories=[views_folder])
 
 # Load database schema validation from database.yaml
 schema_path = os.path.join(schemas_folder, 'database.yaml')

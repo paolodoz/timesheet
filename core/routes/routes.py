@@ -1,20 +1,12 @@
 import cherrypy, os, traceback, logging, cgi
-from core.auth.auth import AuthController, require, is_logged
+from core.auth.auth import AuthController, require, is_logged, check_csrf
 from core.api import crud
 from core.routes.uploads import UploadsRoutes
 from core.routes.datamine import DatamineRoutes
-from core.config import views_folder, templates, conf_session
+from core.config import views_folder, templates, views, conf_session
 from glob import glob
 from jsonschema.exceptions import ValidationError
 from core.validation.validation import TSValidationError
-
-
-
-# Set available views dictionary
-views = {}
-for view_path in glob(os.path.join(views_folder, '*.html')):
-    views[os.path.splitext(os.path.basename(view_path))[0]] = view_path
-
 
 
 class Routes:
@@ -29,17 +21,14 @@ class Routes:
     @require(is_logged())
     def index(self, view = 'index'):
         """
-        Serves HTML views stored in 'views/<view>.html' rendered with template 'templates/index.tpl'
+        Serves HTML views stored in 'view/<view>.html' rendered with template 'templates/index.tpl'
         
         GET /index/<view>
         """
         
-        if view in views.keys():
-            # Templatize index passing requested page and user session data 
-            return templates.get_template('index.tpl').render(view = view, view_page=open(views[view]).read(), **cherrypy.session['_ts_user'])
-        else:
-            raise cherrypy.HTTPError(404)
-
+        view_page = views.get_template('%s.html' % view).render(csrf_token = cherrypy.session['_ts_user'])
+        return templates.get_template('index.tpl').render(view = view, view_page=view_page, **cherrypy.session['_ts_user'])
+        
     @cherrypy.expose
     @require(is_logged())
     @cherrypy.tools.json_out(on = True)
