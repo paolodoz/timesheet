@@ -563,6 +563,7 @@ function showmessage(type, msg) {
   } else {
     box.addClass("alert alert-success");
   }
+  console.log(msg);
   box.text(msg);
   box.fadeIn("slow").delay(5000).fadeOut("slow");
 }
