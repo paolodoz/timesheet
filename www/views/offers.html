@@ -35,10 +35,12 @@ $(document).ready(function() {
     rules: {
       offeramount: {
         required: true,
+        number: true,
         min: 0
       },
       offerpaydelay: {
         required: true,
+        digits: true,
         min: 1
       },
     },
