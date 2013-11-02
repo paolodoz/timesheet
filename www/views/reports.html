@@ -157,67 +157,64 @@ function filterlist(list, currenttext) {
   <div class="col-lg-5">
     <h3>Report Details</h3>
     <form class="form-horizontal" role="form" id="reportForm" method="post" action="/index/reports">
-<div class="form-group">
-    <label for="reportstart" class="col-lg-4 control-label">Date start</label>
-    <div class="col-lg-6">
-      <input type="text" class="form-control datepicker" id="reportstart" name="reportstart" placeholder="2013-01-01">
-    </div>
-  </div>
-<div class="form-group">
-    <label for="reportend" class="col-lg-4 control-label">Date end</label>
-    <div class="col-lg-6">
-      <input type="text" class="form-control datepicker" id="reportend" name="reportend" placeholder="2020-12-31">
-    </div>
-  </div>
-<div class="form-group">
-    <label for="reportproject" class="col-lg-4 control-label">Project</label>
-    <div class="col-lg-6">
-      <select class="form-control" id="reportproject">
-      </select>
-    </div>
-  </div>
-<div class="form-group">
-    <label for="reporthours" class="col-lg-4 control-label">Normal/Extra hours</label>
-    <div class="col-lg-6">
-<div class="btn-group" data-toggle="buttons">
-  <label class="btn btn-default">
-    <input type="radio" name="options" id="hoursN"> Normal
-  </label>
-  <label class="btn btn-default">
-    <input type="radio" name="options" id="hoursE"> Extra
-  </label>
-  <label class="btn btn-default active">
-    <input type="radio" name="options" id="hoursB"> Both
-  </label>
-</div>
-    </div>
-  </div>
-<div class="form-group">
-  <label for="reporttasks" class="col-lg-4 control-label">Tasks</label>
-  <div class="col-lg-6">
-    <select multiple class="form-control" id="reporttasks">
-      <option value="1">Office</option>
-      <option value="2">Away</option>
-    </select>
-  </div>
-</div>
-<div class="form-group">
-    <div class="col-lg-offset-4 col-lg-7">
-      <button type="submit" class="btn btn-primary" id="btnsubmit"><span class="glyphicon glyphicon-search"></span> Generate</button>
-      <button type="reset" class="btn" id="btnreset"> Reset</button>
-    </div>
-</div>
+      <div class="form-group">
+        <label for="reportstart" class="col-lg-4 control-label">Date start</label>
+        <div class="col-lg-6">
+          <input type="text" class="form-control datepicker" id="reportstart" name="reportstart" placeholder="2013-01-01">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="reportend" class="col-lg-4 control-label">Date end</label>
+        <div class="col-lg-6">
+          <input type="text" class="form-control datepicker" id="reportend" name="reportend" placeholder="2020-12-31">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="reportproject" class="col-lg-4 control-label">Project</label>
+        <div class="col-lg-6">
+          <select class="form-control" id="reportproject"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="reporthours" class="col-lg-4 control-label">Normal/Extra hours</label>
+        <div class="col-lg-6">
+          <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default">
+              <input type="radio" name="options" id="hoursN"> Normal
+            </label>
+            <label class="btn btn-default">
+              <input type="radio" name="options" id="hoursE"> Extra
+            </label>
+            <label class="btn btn-default active">
+              <input type="radio" name="options" id="hoursB"> Both
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="reporttasks" class="col-lg-4 control-label">Tasks</label>
+        <div class="col-lg-6">
+          <select multiple class="form-control" id="reporttasks">
+            <option value="1">Office</option>
+            <option value="2">Away</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-lg-offset-4 col-lg-7">
+          <button type="submit" class="btn btn-primary" id="btnsubmit"><span class="glyphicon glyphicon-search"></span> Generate</button>
+          <button type="reset" class="btn" id="btnreset"> Reset</button>
+        </div>
+      </div>
     </form>
   </div>
 </div>
 <div class="row results">
-<div class="panel panel-default">
+  <div class="panel panel-default">
   <!-- Default panel contents -->
-  <div class="panel-heading">Report results</div>
-<div id="real"></div>
-
-
-</div>
+    <div class="panel-heading">Report results</div>
+    <div id="real"></div>
+  </div>
 </div>
 
 <div class="modal fade" id="reportwait" data-backdrop="static" data-keyboard="false">
