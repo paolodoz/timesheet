@@ -605,7 +605,7 @@ function simpleDate(date) {
   return date.getFullYear() + "-" + month + "-" + day;
 }
 
-var tasks = ["","Office","Away"];
+var tasks = ["","Office","Away","Holiday","Bank Holiday","Leave","Unpaid leave"];
 function getTaskName(id) {
   return tasks[id];
 }

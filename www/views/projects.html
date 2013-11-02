@@ -1,11 +1,16 @@
 <script src="/static/js/jquery.colorPicker.js"></script>
 <link href="/static/css/colorPicker.css" rel="stylesheet" media="screen">
 <script type="text/javascript">
-var validator,isupdate = false;
+var i,htmltasks,validator,isupdate = false;
 $(document).ready(function() {
   loadProjectsList("projectsList");
   loadCustomersList("projectcustomer");
   loadUsersList("usersList");
+  htmltasks = "";
+  for(i=1; i < tasks.length; i++) {
+    htmltasks += "<option value='" + i + "'>" + tasks[i] + "</option>";
+  }
+  $("#projecttasks").html(htmltasks);
   $(".datepicker").datepicker();
   $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
   $('.rapidsearch').keyup(function () {
@@ -222,6 +227,7 @@ function filterlist(list, currenttext) {
   <option value="1">Development</option>
   <option value="2">Research</option>
   <option value="3">Business</option>
+  <option value="4">Organization</option>
       </select>
     </div>
   </div>
@@ -275,8 +281,6 @@ function filterlist(list, currenttext) {
   <label for="projecttasks" class="col-lg-4 control-label">Tasks</label>
   <div class="col-lg-6">
     <select multiple class="form-control" id="projecttasks" name="projecttasks">
-      <option value="1">Office</option>
-      <option value="2">Away</option>
     </select>
   </div>
 </div>
