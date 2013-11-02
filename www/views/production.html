@@ -1,8 +1,8 @@
 <script src="/static/js/jquery.colorPicker.js"></script>
 <script type="text/javascript">
-var validator, cur_prj;
+var validator, cur_prj, me;
 $(document).ready(function() {
-  loadProjectsList("projectsList");
+  user.me(userdata);
   $('.rapidsearch').keyup(function () {
     var list = this.id.substr(3);
     var currenttext = $(this).val().toLowerCase();
@@ -16,7 +16,6 @@ $(document).ready(function() {
   $("#btnreset").click(function() {
     resetProductionForm();
   });
-
   $("#productionForm").submit(function(event) {
     event.preventDefault();
     if(!validator.form())
@@ -47,8 +46,14 @@ $(document).ready(function() {
   });
 });
 
+function userdata(data) {
+  me = data;
+  loadProjectsList("projectsList");
+}
+
 function loadProjectsList(list) {
   var filter = [{},{name:1}];
+  filter[0]["responsible._id"] = me._id;
   project.load(filter, loadProjects, list);
 }
 
