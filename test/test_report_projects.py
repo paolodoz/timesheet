@@ -1,5 +1,4 @@
 from testclasses import TestClassBase, TestCaseAsEmployee, TestCaseAsManager
-#from test_report_users_hours import ModuleData
 
 class ModuleData:
 
@@ -16,13 +15,13 @@ class ModuleData:
         
         # Add projects
         projects_json = self._assert_req('/add/project', [ 
-                                 { 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag1'}, 'employees' : [ { '_id' : self.users_ids[1], 'name' : 'Emp1'} ], 
+                                 { 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag1'}, 'employees' : [ { '_id' : self.users_ids[1], 'name' : 'Emp1'} ], 
                                   "economics" : [ 
                                                  { "note" : "mynote1", "budget" : 3, "invoiced" : 0, "period" : "2005-10-08", "extra" : 1 },     
                                                  { "note" : "mynote2", "budget" : 5, "invoiced" : 0,  "period" : "2005-11-08", "extra" : 4 }, 
                                                  { "note" : "mynote3", "budget" : 20, "invoiced" : 0,  "period" : "2005-12-08", "extra" : 8 } ] },
-                                 { 'customer' : 'CUSTOMER1', 'type' : 'TYPE', 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag2'}, 'employees' : [ { '_id' : self.users_ids[0], 'name' : 'Emp2'} ] }, 
-                                 { 'customer' : 'CUSTOMER3', 'type' : 'TYPE', 'name' : 'PROJECTNAME3', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Manag3'}, 'employees' : [ { '_id' : self.users_ids[2], 'name' : 'Emp3'} ] } 
+                                 { 'customer' : 'CUSTOMER1', 'type' : 'TYPE', 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag2'}, 'employees' : [ { '_id' : self.users_ids[0], 'name' : 'Emp2'} ] }, 
+                                 { 'customer' : 'CUSTOMER3', 'type' : 'TYPE', 'name' : 'PROJECTNAME3', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Manag3'}, 'employees' : [ { '_id' : self.users_ids[2], 'name' : 'Emp3'} ] } 
                                  ], 
                 { 'error' : None, 'ids' : [ '', '', '' ] }
                 )

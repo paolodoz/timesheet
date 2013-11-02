@@ -114,9 +114,6 @@ project:
     grand_total:
       type: number
       optional: True
-    expences:
-      type: number
-      optional: True
     responsible:
       type: object
       additionalProperties: False
