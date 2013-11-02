@@ -164,13 +164,15 @@ def report_projects(criteria):
     
     POST /data/report_projects/
     
-    Expects { 'start' : '', 'end' : '', 'customer' : '', 'projects' : [] } 
-    Returns { 'error' : string, 'records' : [ [ 'YYYY-MM', 2 ], [ 'YYYY-MM', 4 ], .. ]  } 
+    Expects { 'start' : '', 'end' : '', 'customer' : '', 'projects' : [], 'mode' : 'total|project' } 
+    Returns with mode total
+       { 'error' : string, 'records' : [ [ 'YYYY-MM', 2 ], [ 'YYYY-MM', 4 ], .. ]  } 
+    Returns with mode total
+       { 'error' : string, 'records' : {  'proj1' : [ [ 'YYYY-MM', 2 ], [ 'YYYY-MM', 4 ] ], .. }  } 
     """
     
-    
-    def _find_days_from_customers(sanified_criteria):
-            
+    def _find_project_list_by_customer(sanified_criteria):
+        
         # Get projects by customer
         customer_input = sanified_criteria.get('customer')
         if customer_input:
@@ -180,6 +182,11 @@ def report_projects(criteria):
                 projects_input.append(str(project['_id'])) 
         else:
             projects_input = sanified_criteria.get('projects', [])
+            
+        return projects_input
+    
+    def _find_days_by_projects(projects_input, sanified_criteria):
+            
         
         # Prepare the aggregation pipe
         
@@ -217,13 +224,26 @@ def report_projects(criteria):
         
         return db.day.aggregate(aggregation_pipe)
 
-    def _find_salaries_from_date_users(days_ids_list, end, start):
+    def _find_salaries_by_date_users(days_ids_list, end, start):
         # TODO: misure if _id filter now is superflous due to filter check during merge
         aggregation_pipe = [ { '$match' : { 'salary.cost' : { '$gt' : 0 }, '_id' : { '$in' : days_ids_list } } }, { '$project' : { 'salary.from' : 1, 'salary.to' : 1, 'salary.cost' : 1, '_id' : 1 } } ]
         cherrypy.log(aggregation_pipe.__repr__(), context = 'TS.REPORT_PROJECTS.salaries_aggregation', severity = logging.INFO)
         return db.user.aggregate(aggregation_pipe)
 
-    def _merge_total(days_result, salaries_result):
+    def _find_costs_by_project_date(projects_input, end, start):
+
+        objectified_projects_input = [ ObjectId(p) for p in projects_input ]
+
+        if projects_input:
+            match_projects = { '_id' : { '$in' : objectified_projects_input }  }
+        else:
+            match_projects = {}
+
+        aggregation_pipe = [ { '$match' : match_projects }, { '$unwind' : '$economics'}, { '$match' : { 'economics.period' : { '$gte' : start, '$lte' : end } } }, { '$group' : { '_id' : { 'project_id' : '$_id', 'period' : '$economics.period', 'budget' : '$economics.budget', 'extra' : '$economics.extra'   } } } ]
+        cherrypy.log(aggregation_pipe.__repr__(), context = 'TS.REPORT_PROJECTS.projects_aggregation', severity = logging.INFO)
+        return db.project.aggregate(aggregation_pipe)
+
+    def _merge_total(days_result, salaries_result, budget_result):
         
         total_costs = {}
         
@@ -231,14 +251,21 @@ def report_projects(criteria):
             
             user_record = day.get('_id',{})
             user_id = user_record.get('user_id')
+            project = user_record.get('project')
             user_date = user_record.get('date')
             user_YM = '-'.join(user_date.split('-')[:2])
             user_hours = day.get('hours', 0)
     
             cost = next((sal['salary'][0]['cost'] for sal in salaries_result if sal['_id'] == ObjectId(user_id) and sal['salary'][0]['from'] <= user_date and sal['salary'][0]['to'] >= user_date ), 0)
             
-            if cost:
-               total_costs[user_YM] = total_costs.get(user_YM, 0)  + ( cost * user_hours )
+            budget, extra = next(( (budg['_id']['budget'], budg['_id']['extra']) for budg in budget_result if budg['_id']['project_id'] == ObjectId(project) and budg['_id']['period'].startswith(user_YM)), (0,0))
+            
+            if cost or budget or extra:
+                
+                if not total_costs.get(user_YM):
+                    total_costs[user_YM] = { 'cost' : 0, 'budget' : budget, 'extra' : extra}
+             
+                total_costs[user_YM]['cost'] = total_costs[user_YM]['cost']  + ( cost * user_hours )
                  
         ## ORDER
         
@@ -249,7 +276,7 @@ def report_projects(criteria):
                 
         return output_costs_list
 
-    def _merge_by_project(days_result, salaries_result):
+    def _merge_by_project(days_result, salaries_result, budget_result):
     
         ### MERGE
         project_costs = {}
@@ -265,16 +292,20 @@ def report_projects(criteria):
     
             cost = next((sal['salary'][0]['cost'] for sal in salaries_result if sal['_id'] == ObjectId(user_id) and sal['salary'][0]['from'] <= user_date and sal['salary'][0]['to'] >= user_date ), 0)
             
-            if cost:
+            budget, extra = next(( (budg['_id']['budget'], budg['_id']['extra']) for budg in budget_result if budg['_id']['project_id'] == ObjectId(project) and budg['_id']['period'].startswith(user_YM)), (0,0))
+            
+            if cost or budget or extra:
                     
-                if not project in project_costs:
-                    project_costs[project] = {}
-
-                project_costs[project][user_YM] = project_costs[project].get(user_YM, 0)  + ( cost * user_hours )
+                if not project_costs.get(project):
+                    project_costs[project] = { user_YM : {}}
+                if not project_costs[project].get(user_YM):
+                    project_costs[project][user_YM] = { 'cost' : 0, 'budget' : budget, 'extra' : extra}
+                    
+                # While can exists multiple costs for a project-month, cannot exists multiple badges or extras
+                project_costs[project][user_YM]['cost'] = project_costs[project][user_YM]['cost']  + ( cost * user_hours )
+             
              
         ## ORDER
-        print 'AAAAAAAAAAAAAAAAAAAAAAAAAAA', project_costs
-        
         output_costs_dict = {}
         
         for project in project_costs.keys():
@@ -291,16 +322,22 @@ def report_projects(criteria):
     sanified_criteria = sanitize_objectify_json(criteria)
         
     aggregation_mode = sanified_criteria.get('mode', 'total')  
+
+    # Find project list 
+    projects_input = _find_project_list_by_customer(sanified_criteria)
     
     # Day mining
-    days_result = _find_days_from_customers(sanified_criteria)['result'] 
+    days_result = _find_days_by_projects(projects_input, sanified_criteria)['result'] 
     days_ids_list = [ ObjectId(r['_id']['user_id']) for r in days_result ]
     
     # Salary mining
-    salaries_result = _find_salaries_from_date_users(days_ids_list, sanified_criteria['end'], sanified_criteria['start'])['result']
+    salaries_result = _find_salaries_by_date_users(days_ids_list, sanified_criteria['end'], sanified_criteria['start'])['result']
+
+    # Project budget extra mining
+    budget_result = _find_costs_by_project_date(projects_input, sanified_criteria['end'], sanified_criteria['start'])['result']
 
     if aggregation_mode == 'total':
-        return { 'records' : _merge_total(days_result, salaries_result) }
+        return { 'records' : _merge_total(days_result, salaries_result, budget_result) }
     
     elif aggregation_mode == 'project':
-        return { 'records' : _merge_by_project(days_result, salaries_result) }    
+        return { 'records' : _merge_by_project(days_result, salaries_result, budget_result) }    
