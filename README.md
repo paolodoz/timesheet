@@ -21,7 +21,11 @@ Setup
 
   5. If required, customize the configuration file _core/config.yaml_.
 
-  6. Point your browser to the web interface, by default: [https://localhost:9090](https://localhost:9090)
+  6. Timesheet can be run as standalone web server or embedded with apache mod_wsgi. To run it as standalone service, execute
+
+        ./timesheet.py
+
+  7. Point your browser to the web interface, by default: [https://localhost:9090](https://localhost:9090)
   
-  7. Make profits :)
+  8. Make profits :)
 
