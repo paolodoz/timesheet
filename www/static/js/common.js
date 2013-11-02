@@ -161,6 +161,34 @@ var project = {
       dataType: "json",
     });
   },
+  production : function (prj, form, callback) {
+    var url;
+    url = "/update/project";
+    var prod = {};
+    prod.period = $("#productionperiod").val();
+    prod.budget = Number($("#productionbudget").val());
+    prod.extra = Number($("#productionextra").val());
+    prod.note = $("#productionnote").val();
+    prod.invoiced = 0;
+    if(!prj.economics) {
+      prj.economics = new Array();
+    }
+    prj.economics.push(prod);
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: JSON.stringify(prj),
+      success: function(data) {
+        if(!data.error) {
+          callback(data);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
   getname : function(id) {
     var i;
     if(!this.prj)
