@@ -119,6 +119,23 @@ project:
           type: string
         name:
           type: string
+    economics:
+      type: array
+      items:
+        optional: True
+        additionalProperties: False
+        properties:
+          period:
+            type: string
+            format: date
+          budget:
+            type: number
+          extra:
+            type: number
+          note:
+            type: string
+          invoiced:
+            type: number
     employees:
       type: array
       items:
