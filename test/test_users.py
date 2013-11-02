@@ -65,8 +65,8 @@ class DayAPIAsEmployee(TestCaseAsEmployee):
         self._assert_req('/get/user', [ { '_id' : self.employee_id }, { '_id' : 1 } ], { 'error': None, 'records' : [ { '_id' : '' } ] })
  
         # Update itself
-        self._assert_req('/update/user', { '_id' : self.employee_id, 'email' : 'CHANGEDEMAIL' }, { 'error': None })
-        self._assert_req('/get/user', [ { '_id' : self.employee_id }, { 'email' : 1, '_id' : 0 } ], { 'error': None, 'records' : [ { 'email' : 'CHANGEDEMAIL' } ] })
+        self._assert_req('/update/user', { '_id' : self.employee_id, 'email' : 'CHANGEDEMAIL@DOMAIN.COM' }, { 'error': None })
+        self._assert_req('/get/user', [ { '_id' : self.employee_id }, { 'email' : 1, '_id' : 0 } ], { 'error': None, 'records' : [ { 'email' : 'CHANGEDEMAIL@DOMAIN.COM' } ] })
         self._assert_req('/update/user', { '_id' : self.employee_id, 'email' : 'EMAIL@DOMAIN.COM' }, { 'error': None })
         
  
@@ -79,6 +79,9 @@ class DayAPIAsEmployee(TestCaseAsEmployee):
         self._assert_req('/get/user', [ { '_id' : self.employee_id }, { 'password' : 1 } ], { 'error': "TSValidationError: Field 'password' is restricted for current user", 'records' : [ ] })
         self._assert_req('/get/user', [ { '_id' : self.employee_id }, { 'salt' : 1 } ], { 'error': "TSValidationError: Field 'salt' is restricted for current user", 'records' : [ ] })
  
+        # Wrong email type
+        self._assert_req('/update/user', { '_id' : self.employee_id, 'email' : 'CHANGEDEMAIL#DOMAIN.COM' }, {u'error': u"ValidationError: u'CHANGEDEMAIL#DOMAIN.COM' is not a 'email'"})
+        
         # Delete himself
         self._assert_req('/remove/user', [ {  '_id' : self.employee_id } ], { 'error': "TSValidationError: Action 'remove' in 'user' is restricted for current user" })
  

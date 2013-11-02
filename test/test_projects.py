@@ -44,7 +44,30 @@ class ProjectsAPIAsAdmin(TestClassBase, ModuleData):
         self._assert_req('/get/project', [ { 'employees._id' : self.users_ids[0] } , { 'name' : 1, '_id' : 0 } ], { 'error': None, 'records' : [ { 'name' : 'PROJECTNAME2'  } ] })
         
 
+    def test_project_types_ko(self):
+        
+        # Wrong type on main project struct
+        self._assert_req('/add/project', [ 
+             { 'customer' : 'CUSTOMER4', 'type' : 'TYPE', 'name' : 'PROJECTNAME4', 'description' : 'description4', 'contact_person' : 'contact_person4', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 3}, 'employees' : [ { '_id' : self.users_ids[1], 'name' : 'Emp1'} ] },
+             ], 
+        {u'error': u"ValidationError: 3 is not of type 'string'", u'ids': []}
+        )
+         
+        # Wrong type on main project struct
+        self._assert_req('/add/project', [ 
+             { 'customer' : 'CUSTOMER4', 'type' : 'TYPE', 'name' : 'PROJECTNAME4', 'description' : 'description4', 'contact_person' : 'contact_person4', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'expences' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'resp1'}, 'employees' : [ { '_id' : self.users_ids[1], 'name' : 'Emp1'} ],
+              u'economics': [{u'note': u'dsffdsfds', u'extra': 4242, u'period': u'2013-11-26', u'budget': 'STR', u'invoiced': 0}, {u'note': u'das', u'extra': 5, u'invoiced': 0, u'period': u'2013-11-26', u'budget': 4}] },
+             ], 
+        {u'error': u"ValidationError: u'STR' is not of type 'number'", u'ids': []}
+        )
+        
+        # Wrong type on main project struct on UPDATE
+        self._assert_req('/update/project',  
+             { '_id' : self.projects_ids[0], u'economics': [{u'note': u'dsffdsfds', u'extra': 4242, u'period': u'2013-11-26', u'budget': 'STR_NOT_INT', u'invoiced': 0}, {u'note': u'das', u'extra': 5, u'invoiced': 0, u'period': u'2013-11-26', u'budget': 4}] },
+             {u'error': u"ValidationError: u'STR_NOT_INT' is not of type 'number'"}
+        )
 
+        
 class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
     
     def setUp(self):        

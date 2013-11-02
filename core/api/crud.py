@@ -68,14 +68,13 @@ def add(collection, documents_list):
     
     check_action_permissions('add', collection)
     validate_json_list(collection, documents_list)
-    
+
+    for document in documents_list:
+        check_insert_permissions(collection, document)
+
     # Sanify documents
     sanified_documents_list = sanitize_objectify_json(documents_list)
-    
-#     # Check insertion permissions
-#     for document in documents_list:
-#         check_insert_permissions(collection, document)
-    
+
     # Eventually rewrite password and salt
     update_password_salt_user_list(collection, sanified_documents_list)
     
@@ -93,12 +92,11 @@ def update(collection, document):
         raise TSValidationError("Dict with '_id' field expected, not '%s'" % document.__class__.__name__)
     
     check_action_permissions('update', collection)
+    validate_json_list(collection, [ document ])
     check_insert_permissions(collection, document)
-    
-    # Sanify documents
     sanified_document = sanitize_objectify_json(document)
     
-    cherrypy.log('%s' % (document), context = 'TS.UPDATE.%s.document' % collection, severity = db_log_severity)
+    cherrypy.log('%s' % (sanified_document), context = 'TS.UPDATE.%s.document' % collection, severity = db_log_severity)
     
     db_collection = db[collection].find_one({ '_id' : sanified_document['_id'] })
     db[collection].update({ '_id' : sanified_document['_id'] }, recursive_merge(db_collection, sanified_document))

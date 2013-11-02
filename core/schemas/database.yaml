@@ -3,6 +3,8 @@ customer:
   type: object
   additionalProperties: False
   properties: 
+    _id:
+      type: string
     name: 
       type: string
       minLength: 1
@@ -32,6 +34,8 @@ user:
   type: object
   additionalProperties: False
   properties: 
+    _id:
+      type: string
     name: 
       type: string
       minLength: 1
@@ -77,6 +81,8 @@ project:
   type: object
   additionalProperties: False
   properties:
+    _id:
+      type: string
     customer:
       type: string
       minLength: 1
@@ -151,6 +157,8 @@ trip:
   type: object
   additionalProperties: False
   properties:
+    _id:
+      type: string
     user:
       type: string
     project:
@@ -184,6 +192,8 @@ day:
   type: object
   additionalProperties: False
   properties:
+    _id:
+      type: string
     date:
       type: string
       format: date
@@ -215,6 +225,8 @@ offer:
   type: object
   additionalProperties: False
   properties:
+    _id:
+      type: string
     project:
       type: string
     name:
@@ -243,6 +255,8 @@ upload:
   type: object
   additionalProperties: False
   properties:
+    _id:
+      type: string
     name:
       type: string
     content_type:
