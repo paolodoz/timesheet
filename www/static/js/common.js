@@ -607,6 +607,7 @@ function simpleDate(date) {
   month = (month < 10 ) ? "0" + month : month;
   return date.getFullYear() + "-" + month + "-" + day;
 }
+var expcategories = ["", "Hotel", "Transportation", "Food", "Other"];
 var statuses = ["", "Pending", "Approved", "Rejected"];
 var tasks = ["","Office","Away","Holiday","Bank Holiday","Leave","Unpaid leave"];
 function getTaskName(id) {

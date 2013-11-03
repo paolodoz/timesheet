@@ -46,8 +46,8 @@
         </ul>
       </li>
     <li class="${'active' if view == 'expences' else ''}">
-    <a href="#">
-      Note spese
+    <a href="/index/expences">
+      Expences
     </a>
   </li>
 <li>
