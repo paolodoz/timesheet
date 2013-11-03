@@ -156,14 +156,14 @@ trip:
   properties:
     _id:
       type: string
-    user:
+    user_id:
       type: string
     project:
       type: string
     description:
       type: string
     status: 
-      type: string   
+      type: integer
     start:
       type: string
       format: date
@@ -173,6 +173,10 @@ trip:
     country:
       type: string
     city:
+      type: string
+    from:
+      type: string
+    note:
       type: string
     accommodation:
       type: object

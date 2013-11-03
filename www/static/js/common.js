@@ -271,20 +271,23 @@ var trip = {
       trip = _trip[0];
       url = "/add/trip";
     }
-
+    trip.user_id = me._id;
     trip.accommodation = {};
     $("#" + form + " input, #" + form + " select, #" + form + " checkbox, #" + form + " textarea").each(function (){
       var property = $(this).attr("id").substr(4);
       if (property == "_id" && !isupdate)
         return;
-      if($(this).is(':checkbox')) 
-      {
+      if($(this).is(':checkbox')) {
         trip.accommodation[property] = $(this).is(':checked') ? true : false;
       }
-      else
-        trip[property] = $(this).val();
+      else {
+        value = Number($(this).val());
+        if(isNaN(value))
+          trip[property] = $(this).val();
+        else
+          trip[property] = value;
+      }
     });
-
     $.ajax({
       type: "POST",
       url: url,
@@ -604,7 +607,7 @@ function simpleDate(date) {
   month = (month < 10 ) ? "0" + month : month;
   return date.getFullYear() + "-" + month + "-" + day;
 }
-
+var statuses = ["", "Pending", "Approved", "Rejected"];
 var tasks = ["","Office","Away","Holiday","Bank Holiday","Leave","Unpaid leave"];
 function getTaskName(id) {
   return tasks[id];

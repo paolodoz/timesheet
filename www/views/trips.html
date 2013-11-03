@@ -1,10 +1,11 @@
 <script type="text/javascript">
-var me = new Array();
-var isupdate = false;
-
+var me, htmlstatus, isupdate = false;
 $(document).ready(function() {
-  loadTripsList("tripsList");
-  loadProjectsList("tripproject");
+  htmlstatus = "";
+  for(i=1; i < statuses.length; i++) {
+    htmlstatus += "<option value='" + i + "'>" + statuses[i] + "</option>";
+  }
+  $("#tripstatus").html(htmlstatus);
   $(".datepicker").datepicker();
   $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
   $('.rapidsearch').keyup(function () {
@@ -25,7 +26,6 @@ $(document).ready(function() {
   });
   $("#tripForm").submit(function(event) {
     event.preventDefault();
-    $("#tripuserid").val(me._id);
     trip.update(isupdate, "tripForm", resetTripForm);    
     loadTripsList("tripsList");
   });
@@ -34,15 +34,17 @@ $(document).ready(function() {
 
 function userdata(data){
   me = data;
+  loadTripsList("tripsList");
+  loadProjectsList("tripproject");
 }
 
 function loadProjectsList(list) {
-  var filter = [{},{name:1}];
+  var filter = [{ 'employees._id' : me._id },{name:1}];
   project.load(filter, loadProjects, list);
 }
 
 function loadTripsList(list) {
-  var filter = [{userid:me._id},{start:1}];
+  var filter = [{user_id:me._id},{start:1, city:1}];
   trip.load(filter, loadTrips, list);
 }
 
@@ -64,13 +66,9 @@ function resetTripForm()
   isupdate = false;
   $("#tripForm")[0].reset();
   $("#trip_id").val(0);
-  $("#tripcar").removeClass("active");
-  $("#tripairplane").removeClass("active");
-  $("#triphotel").removeClass("active");  
+  $(":checkbox").parent().removeClass("active");
   $("#btnremove").addClass("hidden");
   $("#tripsList li").removeClass("active");
-  $("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
-  $("#usersForm h4 span").text("");
 }
 
 function loadProjects(data, container) {
@@ -86,7 +84,7 @@ function loadTrips(data, container) {
   var i;
   var htmllist = "";
   for(i=0;i < data.records.length; i++) {
-    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data.records[i].start + "</li>";
+    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data.records[i].city + " " + data.records[i].start + "</li>";
   }
   //add line for new trip
   htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Trip ...</li>";
@@ -131,100 +129,89 @@ function filterlist(list, currenttext) {
 <h2>Trips Management</h2>
 <div class="row">
   <div class="col-lg-3">
-    <h3>Old trips</h3>
+    <h3>My trips</h3>
     <div class="input-group">
       <span class="input-group-addon glyphicon glyphicon-search"></span>
       <input type="text" class="form-control rapidsearch" placeholder="Rapid Search" id="txttrips">
     </div>
     <p></p>
-    <ul class="list-group" id="tripsList">
+    <ul class="list-group" id="tripsList"></ul>
   </div>
-  
-<h3>Trip details</h3>
+  <div class="col-lg-4">
+    <h3>Trip details</h3>
     <form class="form-horizontal" role="form" id="tripForm" method="post" action="/index/trips">
-    <input type="hidden" id="trip_id" value="0">
-    <input type="hidden" id="tripuserid" value="0">
-  <div class="col-lg-4">
-    
-
-       
-       <div class="form-group">
-          <label for="tripproject" class="col-lg-4 control-label">Project</label>
-          <div class="col-lg-6">
-             <select class="form-control" id="tripproject"></select>
-          </div>
-       </div>
-
-       <div class="form-group">
-          <label for="tripdescription" class="col-lg-4 control-label">Description</label>
-          <div class="col-lg-6">
-	     <textarea class="form-control" id="tripdescription" rows="3" placeholder="Description"></textarea>
-          </div>
-       </div>
-
-       <div class="form-group">
-          <label for="tripstatus" class="col-lg-4 control-label">Status</label>
-          <div class="col-lg-6">
-             <select class="form-control" id="tripstatus" disabled="disabled"><option value='pending'>pending</option></select>
-
-          </div>
-       </div>
-
-
-  </div>
-  <div class="col-lg-4">
-    <h3> </h3>
-
-    <div class="form-group">
-       <label for="tripstart" class="col-lg-4 control-label">Date start</label>
-          <div class="col-lg-6">
-             <input type="text" class="form-control datepicker" id="tripstart" placeholder="1/1/2013">
-          </div>
-    </div>
-
-    <div class="form-group">
-       <label for="tripend" class="col-lg-4 control-label">Date end</label>
-       <div class="col-lg-6">
-          <input type="text" class="form-control datepicker" id="tripend" placeholder="31/12/2020">
-       </div>
-    </div>
-
-    <div class="form-group">
-       <div class="btn-group" data-toggle="buttons">	
-          <label class="btn btn-primary" id="tripcar">
-          <input type="checkbox" id="tripcar" ><span class='icon-car'></span>
-          </label>
-          <label id="tripairplane" class="btn btn-primary">
-          <input type="checkbox" id="tripairplane" ><span class='icon-airplane'></span>
-          </label>
-          <label class="btn btn-primary" id="triphotel">
-          <input type="checkbox" id="triphotel" ><span class='icon-hotel'></span>
-          </label>
-       </div>
-    </div>
-
-    <div class="form-group">
-       <label for="trippcountry" class="col-lg-4 control-label">Country</label>
-       <div class="col-lg-6">
-          <select class="form-control" id="tripcountry"><option value='italy'>Italy</option></select>
-       </div>
-    </div>
-
-    <div class="form-group">
-       <label for="trippcity" class="col-lg-4 control-label">City</label>
-       <div class="col-lg-6">
-          <select class="form-control" id="tripcity"><option value='turin'>Turin</option></select>
-       </div>
-    </div>
-
-    <div class="form-group">
-      <div class="col-lg-offset-4 col-lg-7">
-         <button type="submit" class="btn btn-primary" id="btnsubmit"><span class="glyphicon glyphicon-plus"></span> Add</button>
-         <button type="reset" class="btn" id="btnreset"> Reset</button>
-         <button type="button" class="btn btn-danger hidden" id="btnremove"><span class="glyphicon glyphicon-trash"></span> Remove</button>
+      <input type="hidden" id="trip_id" value="0">
+      <div class="form-group">
+        <label for="tripproject" class="col-lg-4 control-label">Project</label>
+        <div class="col-lg-7">
+          <select class="form-control" id="tripproject"></select>
+        </div>
       </div>
-    </div>
-
-</form>
+      <div class="form-group">
+        <label for="tripdescription" class="col-lg-4 control-label">Description</label>
+        <div class="col-lg-7">
+          <textarea class="form-control" id="tripdescription" rows="3" placeholder="Description"></textarea>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="tripstatus" class="col-lg-4 control-label">Status</label>
+        <div class="col-lg-7">
+          <select class="form-control" id="tripstatus" disabled="disabled"></select>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="tripstart" class="col-lg-4 control-label">Date start</label>
+        <div class="col-lg-7">
+          <input type="text" class="form-control datepicker" id="tripstart" placeholder="2013-01-01">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="tripend" class="col-lg-4 control-label">Date end</label>
+        <div class="col-lg-7">
+          <input type="text" class="form-control datepicker" id="tripend" placeholder="2020-12-31">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="tripend" class="col-lg-4 control-label">Services</label>
+        <div class="col-lg-7">
+          <div class="btn-group" data-toggle="buttons">
+            <label class="btn btn-default" id="tripcar">
+              <input type="checkbox" id="tripcar" ><span class='icon-car'></span>
+            </label>
+            <label id="tripairplane" class="btn btn-default">
+              <input type="checkbox" id="tripairplane" ><span class='icon-airplane'></span>
+            </label>
+            <label class="btn btn-default" id="triphotel">
+              <input type="checkbox" id="triphotel" ><span class='icon-hotel'></span>
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="tripfrom" class="col-lg-4 control-label">From</label>
+        <div class="col-lg-7">
+          <input type="text" class="form-control" id="tripfrom">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="tripcity" class="col-lg-4 control-label">To</label>
+        <div class="col-lg-7">
+          <input type="text" class="form-control" id="tripcity">
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="tripcountry" class="col-lg-4 control-label">Country</label>
+        <div class="col-lg-7">
+          <input type="text" class="form-control" id="tripcountry">
+        </div>
+      </div>
+      <div class="form-group">
+        <div class="col-lg-offset-4 col-lg-7">
+          <button type="submit" class="btn btn-primary" id="btnsubmit"><span class="glyphicon glyphicon-plus"></span> Request</button>
+          <button type="reset" class="btn" id="btnreset"> Reset</button>
+          <button type="button" class="btn btn-danger hidden" id="btnremove"><span class="glyphicon glyphicon-trash"></span> Remove</button>
+        </div>
+      </div>
+    </form>
   </div>
 </div>
