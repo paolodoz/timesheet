@@ -149,45 +149,96 @@ project:
             type: string
           name:
             type: string
-
-trip:
-  type: object
-  additionalProperties: False
-  properties:
-    _id:
-      type: string
-    user_id:
-      type: string
-    project:
-      type: string
-    description:
-      type: string
-    status: 
-      type: integer
-    start:
-      type: string
-      format: date
-    end:
-      type: string
-      format: date
-    country:
-      type: string
-    city:
-      type: string
-    from:
-      type: string
-    note:
-      type: string
-    accommodation:
-      type: object
-      additionalProperties: False
-      properties:
-        car:
-           type: boolean
-        hotel:
-           type: boolean
-        airplane:
-           type: boolean
+    trip:
+      type: array
+      items:
+        optional: True
+        additionalProperties: False
+        properties:
+          _id:
+            type: string
+          user_id:
+            type: string
+          project:
+            type: string
+          description:
+            type: string
+          status:
+            type: integer
+          start:
+            type: string
+            format: date
+          end:
+            type: string
+            format: date
+          country:
+            type: string
+          city:
+            type: string
+          from:
+            type: string
+          note:
+            type: string
+          accommodation:
+            type: object
+            additionalProperties: False
+            properties:
+              car:
+                 type: boolean
+              hotel:
+                 type: boolean
+              airplane:
+                 type: boolean
+    expences:
+      type: array
+      items:
+        optional: True
+        additionalProperties: False
+        properties:
+          _id:
+            type: string
+          user_id:
+            type: string
+          trip_id:
+            type: string
+          date:
+            type: string
+            format: date
+          file:
+            type: object
+            additionalProperties: False
+            properties:
+              _id:
+                type: string
+              name:
+                type: string
+          objects:
+            type: array
+            items:
+              optional: True
+              additionalProperties: False
+              properties:
+                date:
+                  type: string
+                  format: date
+                city:
+                  type: string
+                amount:
+                  type: number
+                category:
+                  type: integer
+                description:
+                  type: string
+                paidby:
+                  type: integer
+                file:
+                  type: object
+                  additionalProperties: False
+                properties:
+                  _id:
+                    type: string
+                  name:
+                    type: string
 
 day:
   type: object
