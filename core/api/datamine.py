@@ -9,6 +9,51 @@ try:
 except ImportError as e:
     from bson import ObjectId
 
+
+
+def push_expences(documents_list):
+    
+    """
+    Add new expences in projects
+    
+    POST /data/push_expences/
+    
+    Expects a list of 'project' elements having the 'project.expences' subdocument.
+    Returns the { 'error' : string, 'ids' : [] }
+    """
+    
+    validate_json_list('project', documents_list)
+    
+    sanified_documents_list = sanitize_objectify_json(documents_list)
+    
+    expences_ids = []
+    
+    cherrypy.log(str(sanified_documents_list), context = 'TS.PUSH_EXPENCES', severity = logging.INFO)
+    
+    for sanified_document in sanified_documents_list:
+
+        check_insert_permissions('push_expences', sanified_document)
+
+        project_id = sanified_document['_id']
+
+        found = db.project.find({ '_id' : project_id }).limit(1).count()
+
+        # If found
+        if found:
+            for expence in sanified_document['expences']:
+    
+                 # Add just generated expence_id to the object             
+                 expence_id = str(ObjectId())
+                 
+                 expence['_id'] = expence_id
+                 
+                 # Push new one
+                 db.project.update({'_id': project_id }, {'$push' : { 'expences' : expence }})
+
+                 expences_ids.append(expence_id)
+
+    return { 'ids' : expences_ids }
+
 def push_days(documents_list):
     
     """
@@ -16,7 +61,7 @@ def push_days(documents_list):
     
     POST /data/push_days/
     
-    Expects a list of 'day' collections. Push only one user per day.
+    Expects a list of 'day' elements. Push only one user per day.
     Returns { 'error' : string }
     """
     
