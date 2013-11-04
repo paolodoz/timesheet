@@ -4,6 +4,7 @@ var me, myprj, validator, datestart, dateend, cevent, calendar, firstday, lastda
 $(document).ready( function() {
   calendar = $('#calendar').fullCalendar({
     firstDay:1,
+    aspectRatio: 1.6,
     weekNumbers:true,
     selectable:true,
     select: function(start, end, allDay) {
