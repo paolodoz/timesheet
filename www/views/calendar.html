@@ -9,6 +9,10 @@ $(document).ready( function() {
     select: function(start, end, allDay) {
       datestart = start;
       dateend = end;
+      if(simpleDate(end) < firstday || simpleDate(start) > lastday) {
+        calendar.fullCalendar('unselect');
+        return;
+      }
       $('#edithours').modal('show');
     },
     eventClick: function(calEvent, jsEvent, view) {
