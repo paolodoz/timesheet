@@ -86,6 +86,13 @@ $(document).ready( function() {
   });
 });
 
+function resetFormEditHours() {
+  $("#frmedithours")[0].reset();
+  $("#hourstask").html("");
+  $("#hoursamount").val("8");
+  $("#hours-range").slider("option", "value", 8);
+}
+
 function userdata(data){
   me = data;
   var filter = [ { 'employees._id' : me._id }, { name: 1, tasks : 1, bkgcolor: 1, txtcolor:1, description:1 } ];
@@ -190,6 +197,8 @@ function addCalEvent(start, end, event, allDay) {
   day.update(true, myhours, nothing);
   loadCalendarHours(myhours);
   calendar.fullCalendar('unselect');
+  //reset form
+  resetFormEditHours();
 }
 
 function saveEvent(arrayEl, event) {
