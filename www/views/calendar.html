@@ -84,7 +84,7 @@ $(document).ready( function() {
 
 function userdata(data){
   me = data;
-  var filter = [ { 'employees._id' : me._id }, { name: 1, tasks : 1, bkgcolor: 1, txtcolor:1 } ];
+  var filter = [ { 'employees._id' : me._id }, { name: 1, tasks : 1, bkgcolor: 1, txtcolor:1, description:1 } ];
   project.load(filter,loadprojects,"");
 }
 
@@ -123,7 +123,7 @@ function loadprojects(data, target) {
   var i, j, index, htmlselect = "<option value=''></option>";
   myprj = data.records;
   for(i = 0; i < myprj.length; i++) {
-    htmlselect += "<option value='" + myprj[i]._id + "'>" + myprj[i].name + "</option>";
+    htmlselect += "<option value='" + myprj[i]._id + "'>" + myprj[i].name + " -- " + myprj[i].description.substr(0,30) +  "</option>";
   }
   $("#hoursproject").html(htmlselect);
   $("#hoursproject").change(function() {
