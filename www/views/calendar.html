@@ -130,7 +130,7 @@ function loadprojects(data, target) {
   }
   $("#hoursproject").html(htmlselect);
   $("#hoursproject").change(function() {
-    var htmlselect = "<option value=''></option>";
+    var htmlselect = "";
     for(i = 0; i < myprj.length; i++) {
       if (myprj[i]._id == $(this).val())  {
         for(j = 0; j < myprj[i].tasks.length; j++) {
