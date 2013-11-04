@@ -147,7 +147,7 @@ function addCalEvent(start, end, event, allDay) {
   var diffdays = end.getDate() - start.getDate();
   var cday, i, j, found;
   for(i = 0; i <= diffdays; i++) {
-    if ( start.getDay() == 6 || start.getDay() == 0 ) {
+    if ( (start.getDay() == 6 || start.getDay() == 0) && diffdays != 0) {
       start = new Date(start);
       start.setDate(start.getDate()+1);
       continue;
