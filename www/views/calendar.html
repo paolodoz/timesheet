@@ -144,6 +144,12 @@ function loadprojects(data, target) {
 }
 
 function addCalEvent(start, end, event, allDay) {
+  if (simpleDate(start) < firstday) {
+    start = new Date(firstday);
+  }
+  if (simpleDate(end) > lastday) {
+    end = new Date(lastday);
+  }
   var diffdays = end.getDate() - start.getDate();
   var cday, i, j, found;
   for(i = 0; i <= diffdays; i++) {
