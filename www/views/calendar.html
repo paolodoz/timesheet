@@ -105,8 +105,7 @@ function eventCompare(array, myevent) {
 function loadDays(data) {
   var i, index;
   var aday = firstday;
-  var last = Number(lastday.substr(8));
-  for(i=0; i < last; i++) {
+  for(i=0; i < 31; i++) {
     aday = new Date(aday);
     myhours[i] = {};
     myhours[i].date = simpleDate(aday);
