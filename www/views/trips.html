@@ -6,6 +6,7 @@ $(document).ready(function() {
     htmlstatus += "<option value='" + i + "'>" + statuses[i] + "</option>";
   }
   $("#tripstatus").html(htmlstatus);
+  $("#tripstatus").val(2);
   $(".datepicker").datepicker();
   $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
   $('.rapidsearch').keyup(function () {
