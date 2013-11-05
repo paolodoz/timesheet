@@ -4,11 +4,16 @@ var me, myprj, validator, datestart, dateend, cevent, calendar, firstday, lastda
 $(document).ready( function() {
   calendar = $('#calendar').fullCalendar({
     firstDay:1,
+    aspectRatio: 1.6,
     weekNumbers:true,
     selectable:true,
     select: function(start, end, allDay) {
       datestart = start;
       dateend = end;
+      if(simpleDate(end) < firstday || simpleDate(start) > lastday) {
+        calendar.fullCalendar('unselect');
+        return;
+      }
       $('#edithours').modal('show');
     },
     eventClick: function(calEvent, jsEvent, view) {
@@ -82,6 +87,13 @@ $(document).ready( function() {
   });
 });
 
+function resetFormEditHours() {
+  $("#frmedithours")[0].reset();
+  $("#hourstask").html("");
+  $("#hoursamount").val("8");
+  $("#hours-range").slider("option", "value", 8);
+}
+
 function userdata(data){
   me = data;
   var filter = [ { 'employees._id' : me._id }, { name: 1, tasks : 1, bkgcolor: 1, txtcolor:1, description:1 } ];
@@ -105,8 +117,7 @@ function eventCompare(array, myevent) {
 function loadDays(data) {
   var i, index;
   var aday = firstday;
-  var last = Number(lastday.substr(8));
-  for(i=0; i < last; i++) {
+  for(i=0; i < 31; i++) {
     aday = new Date(aday);
     myhours[i] = {};
     myhours[i].date = simpleDate(aday);
@@ -127,7 +138,7 @@ function loadprojects(data, target) {
   }
   $("#hoursproject").html(htmlselect);
   $("#hoursproject").change(function() {
-    var htmlselect = "<option value=''></option>";
+    var htmlselect = "";
     for(i = 0; i < myprj.length; i++) {
       if (myprj[i]._id == $(this).val())  {
         for(j = 0; j < myprj[i].tasks.length; j++) {
@@ -144,10 +155,16 @@ function loadprojects(data, target) {
 }
 
 function addCalEvent(start, end, event, allDay) {
+  if (simpleDate(start) < firstday) {
+    start = new Date(firstday);
+  }
+  if (simpleDate(end) > lastday) {
+    end = new Date(lastday);
+  }
   var diffdays = end.getDate() - start.getDate();
   var cday, i, j, found;
   for(i = 0; i <= diffdays; i++) {
-    if ( start.getDay() == 6 || start.getDay() == 0 ) {
+    if ( (start.getDay() == 6 || start.getDay() == 0) && diffdays != 0) {
       start = new Date(start);
       start.setDate(start.getDate()+1);
       continue;
@@ -181,6 +198,8 @@ function addCalEvent(start, end, event, allDay) {
   day.update(true, myhours, nothing);
   loadCalendarHours(myhours);
   calendar.fullCalendar('unselect');
+  //reset form
+  resetFormEditHours();
 }
 
 function saveEvent(arrayEl, event) {

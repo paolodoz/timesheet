@@ -585,6 +585,36 @@ var report = {
   },
 }
 
+var file = {
+  upload: function(filename, upComplete, upFailed) {
+    var fd = new FormData();
+    fd.append("data", filename);
+    var xhr = new XMLHttpRequest();
+    xhr.addEventListener("load", upComplete, false);
+    xhr.addEventListener("error", upFailed, false);
+    xhr.open("POST", "/file/upload");
+    xhr.send(fd);
+  },
+  delete: function(id, callback, param) {
+    var filter = [{}];
+    filter[0]._id = id;
+    $.ajax({
+      type: "POST",
+      url: "/remove/upload",
+      data: JSON.stringify(filter),
+      success: function(data) {
+        if(!data.error) {
+          callback(param, data);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  }
+}
+
 function showmessage(type, msg) {
   var box = $("#msgbox");
   box.removeClass();
