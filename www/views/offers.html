@@ -28,8 +28,9 @@ $(document).ready(function() {
   });
   $("#fileupload").click(function() {
     var value = $("#offerfile").val();
-    if(value != "")
-      uploadFile();
+    if(value != "") {
+      file.upload($("#offerfile")[0].files[0], uploadComplete, uploadFailed);
+    }
   });
   validator = $("#offerForm").validate({
     rules: {
@@ -53,47 +54,22 @@ $(document).ready(function() {
   });
 });
 
-function uploadFile() {
-  var xhr = new XMLHttpRequest();
-  var fd = new FormData();
-  fd.append("data", document.getElementById('offerfile').files[0]);
-  xhr.addEventListener("load", uploadComplete, false);
-  xhr.addEventListener("error", uploadFailed, false);
-  xhr.open("POST", "/file/upload");
-  xhr.send(fd);
-}
-
 function uploadComplete(data) {
   var response = jQuery.parseJSON( data.target.responseText )
   $('offerupload_id').val(response.id_upload);
   $('#offerfiles').append(generateFileEntry(response.upload_id,$("#offerfile").val()));
   $("#offerfile").val("");
   $('#offerfiles li:last span').click(function() {
-    deleteFile($(this).parent(), $(this).parent().attr("id"));
+    file.delete($(this).parent().attr("id"), deleteFile, $(this).parent());
   });
 }
 
-function deleteFile(li, id) {
-  var filter = [{}];
-  filter[0]._id = id;
-  $.ajax({
-    type: "POST",
-    url: "/remove/upload",
-    data: JSON.stringify(filter),
-    success: function(data) {
-      if(!data.error) {
-        $(li).remove();
-      } else {
-        showmessage("error", data.error);
-      }
-    },
-    contentType: 'application/json; charset=utf-8',
-    dataType: "json",
-  });
+function deleteFile(li, data) {
+  $(li).remove();
 }
 
 function uploadFailed(evt) {
-  alert("There was an error attempting to upload the file.");
+  showmessage("error", "There was an error attempting to upload the file.");
 }
 
 function loadOffersList(list) {
