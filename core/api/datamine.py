@@ -54,6 +54,51 @@ def push_expences(documents_list):
 
     return { 'ids' : expences_ids }
 
+
+def push_trips(documents_list):
+    
+    """
+    Add new trips in projects
+    
+    POST /data/push_trips/
+    
+    Expects a list of 'project' elements having the 'project.trip' subdocument.
+    Returns the { 'error' : string, 'ids' : [] }
+    """
+    
+    validate_json_list('project', documents_list)
+    
+    sanified_documents_list = sanitize_objectify_json(documents_list)
+    
+    trips_ids = []
+    
+    cherrypy.log(str(sanified_documents_list), context = 'TS.PUSH_TRIPS', severity = logging.INFO)
+    
+    for sanified_document in sanified_documents_list:
+
+        check_insert_permissions('push_trips', sanified_document)
+
+        project_id = sanified_document['_id']
+
+        found = db.project.find({ '_id' : project_id }).limit(1).count()
+
+        # If found
+        if found:
+            for expence in sanified_document['trips']:
+    
+                 # Add just generated trip_id to the object             
+                 trip_id = str(ObjectId())
+                 
+                 expence['_id'] = trip_id
+                 
+                 # Push new one
+                 db.project.update({'_id': project_id }, {'$push' : { 'trips' : expence }})
+
+                 trips_ids.append(trip_id)
+
+    return { 'ids' : trips_ids }
+
+
 def push_days(documents_list):
     
     """
