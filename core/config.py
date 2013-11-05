@@ -28,6 +28,10 @@ restrictions_schema = yaml.load(file(permissions_path, 'r'))
 requests_schema_path = os.path.join(schemas_folder, 'requests.yaml')
 requests_schema = yaml.load(file(requests_schema_path, 'r'))
 
+# Load views restrictions schema from views_restrictions.yaml
+views_restrictions_schema_path = os.path.join(schemas_folder, 'views_restrictions.yaml')
+views_restrictions_schema = yaml.load(file(views_restrictions_schema_path, 'r'))
+
 # Load configuration from config.yaml
 conf_path = os.path.join(core_folder, 'config.yaml')
 conf = yaml.load(file(conf_path, 'r'))

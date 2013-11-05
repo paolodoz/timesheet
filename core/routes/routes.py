@@ -3,7 +3,7 @@ from core.auth.auth import AuthController, require, is_logged
 from core.api import crud
 from core.routes.uploads import UploadsRoutes
 from core.routes.datamine import DatamineRoutes
-from core.config import views_folder, templates, views, conf_session
+from core.config import views_folder, templates, views, conf_session, views_restrictions_schema
 from glob import glob
 from jsonschema.exceptions import ValidationError
 from core.validation.validation import TSValidationError
@@ -26,8 +26,13 @@ class Routes:
         GET /index/<view>
         """
         
+        user_views_restrictions = views_restrictions_schema.get(cherrypy.session['_ts_user']['group'], [])
+        
+        if view in user_views_restrictions:
+            raise cherrypy.HTTPError("403 Forbidden", "You are not allowed to access this resource.")
+            
         view_page = views.get_template('%s.html' % view).render(csrf_token = cherrypy.session.get('_csrf_token',''))
-        return templates.get_template('index.tpl').render(view = view, view_page=view_page, **cherrypy.session['_ts_user'])
+        return templates.get_template('index.tpl').render(view = view, view_page=view_page, user_views_restrictions=user_views_restrictions, **cherrypy.session['_ts_user'])
         
     @cherrypy.expose
     @require(is_logged())

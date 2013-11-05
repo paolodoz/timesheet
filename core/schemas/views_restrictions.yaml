@@ -1,0 +1,15 @@
+# This schemas define views restrictions, reflected also in menu voices.
+
+employee:  
+  - reports 
+  - reports_prj
+  - projects
+  - offers
+  - production 
+  - invoices
+  - customers
+  - users
+  
+project manager: 
+  - customers
+  - users
