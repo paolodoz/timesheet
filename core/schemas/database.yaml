@@ -149,7 +149,7 @@ project:
             type: string
           name:
             type: string
-    trip:
+    trips:
       type: array
       items:
         optional: True
@@ -158,8 +158,6 @@ project:
           _id:
             type: string
           user_id:
-            type: string
-          project:
             type: string
           description:
             type: string
