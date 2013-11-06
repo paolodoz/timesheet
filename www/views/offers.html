@@ -98,7 +98,6 @@ function resetOfferForm()
   isupdate = false;
   $("#offerForm")[0].reset();
   $("#offer_id").val(0);
-  $("#offerfiletxt").text("");
   $("#btnremove").addClass("hidden");
   $("#offerfiles").html("");
   $("#offersList li").removeClass("active");
@@ -245,7 +244,6 @@ function filterlist(list, currenttext) {
     <div class="col-lg-6">
       <input type="file" name="data" id="offerfile">
 <button type="button" class="btn btn-default" id="fileupload"><span class="glyphicon glyphicon-upload"></span> Upload</button>
-<p id="offerfiletxt" class="form-control-static"></p>
     </div>
   </div>
 <div class="form-group">
