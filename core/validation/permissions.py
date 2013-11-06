@@ -84,12 +84,7 @@ def check_upsert_permissions(action, collection, document):
     elif restrictions != True:       
         jsonschema.validate(document, restrictions, format_checker=jsonschema.FormatChecker())
 
-def check_get_permissions(collection, criteria_projection):
-
-    if (isinstance(criteria_projection, types.ListType) and len(criteria_projection) == 2 and criteria_projection[1]):
-        criteria, projection = criteria_projection
-    else:
-        raise TSValidationError('Expected list with criteria and nonempty projection')
+def check_get_permissions(collection, criteria, projection):
 
     if cherrypy.session['_ts_user']['group'] == 'administrator': return
     

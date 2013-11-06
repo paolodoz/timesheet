@@ -3,7 +3,7 @@ try:
 except ImportError as e:
     from pymongo import Connection
 
-from core.validation.validation import TSValidationError, recursive_merge, update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
+from core.validation.validation import TSValidationError, validate_request, recursive_merge, update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
 from core.validation.permissions import check_get_permissions, check_upsert_permissions, check_remove_permissions
 from bson.objectid import ObjectId
 from core.config import collections, conf_mongodb, conf_auth, conf_auth_db
@@ -18,8 +18,11 @@ def get(collection, criteria_projection):
     """Get selected records from collection, and return it as json
     Called by GET /<collection>/"""
       
+    # Check request format
+    validate_request('get', criteria_projection)
+      
     # Check permissions  
-    check_get_permissions(collection, criteria_projection)
+    check_get_permissions(collection, criteria_projection[0], criteria_projection[1])
     
     # Sanify criteria (to match with sanified documents)
     sanified_criteria = sanitize_objectify_json(criteria_projection[0])
@@ -33,6 +36,9 @@ def get(collection, criteria_projection):
 def remove(collection, criterias = []):
     """Remove selected records from collection
     Called by POST /remove/<collection>"""
+
+    # Check request format
+    validate_request('remove', criterias)
     
     # Check permissions before requests  
     for criteria in criterias:
@@ -45,17 +51,14 @@ def remove(collection, criterias = []):
     
     # Requests
     for criteria in sanified_criterias:
-        # Skip empty criteria to avoid database flush
-        if criteria:
-            db[collection].remove(criteria)
+        db[collection].remove(criteria)
             
 def add(collection, documents_list):
     """Insert new record list to collection
     Called by POST /add/<collection>/"""
-    
-    # Check permission
-    if not isinstance(documents_list, list):
-        raise TSValidationError("List expected, not '%s'" % documents_list.__class__.__name__)
+
+    # Check request format
+    validate_request('add', documents_list)
     
     validate_json_list(collection, documents_list)
 
@@ -77,10 +80,9 @@ def update(collection, document):
     """Update an inserted record
     Called by POST /update/<collection>/"""
     
-    # Check permission
-    if not (isinstance(document, types.DictType) and  '_id' in document):
-        raise TSValidationError("Dict with '_id' field expected, not '%s'" % document.__class__.__name__)
-    
+    # Check request format
+    validate_request('update', document)
+        
     validate_json_list(collection, [ document ])
     check_upsert_permissions('update', collection, document)
     sanified_document = sanitize_objectify_json(document)

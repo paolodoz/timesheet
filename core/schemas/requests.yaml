@@ -1,4 +1,63 @@
 
+get:
+  type: array
+  minItems: 2
+  maxItems: 2
+  items:
+    - type: object
+    - type: object
+      minProperties: 1
+      
+remove:
+  type: array
+  minItems: 1
+  items:
+    type: object
+    minProperties: 1
+
+add:
+  type: array
+  minItems: 1
+  items:
+    type: object
+    minProperties: 1
+    
+update:
+    type: object
+    minProperties: 2
+    required: [ _id ]
+    properties:
+      _id:
+        type: string
+        pattern: '[\dabcdef]{24}'
+
+push_expences:
+  type: array
+  minItems: 1
+  items:
+    type: object
+    required: [ expences ]
+    properties:
+      expences:
+        type: array
+
+push_trips:
+  type: array
+  minItems: 1
+  items:
+    type: object
+    required: [ trips ]
+    properties:
+      trips:
+        type: array
+
+push_days:
+  type: array
+  minItems: 1
+  items:
+    type: object
+    minProperties: 1
+
 report_users_hours:
   type: object
   additionalProperties: False

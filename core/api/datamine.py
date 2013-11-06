@@ -22,6 +22,7 @@ def push_expences(documents_list):
     Returns the { 'error' : string, 'ids' : [] }
     """
     
+    validate_request('push_expences', documents_list)
     validate_json_list('project', documents_list)
     
     for document in documents_list:
@@ -75,6 +76,7 @@ def push_trips(documents_list):
     Returns the { 'error' : string, 'ids' : [] }
     """
     
+    validate_request('push_trips', documents_list)
     validate_json_list('project', documents_list)
     for document in documents_list:
         
@@ -127,6 +129,7 @@ def push_days(documents_list):
     Returns { 'error' : string }
     """
     
+    validate_request('push_days', documents_list)
     validate_json_list('day', documents_list)
     for document in documents_list:
         check_datamine_permissions('push_days', document)
