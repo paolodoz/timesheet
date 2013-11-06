@@ -120,11 +120,11 @@ class AuthController(object):
         for document in cursor:
             cherrypy.session['_ts_user']['managed_projects'].append(str(document['_id']))
 
-#         # Save ids of taken projects
-#         cherrypy.session['_ts_user']['projects'] = []
-#         cursor = db.project.find({ 'employees._id' : cherrypy.session['_ts_user']['_id'] }, { '_id' : 1 })
-#         for document in cursor:
-#             cherrypy.session['_ts_user']['projects'].append(str(document['_id']))
+        # Save ids of taken projects
+        cherrypy.session['_ts_user']['employed_projects'] = []
+        cursor = db.project.find({ 'employees._id' : cherrypy.session['_ts_user']['_id'] }, { '_id' : 1 })
+        for document in cursor:
+            cherrypy.session['_ts_user']['employed_projects'].append(str(document['_id']))
         
         # Save formatted permissions schemas to speedup following accesses
         cherrypy.session['_ts_user']['restrictions'] = get_user_restrictions()

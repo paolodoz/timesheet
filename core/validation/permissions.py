@@ -9,7 +9,10 @@ def get_user_restrictions():
     replacements = { 
                     '%%username%%' : '^%s$' % (cherrypy.session['_ts_user']['username']), 
                     '%%_id%%' : '^%s$' % (str(cherrypy.session['_ts_user']['_id'])),
-                    '%%managed_projects%%' : (cherrypy.session['_ts_user']['managed_projects'])
+                    '%%managed_projects%%' : (cherrypy.session['_ts_user']['managed_projects']),
+                    '%%employed_projects%%' : (cherrypy.session['_ts_user']['employed_projects']),
+                    '%%projects%%' : (cherrypy.session['_ts_user']['employed_projects'] + 
+                                      cherrypy.session['_ts_user']['managed_projects']),
                     }
 
     def _replace_function_permissions_schema(container):

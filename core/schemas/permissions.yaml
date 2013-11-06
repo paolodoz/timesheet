@@ -195,7 +195,7 @@ push_trips:
       properties:
         _id:
           type: string
-          enum: '%%managed_projects%%'   
+          enum: '%%projects%%'
           
           
 push_expences:
@@ -206,15 +206,18 @@ push_expences:
         properties:
           expences:
             type: array
-            required: [ user_id ]
             items:
-              user_id: 
-                type: string
-                pattern: '%%_id%%'
+              oneOf:
+                - type: object
+                  required: [ user_id ]
+                  properties:
+                    user_id: 
+                      type: string
+                      pattern: '%%_id%%'
               
   project manager:
       type: object
       properties:
         _id:
           type: string
-          enum: '%%managed_projects%%'  
+          enum: '%%projects%%'

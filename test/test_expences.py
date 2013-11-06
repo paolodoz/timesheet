@@ -19,7 +19,7 @@ class ModuleData:
                                   'expences' : [ 
                                                  { '_id' : '7'*24, "user_id" : '1'*24, "trip_id" : '2'*24, "date" : "2010-10-08", "file" : {}, 'objects' : [{}] }     
                                  ] }, 
-                                 { 'customer' : 'CUSTOMER1', 'type' : 'TYPE', 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag2'}, 'employees' : [ { '_id' : self.users_ids[0], 'name' : 'Emp2'} ] }, 
+                                 { 'customer' : 'CUSTOMER1', 'type' : 'TYPE', 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Manag2'}, 'employees' : [ { '_id' : current_id, 'name' : 'Emp2'} ] }, 
                                  { 'customer' : 'CUSTOMER3', 'type' : 'TYPE', 'name' : 'PROJECTNAME3', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Manag3'}, 'employees' : [ { '_id' : self.users_ids[2], 'name' : 'Emp3'} ] } 
                                  ], 
                 { 'error' : None, 'ids' : [ '', '', '' ] }
@@ -63,3 +63,124 @@ class ExpencesAPIAsAdmin(TestClassBase, ModuleData):
          # Get inserted expences
          self._assert_req('/get/project', [ { '_id' : self.projects_ids[0] }, { '_id' : 0, 'expences._id' : 1 }] , {u'error': None, u'records': [{u'expences': [{u'_id': ''}, {u'_id': ''}, {u'_id': ''}, {u'_id': ''}]}]} )
          
+
+    
+class ReportUsersHoursAPIAsEmployee(TestCaseAsEmployee, ModuleData):
+    
+    def setUp(self):        
+        TestClassBase.setUp(self)
+        self._add_user_data()
+        ModuleData._add_module_data(self, self.employee_id)
+        self._log_as_user()
+        
+        
+    def test_expences_ok(self):
+
+        # Insert one trip in a project where user works
+        self._assert_req('/data/push_expences', [ 
+                                { '_id' : self.projects_ids[1], 
+                                 "expences" : [ 
+                                                 { "user_id" : self.employee_id, "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                ] } ], 
+               { 'error' : None, 'ids' : [ '' ] }
+       )
+        
+        
+    def test_expences_ko(self):
+        
+        # Insert one expence in unknown project
+        self._assert_req('/data/push_expences', [ 
+                                { '_id' : '7'*24, 
+                                 "expences" : [ 
+                                                 { "user_id" : self.employee_id, "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                ] } ], 
+               { 'error' : "TSValidationError: Access to project '%s' is restricted for current user" % ('7'*24) }
+               )          
+        
+        # Insert one expence in project where user does not work 
+        self._assert_req('/data/push_expences', [ 
+                                { '_id' : self.projects_ids[2], 
+                                 "expences" : [ 
+                                                 { "user_id" : self.employee_id, "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                ] } ], 
+               { 'error' : "TSValidationError: Access to project '%s' is restricted for current user" % (self.projects_ids[2]) }
+               )       
+
+        # Insert a trip in correct project with wrong user_id
+        self.maxDiff = None
+        self._assert_req('/data/push_expences', [ 
+                                 { '_id' : self.projects_ids[1], 
+                                  "expences" : [ 
+                                                 { "user_id" : self.users_ids[1], "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                 ] } ], 
+                {u'error': u"ValidationError: {u'date': u'2005-10-08', u'user_id': u'%s', u'objects': [{}], u'trip_id': u'222222222222222222222222', u'file': {}} is not valid under any of the given schemas" % (self.users_ids[1])}
+        )
+        
+
+class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
+     
+    def setUp(self):        
+        TestClassBase.setUp(self)
+        self._add_user_data()
+        ModuleData._add_module_data(self, self.manager_id)
+        self._log_as_user()
+
+    def test_expences_ok(self):
+
+        # Insert one trip in a project where user works
+        self._assert_req('/data/push_expences', [ 
+                                { '_id' : self.projects_ids[1], 
+                                 "expences" : [ 
+                                                 { "user_id" : self.manager_id, "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                ] } ], 
+               { 'error' : None, 'ids' : [ '' ] }
+       )
+
+        # Insert one trip in a project administrated by user
+        self._assert_req('/data/push_expences', [ 
+                                { '_id' : self.projects_ids[0], 
+                                 "expences" : [ 
+                                                 { "user_id" : self.manager_id, "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                ] } ], 
+               { 'error' : None, 'ids' : [ '' ] }
+       )
+
+
+        # Insert a trip in correct project with different user_id (project manager can)
+        self.maxDiff = None
+        self._assert_req('/data/push_expences', [ 
+                                 { '_id' : self.projects_ids[0], 
+                                  "expences" : [ 
+                                                 { "user_id" : self.users_ids[1], "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                 ] } ], 
+               { 'error' : None, 'ids' : [ '' ] }
+        )          
+         
+    def test_day_ko(self):
+        self.maxDiff = None
+        # Insert one expence in an unknown project 
+        self._assert_req('/data/push_expences', [ 
+                                { '_id' : '7'*24, 
+                                 "expences" : [ 
+                                                 { "user_id" : self.users_ids[0], "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                ] } ], 
+               { u'error' : u"ValidationError: u'%s' is not one of %s" % ('7'*24, [ str(self.projects_ids[1]), str(self.projects_ids[0]) ]) }
+        )    
+        
+        # Insert one expence in project where user does not work 
+        self._assert_req('/data/push_expences', [ 
+                                { '_id' : self.projects_ids[2], 
+                                 "expences" : [ 
+                                                 { "user_id" : self.manager_id, "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                ] } ], 
+               { u'error' : u"ValidationError: u'%s' is not one of %s" % (self.projects_ids[2], [ str(self.projects_ids[1]), str(self.projects_ids[0]) ]) }
+               )       
+
+        # Insert a trip in a not administrated project (this should fail) TODO: fix this
+#         self._assert_req('/data/push_expences', [ 
+#                                  { '_id' : self.projects_ids[1], 
+#                                   "expences" : [ 
+#                                                   { "user_id" : self.users_ids[1], "description" : "descr2", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'note' : 'too expensive', 'accommodation' : {} }     
+#                                  ] } ], 
+#                 {u'error': u"ValidationError: {u'status': 2, u'city': u'Austin', u'user_id': u'%s', u'description': u'descr2', u'country': u'USA', u'note': u'too expensive', u'start': u'2009-10-08', u'end': u'2009-10-10', u'accommodation': {}} is not valid under any of the given schemas" % (self.users_ids[1])}
+#         )          

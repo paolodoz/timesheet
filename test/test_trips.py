@@ -116,20 +116,70 @@ class ReportUsersHoursAPIAsEmployee(TestCaseAsEmployee, ModuleData):
         )
         
 
-# class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
-#     
-#     def setUp(self):        
-#         TestClassBase.setUp(self)
-#         self._add_user_data()
-#         ModuleData._add_module_data(self, self.manager_id)
-#         self._log_as_user()
-#         
-#     def test_day_ko(self):
-#         # Insert one expence for admin 
+class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
+     
+    def setUp(self):        
+        TestClassBase.setUp(self)
+        self._add_user_data()
+        ModuleData._add_module_data(self, self.manager_id)
+        self._log_as_user()
+
+    def test_trips_ok(self):
+
+        # Insert one trip in a project where user works
+        self._assert_req('/data/push_trips', [ 
+                                { '_id' : self.projects_ids[1], 
+                                 "trips" : [ 
+                                                 { "user_id" : self.manager_id, "description" : "descr2", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'note' : 'too expensive', 'accommodation' : {} }     
+                                ] } ], 
+               { 'error' : None, 'ids' : [ '' ] }
+       )
+
+        # Insert one trip in a project administrated by user
+        self._assert_req('/data/push_trips', [ 
+                                { '_id' : self.projects_ids[0], 
+                                 "trips" : [ 
+                                                 { "user_id" : self.manager_id, "description" : "descr2", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'note' : 'too expensive', 'accommodation' : {} }     
+                                ] } ], 
+               { 'error' : None, 'ids' : [ '' ] }
+       )
+
+
+        # Insert a trip in correct project with different user_id (project manager can)
+        self.maxDiff = None
+        self._assert_req('/data/push_trips', [ 
+                                 { '_id' : self.projects_ids[0], 
+                                  "trips" : [ 
+                                                  { "user_id" : self.users_ids[1], "description" : "descr2", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'note' : 'too expensive', 'accommodation' : {} }     
+                                 ] } ], 
+               { 'error' : None, 'ids' : [ '' ] }
+        )          
+         
+    def test_day_ko(self):
+        self.maxDiff = None
+        # Insert one expence in an unknown project 
+        self._assert_req('/data/push_trips', [ 
+                                { '_id' : '7'*24, 
+                                 "trips" : [ 
+                                                 { "user_id" : self.users_ids[0], "description" : "descr2", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'note' : 'too expensive', 'accommodation' : {} }     
+                                ] } ], 
+               { u'error' : u"ValidationError: u'%s' is not one of %s" % ('7'*24, [ str(self.projects_ids[1]), str(self.projects_ids[0]) ]) }
+        )    
+        
+        # Insert one expence in project where user does not work 
+        self._assert_req('/data/push_trips', [ 
+                                { '_id' : self.projects_ids[2], 
+                                 "trips" : [ 
+                                                 { "user_id" : self.manager_id, "description" : "descr2", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'note' : 'too expensive', 'accommodation' : {} }     
+                                ] } ], 
+               { u'error' : u"ValidationError: u'%s' is not one of %s" % (self.projects_ids[2], [ str(self.projects_ids[1]), str(self.projects_ids[0]) ]) }
+               )       
+
+        # Insert a trip in a not administrated project (this should fail) TODO: fix this
 #         self._assert_req('/data/push_trips', [ 
-#                                 { '_id' : '1'*24, 
-#                                  "trips" : [ 
-#                                                  { "user_id" : self.users_ids[0], "description" : "descr2", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'note' : 'too expensive', 'accommodation' : {} }     
-#                                 ] } ], 
-#                { 'error' : "TSValidationError: Access to project '111111111111111111111111' is restricted for current user" }
-#                )                  
+#                                  { '_id' : self.projects_ids[1], 
+#                                   "trips" : [ 
+#                                                   { "user_id" : self.users_ids[1], "description" : "descr2", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'note' : 'too expensive', 'accommodation' : {} }     
+#                                  ] } ], 
+#                 {u'error': u"ValidationError: {u'status': 2, u'city': u'Austin', u'user_id': u'%s', u'description': u'descr2', u'country': u'USA', u'note': u'too expensive', u'start': u'2009-10-08', u'end': u'2009-10-10', u'accommodation': {}} is not valid under any of the given schemas" % (self.users_ids[1])}
+#         )          
