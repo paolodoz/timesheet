@@ -261,37 +261,32 @@ var trip = {
     });
   },
   update : function (isupdate, form, callback) {
-    var trip, _trip, url;
-    if(isupdate) {
-      _trip = {};
-      trip = _trip;
-      url = "/update/trip";
-    } else {
-      _trip = [{}];
-      trip = _trip[0];
-      url = "/add/trip";
-    }
-    trip.user_id = me._id;
-    trip.accommodation = {};
+    var trip, prj = {}, url;
+    url = "/data/push_trips";
+    prj._id = $("#tripproject").val();
+    prj.trips = new Array();
+    prj.trips[0] = {}
+    prj.trips[0].user_id = me._id;
+    prj.trips[0].accommodation = {};
     $("#" + form + " input, #" + form + " select, #" + form + " checkbox, #" + form + " textarea").each(function (){
       var property = $(this).attr("id").substr(4);
-      if (property == "_id" && !isupdate)
+      if (property == "project" || property == "_id")
         return;
       if($(this).is(':checkbox')) {
-        trip.accommodation[property] = $(this).is(':checked') ? true : false;
+        prj.trips[0].accommodation[property] = $(this).is(':checked') ? true : false;
       }
       else {
         value = Number($(this).val());
         if(isNaN(value))
-          trip[property] = $(this).val();
+          prj.trips[0][property] = $(this).val();
         else
-          trip[property] = value;
+          prj.trips[0][property] = value;
       }
     });
     $.ajax({
       type: "POST",
       url: url,
-      data: JSON.stringify(_trip),
+      data: JSON.stringify(prj),
       success: function(data) {
         if(!data.error) {
           callback(data);
@@ -638,7 +633,7 @@ function simpleDate(date) {
   return date.getFullYear() + "-" + month + "-" + day;
 }
 var expcategories = ["", "Hotel", "Transportation", "Food", "Other"];
-var statuses = ["", "Pending", "Approved", "Rejected"];
+var statuses = ["", "Rejected", "Draft", "Pending", "Approved by PM", "Approved by administration"];
 var tasks = ["","Office","Away","Holiday","Bank Holiday","Leave","Unpaid leave"];
 function getTaskName(id) {
   return tasks[id];
