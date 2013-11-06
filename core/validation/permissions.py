@@ -2,14 +2,14 @@ import yaml, cherrypy, types, jsonschema
 from core.validation.validation import TSValidationError, recursive_replace, ObjectId
 from core.config import restrictions_schema
 
-def get_user_restrictions(schema_name):
+def get_user_restrictions():
     """Format restriction schemas. Saved on auth login to speedup following accesses"""
     
     # Recursively replace needs a condition_function and replace_function
     replacements = { 
                     '%%username%%' : '^%s$' % (cherrypy.session['_ts_user']['username']), 
                     '%%_id%%' : '^%s$' % (str(cherrypy.session['_ts_user']['_id'])),
-                    '%%managed_projects%%' : cherrypy.session['_ts_user']['managed_projects'] 
+                    '%%managed_projects%%' : (cherrypy.session['_ts_user']['managed_projects'])
                     }
 
     def _replace_function_permissions_schema(container):
@@ -27,68 +27,104 @@ def get_user_restrictions(schema_name):
     
     for collection_name, collection_schema in restrictions_schema.items():
         try:
-            schema = collection_schema[schema_name][cherrypy.session['_ts_user']['group']]
+            group_schema = collection_schema[cherrypy.session['_ts_user']['group']]
         except KeyError as e:
             pass
         else:
-            formatted_schemas[collection_name] = recursive_replace(schema, _replace_function_permissions_schema)
-            
+            formatted_schemas[collection_name] = recursive_replace(group_schema, _replace_function_permissions_schema)
+    
     return formatted_schemas
 
-    
-def check_action_permissions(action, collection):
 
-    try:
-        # Check if request restrictions are set for the collection.user
-        restrictions_acts = restrictions_schema[collection]['action_restrictions'][cherrypy.session['_ts_user']['group']]
-    except KeyError:
-        # If not, skip procedure
-        return
-
-    if action in restrictions_acts:
-        raise TSValidationError("Action '%s' in '%s' is restricted for current user" % (action, collection))
+def check_datamine_permissions(action, document):
+    # Get datamine permissions
     
-def check_criteria_permissions(collection, criteria):
-
-    try:
-        # Check if request restrictions are set for the collection.user
-        restrictions_criteria = cherrypy.session['_ts_user']['criteria_restrictions_schema'][collection]
-    except KeyError:
-        # If not, skip procedure
-        return
-    
-    jsonschema.validate(criteria, restrictions_criteria, format_checker=jsonschema.FormatChecker())
-
-   
-def check_insert_permissions(collection, document):
-
-    try:
-        # Check if request restrictions are set for the collection.user
-        restrictions_document = cherrypy.session['_ts_user']['insert_restrictions_schema'][collection]
-    except KeyError:
-        # If not, skip procedure
-        return
-    
-    jsonschema.validate(document, restrictions_document, format_checker=jsonschema.FormatChecker())
-    
-def check_projection_permissions(collection, projections):    
-    """Check if group user can access to the resource"""
+    if cherrypy.session['_ts_user']['group'] == 'administrator': return
     
     try:
-        # Check if request restrictions are set for the collection.user
-        restrictions_projs = restrictions_schema[collection]['projection_restrictions'][cherrypy.session['_ts_user']['group']]
+        restrictions = cherrypy.session['_ts_user']['restrictions'][action]
     except KeyError:
-        # If not, skip procedure
-        return
-    
-    # If some projection is restricted, raise an error 
-    restricted_projs = next((p for p in projections if p in restrictions_projs), None)
-    if restricted_projs:
-        raise TSValidationError("Field '%s' is restricted for current user" % (restricted_projs))
-    
-
+        restrictions = None
         
+    if not restrictions:
+        raise TSValidationError("Access to '%s' is restricted for current user" % (action))
+    elif restrictions != True:
+        jsonschema.validate(document, restrictions, format_checker=jsonschema.FormatChecker())    
+    
+def check_remove_permissions(collection, document):
+    
+    if cherrypy.session['_ts_user']['group'] == 'administrator': return
+    
+    # Get remove permissions
+    try:
+        restrictions = cherrypy.session['_ts_user']['restrictions'][collection]['remove']
+    except KeyError:
+        restrictions = None
+        
+    if not restrictions:
+        raise TSValidationError("Access to 'remove.%s' is restricted for current user" % (collection))
+    elif restrictions != True:       
+        jsonschema.validate(document, restrictions, format_checker=jsonschema.FormatChecker())
+    
+def check_upsert_permissions(action, collection, document):
+    
+    if cherrypy.session['_ts_user']['group'] == 'administrator': return
+    
+    # Get add/update permissions
+    try:
+        restrictions = cherrypy.session['_ts_user']['restrictions'][collection][action]
+    except KeyError:
+        restrictions = None
+        
+    if not restrictions:
+        raise TSValidationError("Access to '%s.%s' is restricted for current user" % (action, collection))
+    elif restrictions != True:       
+        jsonschema.validate(document, restrictions, format_checker=jsonschema.FormatChecker())
+
+def check_get_permissions(collection, criteria_projection):
+
+    if (isinstance(criteria_projection, types.ListType) and len(criteria_projection) == 2 and criteria_projection[1]):
+        criteria, projection = criteria_projection
+    else:
+        raise TSValidationError('Expected list with criteria and nonempty projection')
+
+    if cherrypy.session['_ts_user']['group'] == 'administrator': return
+    
+    # Get criteria permissions
+    try:
+        criteria_restrictions = cherrypy.session['_ts_user']['restrictions'][collection]['get']['criteria']
+    except KeyError:
+        criteria_restrictions = None
+        
+    # Get projection permissions
+    try:
+        projections_restrictions = cherrypy.session['_ts_user']['restrictions'][collection]['get']['projections']
+    except KeyError:
+        projections_restrictions = None
+           
+    # If there are no restrictions, check if is set to True
+    if not criteria_restrictions and not projections_restrictions:
+        # If collection.get is not set to True, the access is denied
+        try:
+            get_permissions = cherrypy.session['_ts_user']['restrictions'][collection]['get']
+        except KeyError:
+            get_permissions = None        
+            
+        if get_permissions != True:
+            raise TSValidationError("Access to 'get.%s' is restricted for current user" % (collection))
+        
+        # Else, returns as allowed
+        else:
+            return
+    
+    # Validate projections
+    if projections_restrictions:
+        restricted_projs = next((p for p in projection if p in projections_restrictions), None)
+        if restricted_projs:
+            raise TSValidationError("Field 'get.%s.%s' is restricted for current user" % (collection, restricted_projs))
+    
+    # Validate criteria
+    if criteria_restrictions:
+        jsonschema.validate(criteria, criteria_restrictions, format_checker=jsonschema.FormatChecker())
         
     
-    
-       

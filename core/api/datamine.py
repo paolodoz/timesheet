@@ -1,5 +1,5 @@
 from core.validation.validation import TSValidationError, validate_request, update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
-from core.validation.permissions import check_action_permissions, check_criteria_permissions, check_projection_permissions, check_insert_permissions
+from core.validation.permissions import check_datamine_permissions
 from bson.objectid import ObjectId
 from core.api.crud import db
 import cherrypy, logging
@@ -24,6 +24,17 @@ def push_expences(documents_list):
     
     validate_json_list('project', documents_list)
     
+    for document in documents_list:
+        
+        # Check if current user is an employee of selected project
+        # TODO: find a better way using standard check_datamine_permissions validation
+        if cherrypy.session['_ts_user']['group'] == 'employee':
+            found = db.project.find({ '_id' : ObjectId(document['_id']), 'employees._id' : cherrypy.session['_ts_user']['_id'] }).limit(1).count()
+            if not found:
+                raise TSValidationError("Access to project '%s' is restricted for current user" % (document['_id']))
+            
+        check_datamine_permissions('push_expences', document)
+    
     sanified_documents_list = sanitize_objectify_json(documents_list)
     
     expences_ids = []
@@ -31,8 +42,6 @@ def push_expences(documents_list):
     cherrypy.log(str(sanified_documents_list), context = 'TS.PUSH_EXPENCES', severity = logging.INFO)
     
     for sanified_document in sanified_documents_list:
-
-        check_insert_permissions('push_expences', sanified_document)
 
         project_id = sanified_document['_id']
 
@@ -67,6 +76,16 @@ def push_trips(documents_list):
     """
     
     validate_json_list('project', documents_list)
+    for document in documents_list:
+        
+        # Check if current user is an employee of selected project
+        # TODO: find a better way using standard check_datamine_permissions validation
+        if cherrypy.session['_ts_user']['group'] == 'employee':
+            found = db.project.find({ '_id' : ObjectId(document['_id']), 'employees._id' : cherrypy.session['_ts_user']['_id'] }).limit(1).count()
+            if not found:
+                raise TSValidationError("Access to project '%s' is restricted for current user" % (document['_id']))
+        
+        check_datamine_permissions('push_trips', document)
     
     sanified_documents_list = sanitize_objectify_json(documents_list)
     
@@ -75,8 +94,6 @@ def push_trips(documents_list):
     cherrypy.log(str(sanified_documents_list), context = 'TS.PUSH_TRIPS', severity = logging.INFO)
     
     for sanified_document in sanified_documents_list:
-
-        check_insert_permissions('push_trips', sanified_document)
 
         project_id = sanified_document['_id']
 
@@ -111,12 +128,12 @@ def push_days(documents_list):
     """
     
     validate_json_list('day', documents_list)
-    
+    for document in documents_list:
+        check_datamine_permissions('push_days', document)
+
     sanified_documents_list = sanitize_objectify_json(documents_list)
     
     for sanified_document in sanified_documents_list:
-
-        check_insert_permissions('push_days', sanified_document)
 
         date = sanified_document['date']
         
@@ -154,7 +171,7 @@ def search_days(criteria):
     """
     Get day by collection
     
-    POST /data/search_days/
+    POST /data/search_days/    
     
     Expects a  { 'start' : 'date1', 'end' : 'date2', 'user_id' : 'user_id' } 
     Returns { 'error' : string, 'records' : [ { }, { }, .. ]  } 
@@ -168,7 +185,7 @@ def search_days(criteria):
 
     # Prepare the criteria with date range && user_id
     prepared_criteria = { "date" :  {"$gte": sanified_criteria['start'], "$lte": sanified_criteria['end']}, "users.user_id" : user_id }
-    check_criteria_permissions('search_days', prepared_criteria)
+    check_datamine_permissions('search_days', prepared_criteria)
     
     # Prepare the projection to return only date and users.date where user id is correct
     projection = { 'date' : 1, 'users' : { '$elemMatch' : { 'user_id' : user_id }}}
@@ -187,7 +204,6 @@ def report_users_hours(criteria):
     Returns { 'error' : string, 'records' : [ { }, { }, .. ]  } 
     """
     
-    check_action_permissions('report_users_hours', 'report_users_hours')
     validate_request('report_users_hours', criteria)
     sanified_criteria = sanitize_objectify_json(criteria)
     
@@ -220,7 +236,7 @@ def report_users_hours(criteria):
     if sanified_criteria['tasks']:
         match_users_projects_extras_tasks['users.hours.task'] = { '$in' : sanified_criteria['tasks'] }
     
-    check_criteria_permissions('report_users_hours', match_users_projects_extras_tasks)
+    check_datamine_permissions('report_users_hours', match_users_projects_extras_tasks)
     
     aggregation_pipe = [ 
                         { '$match': dates_match },
@@ -292,7 +308,7 @@ def report_projects(criteria):
         if projects_input:
             match_projects['users.hours.project'] = { '$in' : projects_input }
         
-        check_criteria_permissions('report_projects', match_projects)
+        check_datamine_permissions('report_projects', match_projects)
         
         aggregation_pipe = [ 
                             { '$match': dates_match },
@@ -407,7 +423,6 @@ def report_projects(criteria):
         return output_costs_dict
             
 
-    check_action_permissions('report_projects', 'report_projects')
     validate_request('report_projects', criteria)
     sanified_criteria = sanitize_objectify_json(criteria)
         

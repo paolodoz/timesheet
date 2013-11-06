@@ -1,19 +1,19 @@
+# Permissions schema is defined in this way:
+#
 
 customer:
-    action_restrictions:
-      employee:
-        - remove
-        - add
-        - update
-        - get
-      project manager:
-        - remove
-        - add
-        - update
+  project manager:
+    get:
+      True
 
-user:   
-    criteria_restrictions_schema:
-      employee:
+
+user:
+  employee:
+    get:
+      projections:
+        - salt
+        - password
+      criteria:
         type: object
         properties:
           _id:
@@ -21,59 +21,47 @@ user:
             pattern: '%%_id%%'
         required: 
           - _id
-      project manager:
+    update:
         type: object
         properties:
           _id:
             type: string
             pattern: '%%_id%%'
         required: 
-          - _id
-        
-    projection_restrictions:
-      employee:
+          - _id      
+  project manager:
+    get:
+      projections:
         - salt
         - password
-      administrator:
-        - salt
-        - password
-      project manager:
-        - salt
-        - password
-        
-    action_restrictions:
-      employee:
-        - remove
-        - add
-      project manager:
-        - remove
-        - add
-
-# Only administrator can call /*/day directly
-day:
-    action_restrictions:
-      employee:
-        - get
-        - remove
-        - add
-        - update
-      project manager:
-        - get
-        - remove
-        - add
-        - update
-
+      criteria:
+        type: object
+        properties:
+          _id:
+            type: string
+            pattern: '%%_id%%'
+        required: 
+          - _id          
+    update:
+        type: object
+        properties:
+          _id:
+            type: string
+            pattern: '%%_id%%'
+        required: 
+          - _id      
+    
 search_days:
-    criteria_restrictions_schema:
-      employee:
+    employee:
         type: object
         properties:
           users.user_id: 
             type: string
             pattern: '%%_id%%'
         required: 
-          - users.user_id                
-      project manager:
+          - users.user_id
+                   
+    project manager:
         type: object
         properties:
           users.user_id: 
@@ -81,10 +69,9 @@ search_days:
             pattern: '%%_id%%'
         required: 
           - users.user_id   
-          
-push_days:            
-    insert_restrictions_schema:
-      employee:
+
+push_days:
+    employee:
         type: object
         properties:
           users:
@@ -95,7 +82,8 @@ push_days:
                 user_id:
                   type: string
                   pattern: '%%_id%%'
-      project manager:
+    
+    project manager:
         type: object
         properties:
           date:
@@ -116,10 +104,9 @@ push_days:
                       project:
                         enum : '%%managed_projects%%'
 
-                    
-report_users_hours:    
-    criteria_restrictions_schema:     
-      project manager:
+
+report_users_hours:
+    project manager:
         type: object
         properties:
           users.hours.project:
@@ -132,14 +119,10 @@ report_users_hours:
         required: 
           - users.hours.project
 
-    action_restrictions:
-      employee:
-        - report_users_hours
       
   
 report_projects:
-    criteria_restrictions_schema:     
-      project manager:
+    project manager:
         type: object
         required : [ 'users.hours.project' ]
         properties:
@@ -151,14 +134,12 @@ report_projects:
                 type: array
                 items:
                   enum: '%%managed_projects%%'
-
-    action_restrictions:
-      employee:
-        - report_projects        
+   
                   
 project:
-    criteria_restrictions_schema:
-      employee:
+  employee:
+    get:
+      criteria:
         type: object
         properties:
           employees._id: 
@@ -167,7 +148,9 @@ project:
         required:
           - employees._id
               
-      project manager:
+  project manager:
+    get:
+      criteria:
         oneOf:
           - type: object
             required: [ employees._id ]
@@ -182,28 +165,56 @@ project:
                 type: string
                 pattern: '%%_id%%'
  
-    insert_restrictions_schema:
-      project manager:
-        type: object
-        properties:
-          _id:
-            type: string
-            enum: '%%managed_projects%%'
+    update:
+      type: object
+      properties:
+        _id:
+          type: string
+          enum: '%%managed_projects%%'
 
-    
-    action_restrictions:
-      employee:
-        - remove
-        - add
-        - update
-      project manager:
-        - remove
-        - add
-        
-file:
-    action_restrictions:
-      employee:
-        - remove
-        - add
-        - update
-        - get  
+
+push_trips:
+  # employees._id is validated manually
+  employee:
+        type: object
+        required: [ trips ]
+        properties:
+          trips:
+            type: array
+            items:
+              oneOf:
+                - type: object
+                  required: [ user_id ]
+                  properties:
+                    user_id: 
+                      type: string
+                      pattern: '%%_id%%'
+              
+  project manager:
+      type: object
+      properties:
+        _id:
+          type: string
+          enum: '%%managed_projects%%'   
+          
+          
+push_expences:
+  # employees._id is validated manually
+  employee:
+        type: object
+        required: [ expences ]
+        properties:
+          expences:
+            type: array
+            required: [ user_id ]
+            items:
+              user_id: 
+                type: string
+                pattern: '%%_id%%'
+              
+  project manager:
+      type: object
+      properties:
+        _id:
+          type: string
+          enum: '%%managed_projects%%'  

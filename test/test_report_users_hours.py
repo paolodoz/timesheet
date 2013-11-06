@@ -86,7 +86,7 @@ class ReportUsersHoursAPIAsUser(TestCaseAsEmployee, ModuleData):
                                                       'hours_extra' : False,
                                                       'tasks' : []
                                       }
-                                    , {u'error': "TSValidationError: Action 'report_users_hours' in 'report_users_hours' is restricted for current user"}
+                                    , {u'error': "TSValidationError: Access to 'report_users_hours' is restricted for current user"}
                                     )
  
     

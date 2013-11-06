@@ -25,14 +25,14 @@ class CustomerAPIAsAdmin(TestClassBase):
 class CustomerAPIAsEmployee(TestCaseAsEmployee):
     
     def test_customer_ko(self):
-        self._assert_req('/get/customer', [ {  }, { 'address' : 1 }], { 'error': "TSValidationError: Action 'get' in 'customer' is restricted for current user", 'records' : [ ] })
-        self._assert_req('/remove/customer', [ { 'name' : 'CUSTOMERTEST' } ], {u'error': u"TSValidationError: Action 'remove' in 'customer' is restricted for current user"})
-        self._assert_req('/add/customer', [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL@CUSDOMAIN', 'description' : 'CUSTODESC' } ], {u'error': u"TSValidationError: Action 'add' in 'customer' is restricted for current user", 'ids' : []})
+        self._assert_req('/get/customer', [ {  }, { 'address' : 1 }], { 'error': "TSValidationError: Access to 'get.customer' is restricted for current user", 'records' : [ ] })
+        self._assert_req('/remove/customer', [ { 'name' : 'CUSTOMERTEST' } ], {u'error': u"TSValidationError: Access to 'remove.customer' is restricted for current user"})
+        self._assert_req('/add/customer', [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL@CUSDOMAIN', 'description' : 'CUSTODESC' } ], {u'error': u"TSValidationError: Access to 'add.customer' is restricted for current user", 'ids' : []})
         
         
 class CustomerAPIAsManager(TestCaseAsManager):
     
     def test_customer_ko(self):
         # TODO: test /get/ 
-        self._assert_req('/remove/customer', [ { 'name' : 'CUSTOMERTEST' } ], {u'error': u"TSValidationError: Action 'remove' in 'customer' is restricted for current user"})
-        self._assert_req('/add/customer', [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL@CUSDOMAIN', 'description' : 'CUSTODESC' } ], {u'error': u"TSValidationError: Action 'add' in 'customer' is restricted for current user", 'ids' : []})
+        self._assert_req('/remove/customer', [ { 'name' : 'CUSTOMERTEST' } ], {u'error': u"TSValidationError: Access to 'remove.customer' is restricted for current user"})
+        self._assert_req('/add/customer', [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL@CUSDOMAIN', 'description' : 'CUSTODESC' } ], {u'error': u"TSValidationError: Access to 'add.customer' is restricted for current user", 'ids' : []})

@@ -112,23 +112,30 @@ def all_of(*conditions):
 
 class AuthController(object):
     
+    def reload_users_projects(self):
+
+        # Save ids of managed_projects
+        cherrypy.session['_ts_user']['managed_projects'] = []
+        cursor = db.project.find({ 'responsible._id' : cherrypy.session['_ts_user']['_id'] }, { '_id' : 1 })
+        for document in cursor:
+            cherrypy.session['_ts_user']['managed_projects'].append(str(document['_id']))
+
+#         # Save ids of taken projects
+#         cherrypy.session['_ts_user']['projects'] = []
+#         cursor = db.project.find({ 'employees._id' : cherrypy.session['_ts_user']['_id'] }, { '_id' : 1 })
+#         for document in cursor:
+#             cherrypy.session['_ts_user']['projects'].append(str(document['_id']))
+        
+        # Save formatted permissions schemas to speedup following accesses
+        cherrypy.session['_ts_user']['restrictions'] = get_user_restrictions()
+        
     def on_login(self, username):
         """Called on successful login"""
         
         # Save user data
         cherrypy.session['_ts_user'] = db.user.find_one({ 'username' : username }, { 'username' : 1, 'group' : 1 })
-        
-        # If user is a project manager, save ids in managed_projects
-        cherrypy.session['_ts_user']['managed_projects'] = []
-        if cherrypy.session['_ts_user']['group'] == 'project manager':
-            cursor = db.project.find({ 'responsible._id' : cherrypy.session['_ts_user']['_id'] }, { '_id' : 1 })
-            for document in cursor:
-                cherrypy.session['_ts_user']['managed_projects'].append(str(document['_id']))
-        
-        # Save formatted permissions schemas to speedup following accesses
-        cherrypy.session['_ts_user']['criteria_restrictions_schema'] = get_user_restrictions('criteria_restrictions_schema')
-        cherrypy.session['_ts_user']['insert_restrictions_schema'] = get_user_restrictions('insert_restrictions_schema')
 
+        self.reload_users_projects()
 
         cherrypy.request.login = username
         

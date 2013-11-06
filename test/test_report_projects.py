@@ -235,5 +235,5 @@ class ReportUsersHoursAPIAsUser(TestCaseAsEmployee, ModuleData):
                                                       'projects' : [ self.projects_ids[0] ],
                                                       'customer' : ''
                                       }
-                                    , {u'error': "TSValidationError: Action 'report_projects' in 'report_projects' is restricted for current user"}
+                                    , {u'error': "TSValidationError: Access to 'report_projects' is restricted for current user"}
                                     )  

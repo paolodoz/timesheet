@@ -4,7 +4,7 @@ except ImportError as e:
     from pymongo import Connection
 
 from core.validation.validation import TSValidationError, recursive_merge, update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
-from core.validation.permissions import check_insert_permissions, check_action_permissions, check_criteria_permissions, check_projection_permissions
+from core.validation.permissions import check_get_permissions, check_upsert_permissions, check_remove_permissions
 from bson.objectid import ObjectId
 from core.config import collections, conf_mongodb, conf_auth, conf_auth_db
 import string, hashlib, random, types, cherrypy, logging
@@ -17,25 +17,17 @@ db_log_severity = logging.INFO
 def get(collection, criteria_projection):
     """Get selected records from collection, and return it as json
     Called by GET /<collection>/"""
-    
-    if (isinstance(criteria_projection, types.ListType) and len(criteria_projection) == 2 and criteria_projection[1]):
-        criteria, projection = criteria_projection
-    else:
-        raise TSValidationError('Expected list with criteria and nonempty projection')
       
     # Check permissions  
-    check_action_permissions('get', collection)
-    check_criteria_permissions(collection, criteria)
-    check_projection_permissions(collection, projection)
+    check_get_permissions(collection, criteria_projection)
     
     # Sanify criteria (to match with sanified documents)
-    sanified_criteria = sanitize_objectify_json(criteria)
+    sanified_criteria = sanitize_objectify_json(criteria_projection[0])
     
-    cherrypy.log('%s' % (sanified_criteria), context = 'TS.GET.%s.criteria' % collection, severity = db_log_severity)
-    cherrypy.log('%s' % (projection), context = 'TS.GET.%s.projection' % collection, severity = db_log_severity)
+    cherrypy.log('%s' % (criteria_projection), context = 'TS.GET.%s.criteria_projection' % collection, severity = db_log_severity)
     
     # Request
-    return stringify_objectid_cursor(db[collection].find(sanified_criteria, projection))
+    return stringify_objectid_cursor(db[collection].find(sanified_criteria, criteria_projection[1]))
 
 
 def remove(collection, criterias = []):
@@ -43,9 +35,8 @@ def remove(collection, criterias = []):
     Called by POST /remove/<collection>"""
     
     # Check permissions before requests  
-    check_action_permissions('remove', collection)
     for criteria in criterias:
-        check_criteria_permissions(collection, criteria)
+        check_remove_permissions(collection, criteria)
 
     # Sanify criteria (to match with sanified documents)
     sanified_criterias = sanitize_objectify_json(criterias)
@@ -66,11 +57,10 @@ def add(collection, documents_list):
     if not isinstance(documents_list, list):
         raise TSValidationError("List expected, not '%s'" % documents_list.__class__.__name__)
     
-    check_action_permissions('add', collection)
     validate_json_list(collection, documents_list)
 
     for document in documents_list:
-        check_insert_permissions(collection, document)
+        check_upsert_permissions('add', collection, document)
 
     # Sanify documents
     sanified_documents_list = sanitize_objectify_json(documents_list)
@@ -91,9 +81,8 @@ def update(collection, document):
     if not (isinstance(document, types.DictType) and  '_id' in document):
         raise TSValidationError("Dict with '_id' field expected, not '%s'" % document.__class__.__name__)
     
-    check_action_permissions('update', collection)
     validate_json_list(collection, [ document ])
-    check_insert_permissions(collection, document)
+    check_upsert_permissions('update', collection, document)
     sanified_document = sanitize_objectify_json(document)
     
     cherrypy.log('%s' % (sanified_document), context = 'TS.UPDATE.%s.document' % collection, severity = db_log_severity)

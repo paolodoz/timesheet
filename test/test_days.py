@@ -82,7 +82,7 @@ class DayAPIAsEmployee(TestCaseAsEmployee):
     
     def test_day_ko(self):
         # Access directly to /day/
-        self._assert_req('/get/day', [ {  }, { 'date' : '2000-01-01' } ], {u'error': u"TSValidationError: Action 'get' in 'day' is restricted for current user", 'records' : [] } )
+        self._assert_req('/get/day', [ {  }, { 'date' : '2000-01-01' } ], {u'error': u"TSValidationError: Access to 'get.day' is restricted for current user", 'records' : [] } )
     
         # Get unexistant user 0
         self._assert_req('/data/search_days', { 'start' : '2000-01-01', 'end' : '2003-01-01', 'user_id' : '0' }, {u'error': u"ValidationError: u'0' does not match '^%s$'" % (self.employee_id)} )
@@ -127,7 +127,7 @@ class DayAPIAsManager(TestCaseAsManager, ModuleData):
     def test_day_ko(self):
         
         # Access directly to /day/
-        self._assert_req('/get/day', [ {  }, { 'date' : '2000-01-01' } ], {u'error': u"TSValidationError: Action 'get' in 'day' is restricted for current user", 'records' : [] } )
+        self._assert_req('/get/day', [ {  }, { 'date' : '2000-01-01' } ], {u'error': u"TSValidationError: Access to 'get.day' is restricted for current user", 'records' : [] } )
         
         
         # Get wrong user_id 0

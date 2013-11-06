@@ -2,7 +2,7 @@ import tempfile, os, shutil, cherrypy, time
 from core.config import conf_uploads
 from core.api.crud import db
 from core.validation.validation import TSValidationError, validate_request, cgi, ObjectId, sanitize_objectify_json
-from core.validation.permissions import check_action_permissions, check_criteria_permissions
+from core.validation.permissions import check_datamine_permissions
 import logging
 
 db_log_severity = logging.INFO
@@ -10,8 +10,7 @@ db_log_severity = logging.INFO
 def upload():
     
     # Check permissions  
-    check_action_permissions('insert', 'file')
-    validate_request('file_upload', cherrypy.request.params)
+    check_datamine_permissions('file_upload', cherrypy.request.params)
     
     file_uploading = cherrypy.request.params['data']
     
@@ -44,8 +43,7 @@ def upload():
 def download(upload_id):
     
     # Check permissions  
-    check_action_permissions('get', 'file')
-    validate_request('file_download', cherrypy.request.params)
+    check_datamine_permissions('file_download', cherrypy.request.params)
     
     upload_id = ObjectId(upload_id)
     
@@ -62,13 +60,8 @@ def download(upload_id):
 
 def remove(upload_ids):
 
-    # Check permissions before requests  
-    check_action_permissions('remove', 'file')
-    validate_request('file_remove', cherrypy.request.params)
+    check_datamine_permissions('file_remove', cherrypy.request.params)
     
-    for upload_id in upload_ids:
-        check_criteria_permissions('file_remove', upload_id)
-
     # Sanify upload_id (to match with sanified documents)
     # TODO: check why does not objectify lists
     #upload_ids = sanitize_objectify_json(upload_ids)

@@ -88,11 +88,11 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
         self._assert_req('/get/project', [ { 'employees._id' : self.manager_id, 'responsible._id' : self.manager_id } , { 'name' : 1, '_id' : 0 } ], {u'error': "ValidationError: {u'responsible._id': u'%s', u'employees._id': u'%s'} is valid under each of {'required': ['responsible._id'], 'type': 'object', 'properties': {'responsible._id': {'pattern': '^%s$', 'type': 'string'}}}, {'required': ['employees._id'], 'type': 'object', 'properties': {'employees._id': {'pattern': '^%s$', 'type': 'string'}}}" % (self.manager_id, self.manager_id, self.manager_id, self.manager_id), u'records': []})
         
         # Try to delete
-        self._assert_req('/remove/project', [ { '_id' : self.projects_ids[0], 'responsible._id' : self.manager_id } ], { 'error': "TSValidationError: Action 'remove' in 'project' is restricted for current user" })
+        self._assert_req('/remove/project', [ { '_id' : self.projects_ids[0], 'responsible._id' : self.manager_id } ], { 'error': "TSValidationError: Access to 'remove.project' is restricted for current user" })
         
         # Try to insert
         self._assert_req('/add/project', [ { 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person1', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsible' : { '_id' : self.users_ids[1], 'name' : 'Manag1'}, 'employees' : [ { '_id' : self.users_ids[1], 'name' : 'Emp1'} ] } ], 
-                { 'error' : "TSValidationError: Action 'add' in 'project' is restricted for current user", 'ids' : [  ] }
+                { 'error' : "TSValidationError: Access to 'add.project' is restricted for current user", 'ids' : [  ] }
                 )
 
         # Update project that does not manage
@@ -131,15 +131,15 @@ class ReportUsersHoursAPIAsEmployee(TestCaseAsEmployee, ModuleData):
         self._assert_req('/get/project', [ { 'employees._id' : self.users_ids[0] } , { 'name' : 1, '_id' : 0 } ], { 'error': "ValidationError: u'%s' does not match '^%s$'" % (self.users_ids[0], self.employee_id), 'records' : [ ] })
         
         # Try to delete
-        self._assert_req('/remove/project', [ { 'employees._id' : self.users_ids[0] } ], { 'error': "TSValidationError: Action 'remove' in 'project' is restricted for current user" })
+        self._assert_req('/remove/project', [ { 'employees._id' : self.users_ids[0] } ], { 'error': "TSValidationError: Access to 'remove.project' is restricted for current user" })
          
         # Try to insert
         self._assert_req('/add/project', [ { 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person1', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsible' : { '_id' : self.users_ids[1], 'name' : 'Manag1'}, 'employees' : [ { '_id' : self.users_ids[1], 'name' : 'Emp1'} ] } ], 
-                { 'error' : "TSValidationError: Action 'add' in 'project' is restricted for current user", 'ids' : [  ] }
+                { 'error' : "TSValidationError: Access to 'add.project' is restricted for current user", 'ids' : [  ] }
                 )
  
         # Update project 
-        self._assert_req('/update/project', { '_id' : self.projects_ids[0], 'customer' : 'CUSTOMERZ', 'type' : 'TYPE', 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person1', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsible' : { '_id' : self.employee_id, 'name' : 'Manag1'}, 'employees' : [ { '_id' : self.employee_id, 'name' : 'Emp1'} ] },  { 'error' : "TSValidationError: Action 'update' in 'project' is restricted for current user" } )
+        self._assert_req('/update/project', { '_id' : self.projects_ids[0], 'customer' : 'CUSTOMERZ', 'type' : 'TYPE', 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person1', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsible' : { '_id' : self.employee_id, 'name' : 'Manag1'}, 'employees' : [ { '_id' : self.employee_id, 'name' : 'Emp1'} ] },  { 'error' : "TSValidationError: Access to 'update.project' is restricted for current user" } )
          
 
     def test_project_ok(self):
