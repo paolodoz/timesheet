@@ -141,7 +141,7 @@ class Routes:
             ids = crud.remove(collection, json_in)
         except ValidationError as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
-            json_out = {'error' : '%s: %s' % (type(e).__name__, cgi.escape(e.message)), 'ids' : []}
+            json_out = {'error' : '%s: %s' % (type(e).__name__, cgi.escape(e.message))}
         except TSValidationError as e:
             error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
             json_out = {'error' : '%s: %s' % (type(e).__name__, cgi.escape(str(e))) }
