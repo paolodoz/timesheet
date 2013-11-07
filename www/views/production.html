@@ -80,6 +80,7 @@ function loadProjects(data, container) {
     isupdate = true;
     var filter = [{},{}];
     filter[0]._id = this.id;
+    filter[0]["responsible._id"] = me._id;
     filter[1].economics = 1;
     filter[1].start = 1;
     filter[1].end = 1;
