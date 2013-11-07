@@ -127,16 +127,14 @@ def _add_default_admin(db):
         json_user = { 'password' : password, 'name' : username, 'surname' : 'Default', 'username': username, 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : group, 'salary' : []  }
         validate_json_list('user', [ json_user ])
         
-        json_criteria = {}
         if group == 'administrator':
-            json_criteria['_id'] = json_user['_id'] = '1'*24
+            json_user['_id'] = '1'*24
     
-        sanified_documents_list = sanitize_objectify_json(json_user)
-        update_password_salt_user_json(sanified_documents_list)
-        
+        sanified_json_user = sanitize_objectify_json(json_user)
+        update_password_salt_user_json(sanified_json_user)
 
+        db.user.insert( sanified_json_user )
         
-        db['user'].update( json_criteria , sanified_documents_list, True)
     else:
         print 'OK!\n[-] Skipping user insert, use \'--add-user <usr> <pwd> <group>\' or \'--ldap <usr> <pwd> --add-user-ldap <group>\''
 
