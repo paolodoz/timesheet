@@ -80,7 +80,7 @@ class Upload(TestClassBase):
         self.cookies = CookieJar()
         self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cookies), MultipartPostHandler())
         self._assert_unlogged()
-        self._login(admin_credentials)
+        self._login(admin_credentials, 'administrator')
         self._assert_logged(admin_credentials)
         
     

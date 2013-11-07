@@ -45,12 +45,13 @@ class UserAPIAsAdmin(TestClassBase):
          
         # Check if can't login with NEW_USER_WITH_NO_PWD
         credentials = {'username' : 'NEW_USER_WITH_NO_PWD', 'password' : '' }
-        self._login(credentials)
+        self._login(credentials, 'employee')
         self._assert_unlogged()
          
         # Check if can login with NEW_USER_WITH_PWD
         credentials = {'username' : 'NEW_USER_WITH_PWD', 'password' : 'mypassword' }
-        self._login(credentials)
+        self._login(credentials, 'employee')
+        
         self._assert_logged(credentials)
          
         # Delete the inserted user
@@ -101,10 +102,8 @@ class DayAPIAsManager(TestCaseAsManager):
  
     def test_day_ko(self):
         
-        
         # Get admin
         self._assert_req('/get/user', [ { '_id' : '1'*24 }, { '_id' : 1 } ], { 'error': "ValidationError: u'111111111111111111111111' does not match '^%s$'" % (self.manager_id), 'records' : [ ] })
-        
         
         # Get its password and salt
         self._assert_req('/get/user', [ { '_id' : self.manager_id }, { 'password' : 1 } ], { 'error': "TSValidationError: Field 'get.user.password' is restricted for current user", 'records' : [ ] })

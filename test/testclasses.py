@@ -19,24 +19,25 @@ def clean_id(json_in):
     return recursive_replace(json_in.copy(), _function_clean_id)
 
 class TestClassBase(unittest.TestCase):
-
+    
     def setUp(self):
-        
+
         self.execOnTearDown = []
         
         self.cookies = CookieJar()
         self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cookies))
         self._assert_unlogged()
-        self._login(admin_credentials)
+        self._login(admin_credentials, 'administrator')
         self._assert_logged(admin_credentials)
     
-    def _login(self, credentials):
+    def _login(self, credentials, group):
         self.cookies.clear()
         encoded_credentials = urllib.urlencode(credentials)
         self.opener.open(url + "/auth/login", encoded_credentials)
+        self.group = group
     
     def _assert_logged(self, credentials):
-        self._assert_req('/me', None, { 'username' : credentials['username'], '_id' : '' })
+        self._assert_req('/me', None, { 'username' : credentials['username'], '_id' : '', 'group' : self.group })
         
     def _assert_unlogged(self):
         self.assertEqual(urllib2.urlopen(url + '/me').geturl(), url + '/auth/login')
@@ -52,7 +53,7 @@ class TestClassBase(unittest.TestCase):
         
     def tearDown(self):
         
-        self._login(admin_credentials)
+        self._login(admin_credentials, 'administrator')
         self._assert_logged(admin_credentials)
         
         for command in self.execOnTearDown:
@@ -64,6 +65,7 @@ class TestClassBase(unittest.TestCase):
         return self.opener.open('https://localhost:9090/' + uri).read()        
         
 class TestCaseAsEmployee(TestClassBase):
+    
     def setUp(self):
         TestClassBase.setUp(self)
         self._add_user_data()
@@ -81,10 +83,11 @@ class TestCaseAsEmployee(TestClassBase):
         
     def _log_as_user(self):     
         employee_credentials = { 'username' : 'EMPNAME', 'password' : 'mypassword' }
-        self._login(employee_credentials)
+        self._login(employee_credentials, 'employee')
         self._assert_logged(employee_credentials)
     
 class TestCaseAsManager(TestClassBase):
+
     def setUp(self):
         TestClassBase.setUp(self)
         self._add_user_data()
@@ -102,7 +105,7 @@ class TestCaseAsManager(TestClassBase):
       
     def _log_as_user(self):
         
-        employee_credentials = { 'username' : 'MANAGER', 'password' : 'mypassword' }
-        self._login(employee_credentials)
-        self._assert_logged(employee_credentials)
+        manager_credentials = { 'username' : 'MANAGER', 'password' : 'mypassword' }
+        self._login(manager_credentials, 'project manager')
+        self._assert_logged(manager_credentials)
                 
