@@ -35,14 +35,10 @@ $(document).ready(function() {
   validator = $("#tripForm").validate({
     rules: {
       tripproject: {
-        required: true,
-        number: true,
-        min: 0
+        required: true
       },
       tripdescription: {
-        required: true,
-        digits: true,
-        min: 1
+        required: true
       },
       tripstart: {
         required: true,
