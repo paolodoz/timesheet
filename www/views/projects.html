@@ -3,9 +3,7 @@
 <script type="text/javascript">
 var i,htmltasks,validator,isupdate = false;
 $(document).ready(function() {
-  loadProjectsList("projectsList");
-  loadCustomersList("projectcustomer");
-  loadUsersList("usersList");
+  user.me(userdata);
   htmltasks = "";
   for(i=1; i < tasks.length; i++) {
     htmltasks += "<option value='" + i + "'>" + tasks[i] + "</option>";
@@ -73,8 +71,19 @@ $(document).ready(function() {
   });
 });
 
+function userdata(data) {
+  me = data;
+  loadProjectsList("projectsList");
+  loadCustomersList("projectcustomer");
+  loadUsersList("usersList");
+}
+
 function loadProjectsList(list) {
-  var filter = [{},{name:1}];
+  var filter;
+  if(me.group == "project manager")
+    filter = [{"responsible._id": me._id},{name:1}];
+  else
+    filter = [{},{name:1}];
   project.load(filter, loadProjects, list);
 }
 function loadCustomersList(list) {
@@ -138,7 +147,8 @@ function loadProjects(data, container) {
     htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data.records[i].name + "</li>";
   }
   //add line for new project
-  htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Project ...</li>";
+  if(me.group == "administrator")
+    htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Project ...</li>";
   $("#" + container).html(htmllist);
   $("#" + container + " .list-group-item").click(function() {
     resetProjectsForm();
@@ -148,6 +158,9 @@ function loadProjects(data, container) {
     isupdate = true;
     var filter = createFilterForm("projectForm");
     filter[0]._id = this.id;
+    if(me.group == "project manager") {
+      filter[0]["responsible._id"] = me._id;
+    }
     project.load(filter,loadProjectDetails, container);
   });
 }
