@@ -226,12 +226,12 @@ var trip = {
   load : function (filter, callback, target) {
     $.ajax({
       type: "POST",
-      url: "/get/trip",
+      url: "/get/project",
       data: JSON.stringify(filter),
       success: function(data) {
         if(!data.error) {
           _trip = data.records;
-          callback(data, target);
+          callback(data.records, target);
         } else {
           showmessage("error", data.error);
         }
@@ -261,12 +261,15 @@ var trip = {
     });
   },
   update : function (isupdate, form, callback) {
-    var trip, prj = {}, url;
+    var trip, prj_arr = new Array(), url;
+    prj_arr[0] = {};
+    prj = prj_arr[0];
     url = "/data/push_trips";
     prj._id = $("#tripproject").val();
     prj.trips = new Array();
     prj.trips[0] = {}
     prj.trips[0].user_id = me._id;
+    prj.trips[0].note = "";
     prj.trips[0].accommodation = {};
     $("#" + form + " input, #" + form + " select, #" + form + " checkbox, #" + form + " textarea").each(function (){
       var property = $(this).attr("id").substr(4);
@@ -286,7 +289,7 @@ var trip = {
     $.ajax({
       type: "POST",
       url: url,
-      data: JSON.stringify(prj),
+      data: JSON.stringify(prj_arr),
       success: function(data) {
         if(!data.error) {
           callback(data);
