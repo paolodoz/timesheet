@@ -45,7 +45,7 @@ function loadProjectsList(list) {
 }
 
 function loadTripsList(list) {
-  var filter = [{user_id:me._id},{start:1, city:1}];
+  var filter = [{"trips.user_id":me._id, "trips.status":2},{trips:1}];
   trip.load(filter, loadTrips, list);
 }
 
@@ -82,10 +82,12 @@ function loadProjects(data, container) {
 }
 
 function loadTrips(data, container) {
-  var i;
+  var i,j;
   var htmllist = "";
-  for(i=0;i < data.records.length; i++) {
-    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data.records[i].city + " " + data.records[i].start + "</li>";
+  for(i=0;i < data.length; i++) {
+    for(j=0; j < data[i].trips.length; j++) {
+      htmllist += "<li id='" + data[i].trips[j]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data[i].trips[j].city + " " + data[i].trips[j].start + "</li>";
+    }
   }
   //add line for new trip
   htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Trip ...</li>";
@@ -95,21 +97,19 @@ function loadTrips(data, container) {
     $(this).addClass("active");
     if(this.id == "")
       return;
-    isupdate = true;
-    var filter = createFilterForm("tripForm");
-    filter[0]._id = this.id;
+    var filter = [{"trips._id":this.id },{trips:1}];
     trip.load(filter,loadTripDetails, container);
   });
 }
 
 function loadTripDetails(data,container) {
-  for(var key in data.records[0]) {
-    $("#trip" + key).val(data.records[0][key]);
+  for(var key in data[0]) {
+    $("#trip" + key).val(data[0][key]);
   }
-  for(var key in data.records[0].accommodation) {
-    if(data.records[0].accommodation[key] == true )  
+  for(var key in data[0].accommodation) {
+    if(data[0].accommodation[key] == true )
       $("#trip" + key).addClass("active");
-   if ( data.records[0].accommodation[key] == false) 
+   if (data.accommodation[key] == false)
       $("#trip" + key).removeClass("active");
   }
   
