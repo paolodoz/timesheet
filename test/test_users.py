@@ -98,12 +98,15 @@ class DayAPIAsManager(TestCaseAsManager):
         self._assert_req('/update/user', { '_id' : self.manager_id, 'email' : 'NEWEMAIL@NEWDOMAIN.COM' }, { 'error': None })
         self._assert_req('/get/user', [ { '_id' : self.manager_id }, { 'email' : 1, '_id' : 0 } ], { 'error': None, 'records' : [ { 'email' : 'NEWEMAIL@NEWDOMAIN.COM' } ] })
         self._assert_req('/update/user', { '_id' : self.manager_id, 'email' : 'EMAIL@DOMAIN.COM' }, { 'error': None })
-        
+
+        # Get admin
+        self._assert_req('/get/user', [ { '_id' : '1'*24 }, { '_id' : 1 } ], { 'error': None, 'records' : [ { '_id' : '' } ] })
+                
  
     def test_day_ko(self):
         
-        # Get admin
-        self._assert_req('/get/user', [ { '_id' : '1'*24 }, { '_id' : 1 } ], { 'error': "ValidationError: u'111111111111111111111111' does not match '^%s$'" % (self.manager_id), 'records' : [ ] })
+        # Get admin salary
+        self._assert_req('/get/user', [ { '_id' : '1'*24 }, { 'salary' : 1 } ], { 'error': "TSValidationError: Field 'get.user.salary' is restricted for current user", 'records' : [ ] })
         
         # Get its password and salt
         self._assert_req('/get/user', [ { '_id' : self.manager_id }, { 'password' : 1 } ], { 'error': "TSValidationError: Field 'get.user.password' is restricted for current user", 'records' : [ ] })

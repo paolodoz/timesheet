@@ -32,7 +32,10 @@ class CustomerAPIAsEmployee(TestCaseAsEmployee):
         
 class CustomerAPIAsManager(TestCaseAsManager):
     
+    def test_customer_ok(self):
+        self._assert_req('/get/customer', [ {  }, { 'address' : 1 }], { 'error': None, 'records' : [ ] })
+        
+    
     def test_customer_ko(self):
-        # TODO: test /get/ 
         self._assert_req('/remove/customer', [ { 'name' : 'CUSTOMERTEST' } ], {u'error': u"TSValidationError: Access to 'remove.customer' is restricted for current user"})
         self._assert_req('/add/customer', [ { 'name' : 'CUSTOMERTEST', 'address' : 'CUSTOMER STREET', 'phone' : '123456789', 'contact_person' : 'CUSTO1', 'vat_number' : 'CUSTOVAT', 'website' : 'CUSTOWEB', 'city' : 'CITY', 'country' : 'COUNTRY', 'postal_code' : '0101', 'email' : 'CUSTOMAIL@CUSDOMAIN', 'description' : 'CUSTODESC' } ], {u'error': u"TSValidationError: Access to 'add.customer' is restricted for current user", 'ids' : []})

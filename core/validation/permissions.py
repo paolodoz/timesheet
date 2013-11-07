@@ -31,7 +31,7 @@ def get_user_restrictions():
     for collection_name, collection_schema in restrictions_schema.items():
         try:
             group_schema = collection_schema[cherrypy.session['_ts_user']['group']]
-        except KeyError, TypeError:
+        except (KeyError, TypeError):
             pass
         else:
             formatted_schemas[collection_name] = recursive_replace(group_schema, _replace_function_permissions_schema)
@@ -46,7 +46,7 @@ def check_datamine_permissions(action, document):
     
     try:
         restrictions = cherrypy.session['_ts_user']['restrictions'][action]
-    except KeyError, TypeError:
+    except (KeyError, TypeError):
         restrictions = None
         
     if not restrictions:
@@ -61,7 +61,7 @@ def check_remove_permissions(collection, document):
     # Get remove permissions
     try:
         restrictions = cherrypy.session['_ts_user']['restrictions'][collection]['remove']
-    except KeyError, TypeError:
+    except (KeyError, TypeError):
         restrictions = None
         
     if not restrictions:
@@ -76,7 +76,7 @@ def check_upsert_permissions(action, collection, document):
     # Get add/update permissions
     try:
         restrictions = cherrypy.session['_ts_user']['restrictions'][collection][action]
-    except KeyError, TypeError:
+    except (KeyError, TypeError):
         restrictions = None
         
     if not restrictions:
@@ -91,13 +91,13 @@ def check_get_permissions(collection, criteria, projection):
     # Get criteria permissions
     try:
         criteria_restrictions = cherrypy.session['_ts_user']['restrictions'][collection]['get']['criteria']
-    except KeyError, TypeError:
+    except (KeyError, TypeError):
         criteria_restrictions = None
         
     # Get projection permissions
     try:
         projections_restrictions = cherrypy.session['_ts_user']['restrictions'][collection]['get']['projections']
-    except KeyError, TypeError:
+    except (KeyError, TypeError):
         projections_restrictions = None
            
     # If there are no restrictions, check if is set to True
@@ -105,7 +105,7 @@ def check_get_permissions(collection, criteria, projection):
         # If collection.get is not set to True, the access is denied
         try:
             get_permissions = cherrypy.session['_ts_user']['restrictions'][collection]['get']
-        except KeyError, TypeError:
+        except (KeyError, TypeError):
             get_permissions = None        
             
         if get_permissions != True:

@@ -31,17 +31,11 @@ user:
           - _id      
   project manager:
     get:
+      # Project manager can see every user record but salt, password and salary
       projections:
         - salt
         - password
-      criteria:
-        type: object
-        properties:
-          _id:
-            type: string
-            pattern: '%%_id%%'
-        required: 
-          - _id          
+        - salary       
     update:
         type: object
         properties:
