@@ -44,7 +44,7 @@ class Routes:
         GET /me
         """
         
-        return { 'username' : cherrypy.session['_ts_user']['username'], '_id' : str(cherrypy.session['_ts_user']['_id'])}
+        return { 'username' : cherrypy.session['_ts_user']['username'], '_id' : str(cherrypy.session['_ts_user']['_id']), 'group' : cherrypy.session['_ts_user']['group'] }
         
 
     @cherrypy.expose
