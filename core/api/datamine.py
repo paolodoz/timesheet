@@ -53,14 +53,14 @@ def push_expences(documents_list):
             for expence in sanified_document['expences']:
     
                  # Add just generated expence_id to the object             
-                 expence_id = str(ObjectId())
+                 expence_id = ObjectId()
                  
                  expence['_id'] = expence_id
                  
                  # Push new one
                  db.project.update({'_id': project_id }, {'$push' : { 'expences' : expence }})
 
-                 expences_ids.append(expence_id)
+                 expences_ids.append(str(expence_id))
 
     return { 'ids' : expences_ids }
 
@@ -106,14 +106,14 @@ def push_trips(documents_list):
             for expence in sanified_document['trips']:
     
                  # Add just generated trip_id to the object             
-                 trip_id = str(ObjectId())
+                 trip_id = ObjectId()
                  
                  expence['_id'] = trip_id
                  
                  # Push new one
                  db.project.update({'_id': project_id }, {'$push' : { 'trips' : expence }})
 
-                 trips_ids.append(trip_id)
+                 trips_ids.append(str(trip_id))
 
     return { 'ids' : trips_ids }
 
