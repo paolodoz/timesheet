@@ -19,7 +19,9 @@ class ModuleData:
                                   'trips' : [ 
                                                  { '_id' : '7'*24, "user_id" : '1'*24, "description" : "descr1", "status" : 0, "start" : "2010-10-08", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'note' : 'approved', 'accommodation' : {} }     
                                  ] }, 
-                                 { 'customer' : 'CUSTOMER1', 'type' : 'TYPE', 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Manag2'}, 'employees' : [ { '_id' :current_id, 'name' : 'Emp2'} ] }, 
+                                 { 'customer' : 'CUSTOMER1', 'type' : 'TYPE', 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Manag2'}, 'employees' : [ { '_id' :current_id, 'name' : 'Emp2'} ], 'trips' : [ 
+                                                 { '_id' : '8'*24, "user_id" : '1'*24, "description" : "descr1", "status" : 0, "start" : "2010-10-08", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'note' : 'approved', 'accommodation' : {} }     
+                                 ] }, 
                                  { 'customer' : 'CUSTOMER3', 'type' : 'TYPE', 'name' : 'PROJECTNAME3', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Manag3'}, 'employees' : [ { '_id' : self.users_ids[2], 'name' : 'Emp3'} ] } 
                                  ], 
                 { 'error' : None, 'ids' : [ '', '', '' ] }
@@ -71,7 +73,12 @@ class ReportUsersHoursAPIAsEmployee(TestCaseAsEmployee, ModuleData):
         self._add_user_data()
         ModuleData._add_module_data(self, self.employee_id)
         self._log_as_user()
+
+
+    def test_trips_search(self):
         
+        self._assert_req('/get/project', [ { 'trips._id' :'8'*24, 'employees._id' : self.employee_id } , { 'trips.description' : 1 } ], { 'error' : None, u'records': [{u'_id': '', u'trips': [{u'description': u'descr1'}]}]})
+                
         
     def test_trips_ok(self):
 
@@ -124,6 +131,11 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
         ModuleData._add_module_data(self, self.manager_id)
         self._log_as_user()
 
+    def test_trips_search(self):
+        
+        self._assert_req('/get/project', [ { 'trips._id' :'7'*24, 'responsible._id' : self.manager_id } , { 'trips.description' : 1 } ], { 'error' : None, u'records': [{u'_id': '', u'trips': [{u'description': u'descr1'}]}] })
+        
+
     def test_trips_ok(self):
 
         # Insert one trip in a project where user works
@@ -155,7 +167,7 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
                { 'error' : None, 'ids' : [ '' ] }
         )          
          
-    def test_day_ko(self):
+    def test_trips_ko(self):
         self.maxDiff = None
         # Insert one expence in an unknown project 
         self._assert_req('/data/push_trips', [ 
