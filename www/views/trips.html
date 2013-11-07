@@ -1,5 +1,5 @@
 <script type="text/javascript">
-var me, htmlstatus, isupdate = false;
+var me, validator,  htmlstatus, isupdate = false;
 $(document).ready(function() {
   htmlstatus = "";
   for(i=1; i < statuses.length; i++) {
@@ -27,8 +27,47 @@ $(document).ready(function() {
   });
   $("#tripForm").submit(function(event) {
     event.preventDefault();
+    if(!validator.form())
+      return;
     trip.update(isupdate, "tripForm", resetTripForm);    
     loadTripsList("tripsList");
+  });
+  validator = $("#tripForm").validate({
+    rules: {
+      tripproject: {
+        required: true,
+        number: true,
+        min: 0
+      },
+      tripdescription: {
+        required: true,
+        digits: true,
+        min: 1
+      },
+      tripstart: {
+        required: true,
+        dateISO: true
+      },
+      tripend: {
+        required: true,
+        dateISO: true
+      },
+      tripfrom: {
+        required: true
+      },
+      tripcity: {
+        required: true
+      },
+      tripcountry: {
+        required: true
+      },
+    },
+    highlight: function (element) {
+      $(element).closest('.form-group').addClass('has-error');
+    },
+    unhighlight: function (element) {
+      $(element).closest('.form-group').removeClass('has-error');
+    }
   });
   user.me(userdata);
 });
@@ -45,7 +84,7 @@ function loadProjectsList(list) {
 }
 
 function loadTripsList(list) {
-  var filter = [{"trips.user_id":me._id, "trips.status":2},{trips:1}];
+  var filter = [{ 'employees._id' : me._id ,"trips.user_id":me._id, "trips.status":2},{trips:1}];
   trip.load(filter, loadTrips, list);
 }
 
@@ -97,7 +136,7 @@ function loadTrips(data, container) {
     $(this).addClass("active");
     if(this.id == "")
       return;
-    var filter = [{"trips._id":this.id },{trips:1}];
+    var filter = [{"trips._id": this.id, "employees._id" : me._id },{trips:1}];
     trip.load(filter,loadTripDetails, container);
   });
 }
@@ -145,31 +184,31 @@ function filterlist(list, currenttext) {
       <div class="form-group">
         <label for="tripproject" class="col-lg-4 control-label">Project</label>
         <div class="col-lg-7">
-          <select class="form-control" id="tripproject"></select>
+          <select class="form-control" id="tripproject" name="tripproject"></select>
         </div>
       </div>
       <div class="form-group">
         <label for="tripdescription" class="col-lg-4 control-label">Description</label>
         <div class="col-lg-7">
-          <textarea class="form-control" id="tripdescription" rows="3" placeholder="Description"></textarea>
+          <textarea class="form-control" id="tripdescription" name="tripdescription" rows="3" placeholder="Description"></textarea>
         </div>
       </div>
       <div class="form-group">
         <label for="tripstatus" class="col-lg-4 control-label">Status</label>
         <div class="col-lg-7">
-          <select class="form-control" id="tripstatus" disabled="disabled"></select>
+          <select class="form-control" id="tripstatus" name="tripstatus" disabled="disabled"></select>
         </div>
       </div>
       <div class="form-group">
         <label for="tripstart" class="col-lg-4 control-label">Date start</label>
         <div class="col-lg-7">
-          <input type="text" class="form-control datepicker" id="tripstart" placeholder="2013-01-01">
+          <input type="text" class="form-control datepicker" id="tripstart" name="tripstart" placeholder="2013-01-01">
         </div>
       </div>
       <div class="form-group">
         <label for="tripend" class="col-lg-4 control-label">Date end</label>
         <div class="col-lg-7">
-          <input type="text" class="form-control datepicker" id="tripend" placeholder="2020-12-31">
+          <input type="text" class="form-control datepicker" id="tripend" name="tripend" placeholder="2020-12-31">
         </div>
       </div>
       <div class="form-group">
@@ -191,19 +230,19 @@ function filterlist(list, currenttext) {
       <div class="form-group">
         <label for="tripfrom" class="col-lg-4 control-label">From</label>
         <div class="col-lg-7">
-          <input type="text" class="form-control" id="tripfrom">
+          <input type="text" class="form-control" id="tripfrom" name="tripfrom">
         </div>
       </div>
       <div class="form-group">
         <label for="tripcity" class="col-lg-4 control-label">To</label>
         <div class="col-lg-7">
-          <input type="text" class="form-control" id="tripcity">
+          <input type="text" class="form-control" id="tripcity" name="tripcity">
         </div>
       </div>
       <div class="form-group">
         <label for="tripcountry" class="col-lg-4 control-label">Country</label>
         <div class="col-lg-7">
-          <input type="text" class="form-control" id="tripcountry">
+          <input type="text" class="form-control" id="tripcountry" name="tripcountry">
         </div>
       </div>
       <div class="form-group">
