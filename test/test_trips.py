@@ -62,7 +62,7 @@ class ExpencesAPIAsAdmin(TestClassBase, ModuleData):
                )
  
         # Get inserted expences
-        self._assert_req('/get/project', [ { '_id' : self.projects_ids[0] }, { '_id' : 0, 'trips._id' : 1 }] , {u'error': None, u'records': [{u'trips': [{u'_id': ''}, {u'_id': ''}, {u'_id': ''}, {u'_id': ''}]}]} )
+        self._assert_req('/get/project', [ { '_id' : self.projects_ids[0] }, { '_id' : 0, 'trips._id' : 1 }, { }] , {u'error': None, u'records': [{u'trips': [{u'_id': ''}, {u'_id': ''}, {u'_id': ''}, {u'_id': ''}]}]} )
     
     
     
@@ -77,7 +77,7 @@ class ReportUsersHoursAPIAsEmployee(TestCaseAsEmployee, ModuleData):
 
     def test_trips_search(self):
         
-        self._assert_req('/get/project', [ { 'trips._id' :'8'*24, 'employees._id' : self.employee_id } , { 'trips.description' : 1 } ], { 'error' : None, u'records': [{u'_id': '', u'trips': [{u'description': u'descr1'}]}]})
+        self._assert_req('/get/project', [ { 'trips._id' :'8'*24, 'employees._id' : self.employee_id } , { 'trips.description' : 1 }, { } ], { 'error' : None, u'records': [{u'_id': '', u'trips': [{u'description': u'descr1'}]}]})
                 
         
     def test_trips_ok(self):
@@ -133,7 +133,7 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
 
     def test_trips_search(self):
         
-        self._assert_req('/get/project', [ { 'trips._id' :'7'*24, 'responsible._id' : self.manager_id } , { 'trips.description' : 1 } ], { 'error' : None, u'records': [{u'_id': '', u'trips': [{u'description': u'descr1'}]}] })
+        self._assert_req('/get/project', [ { 'trips._id' :'7'*24, 'responsible._id' : self.manager_id } , { 'trips.description' : 1 }, { } ], { 'error' : None, u'records': [{u'_id': '', u'trips': [{u'description': u'descr1'}]}] })
         
 
     def test_trips_ok(self):

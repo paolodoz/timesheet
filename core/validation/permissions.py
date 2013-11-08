@@ -84,7 +84,7 @@ def check_upsert_permissions(action, collection, document):
     elif restrictions != True:       
         jsonschema.validate(document, restrictions, format_checker=jsonschema.FormatChecker())
 
-def check_get_permissions(collection, criteria, projection):
+def check_get_permissions(collection, criteria, projection, sort):
 
     if cherrypy.session['_ts_user']['group'] == 'administrator': return
     
@@ -99,7 +99,7 @@ def check_get_permissions(collection, criteria, projection):
         projections_restrictions = cherrypy.session['_ts_user']['restrictions'][collection]['get']['projections']
     except (KeyError, TypeError):
         projections_restrictions = None
-           
+
     # If there are no restrictions, check if is set to True
     if not criteria_restrictions and not projections_restrictions:
         # If collection.get is not set to True, the access is denied
@@ -115,11 +115,16 @@ def check_get_permissions(collection, criteria, projection):
         else:
             return
     
-    # Validate projections
+    # Validate projections and sort
     if projections_restrictions:
-        restricted_projs = next((p for p in projection if p in projections_restrictions), None)
-        if restricted_projs:
-            raise TSValidationError("Field 'get.%s.%s' is restricted for current user" % (collection, restricted_projs))
+        restricted_field = next((p for p in projection if p in projections_restrictions), None)
+        
+        if not restricted_field:
+            restricted_field = next((p for p in sort if p in projections_restrictions), None)
+            
+        if restricted_field:
+            raise TSValidationError("Field 'get.%s.%s' is restricted for current user" % (collection, restricted_field))
+
     
     # Validate criteria
     if criteria_restrictions:

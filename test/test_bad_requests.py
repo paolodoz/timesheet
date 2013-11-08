@@ -10,9 +10,10 @@ class BadRequest(TestClassBase):
         self._assert_req('/add/day', [ {u'date': u'2000-10-17', u'UZERZ': [{u'hours': [], u'user_id': u'0'}]} ], { 'error': "ValidationError: Additional properties are not allowed (u'UZERZ' was unexpected)", 'ids' : [] })
         
     def test_bad_get(self):
-        self._assert_req('/get/user', [ { } ], {u'error': u'ValidationError: [{}] is too short', 'records' : [] })
-        self._assert_req('/get/user', [ { }, { } ], {u'error': u'ValidationError: {} does not have enough properties', 'records' : [] })
-        self._assert_req('/get/user', [ { 'asd': 'ads' }, { } ], {u'error': u'ValidationError: {} does not have enough properties', 'records' : [] })
+        
+        self._assert_req('/get/user', [ { }, { } ], {u'error': u'ValidationError: [{}, {}] is too short', 'records' : [] })
+        self._assert_req('/get/user', [ { }, { }, { }], {u'error': u'ValidationError: {} does not have enough properties', 'records' : [] })
+        self._assert_req('/get/user', [ { 'asd': 'ads' }, { }, { 'asd' : 1 } ], {u'error': u'ValidationError: {} does not have enough properties', 'records' : [] })
         
     def test_bad_update(self):
         self._assert_req('/update/user',  [{ '_id' : '1'*24, 'email' : 'CHANGEDEMAIL' } ], { 'error': "ValidationError: [{u'_id': u'111111111111111111111111', u'email': u'CHANGEDEMAIL'}] is not of type 'object'" })

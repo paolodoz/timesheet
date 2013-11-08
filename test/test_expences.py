@@ -61,7 +61,7 @@ class ExpencesAPIAsAdmin(TestClassBase, ModuleData):
                 )
 
          # Get inserted expences
-         self._assert_req('/get/project', [ { '_id' : self.projects_ids[0] }, { '_id' : 0, 'expences._id' : 1 }] , {u'error': None, u'records': [{u'expences': [{u'_id': ''}, {u'_id': ''}, {u'_id': ''}, {u'_id': ''}]}]} )
+         self._assert_req('/get/project', [ { '_id' : self.projects_ids[0] }, { '_id' : 0, 'expences._id' : 1 }, { }] , {u'error': None, u'records': [{u'expences': [{u'_id': ''}, {u'_id': ''}, {u'_id': ''}, {u'_id': ''}]}]} )
          
 
     

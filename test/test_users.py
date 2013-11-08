@@ -12,7 +12,7 @@ class UserAPIAsAdmin(TestClassBase):
         # Delete USERTEST1
         self._assert_req('/remove/user', [ { 'name' : 'USERTEST1'  }, { 'name' : 'USERTEST2'  } ], { 'error' : None })
         # Check if USERTEST1 is deleted
-        self._assert_req('/get/user', [ { 'name' : 'USERTEST1' }, { '_id' : 1 } ], { 'error': None, 'records' : [ ] })
+        self._assert_req('/get/user', [ { 'name' : 'USERTEST1' }, { '_id' : 1 }, { } ], { 'error': None, 'records' : [ ] })
   
         # Delete the remaining user
         self.execOnTearDown.append(('/remove/user', [ { 'name' : 'USERTEST2'  } ], { 'error' : None }))
@@ -28,7 +28,7 @@ class UserAPIAsAdmin(TestClassBase):
         # Add a double customer (UNIQ test)
         self._assert_req('/add/user', [ { 'name' : 'UNIQTEST', 'surname' : 'SURNAME2', 'username' : 'USERNAME', 'email' : 'EMAIL2@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : "DuplicateKeyError internal exception", 'ids' : [ ] })
         # Get the inserted customer (is only one because UNIQ)
-        self._assert_req('/get/user', [ { 'name' : 'UNIQTEST' }, { 'surname' : 1, '_id' : 0 } ], { 'error': None, 'records' : [ { 'surname' : 'SURNAME'  } ] })
+        self._assert_req('/get/user', [ { 'name' : 'UNIQTEST' }, { 'surname' : 1, '_id' : 0 }, { } ], { 'error': None, 'records' : [ { 'surname' : 'SURNAME'  } ] })
           
         # Delete the inserted day
         self.execOnTearDown.append(('/remove/user', [ { 'name' : 'UNIQTEST'  } ], { 'error' : None }))
@@ -63,22 +63,22 @@ class DayAPIAsEmployee(TestCaseAsEmployee):
     def test_day_ok(self):
          
         # Get itself
-        self._assert_req('/get/user', [ { '_id' : self.employee_id }, { '_id' : 1 } ], { 'error': None, 'records' : [ { '_id' : '' } ] })
+        self._assert_req('/get/user', [ { '_id' : self.employee_id }, { '_id' : 1 }, { } ], { 'error': None, 'records' : [ { '_id' : '' } ] })
   
         # Update itself
         self._assert_req('/update/user', { '_id' : self.employee_id, 'email' : 'CHANGEDEMAIL@DOMAIN.COM' }, { 'error': None })
-        self._assert_req('/get/user', [ { '_id' : self.employee_id }, { 'email' : 1, '_id' : 0 } ], { 'error': None, 'records' : [ { 'email' : 'CHANGEDEMAIL@DOMAIN.COM' } ] })
+        self._assert_req('/get/user', [ { '_id' : self.employee_id }, { 'email' : 1, '_id' : 0 }, { } ], { 'error': None, 'records' : [ { 'email' : 'CHANGEDEMAIL@DOMAIN.COM' } ] })
         self._assert_req('/update/user', { '_id' : self.employee_id, 'email' : 'EMAIL@DOMAIN.COM' }, { 'error': None })
          
   
     def test_day_ko(self):
   
         # Get admin
-        self._assert_req('/get/user', [ { '_id' : '1'*24 }, { '_id' : 1 } ], { 'error': "ValidationError: u'111111111111111111111111' does not match '^%s$'" % (self.employee_id), 'records' : [ ] })
+        self._assert_req('/get/user', [ { '_id' : '1'*24 }, { '_id' : 1 }, { } ], { 'error': "ValidationError: u'111111111111111111111111' does not match '^%s$'" % (self.employee_id), 'records' : [ ] })
   
         # Get its password and salt
-        self._assert_req('/get/user', [ { '_id' : self.employee_id }, { 'password' : 1 } ], { 'error': "TSValidationError: Field 'get.user.password' is restricted for current user", 'records' : [ ] })
-        self._assert_req('/get/user', [ { '_id' : self.employee_id }, { 'salt' : 1 } ], { 'error': "TSValidationError: Field 'get.user.salt' is restricted for current user", 'records' : [ ] })
+        self._assert_req('/get/user', [ { '_id' : self.employee_id }, { 'password' : 1 }, { } ], { 'error': "TSValidationError: Field 'get.user.password' is restricted for current user", 'records' : [ ] })
+        self._assert_req('/get/user', [ { '_id' : self.employee_id }, { 'salt' : 1 }, { } ], { 'error': "TSValidationError: Field 'get.user.salt' is restricted for current user", 'records' : [ ] })
   
         # Wrong email type
         self._assert_req('/update/user', { '_id' : self.employee_id, 'email' : 'CHANGEDEMAIL#DOMAIN.COM' }, {u'error': u"ValidationError: u'CHANGEDEMAIL#DOMAIN.COM' is not a 'email'"})
@@ -92,25 +92,25 @@ class DayAPIAsManager(TestCaseAsManager):
     def test_day_ok(self):
         
         # Get itself
-        self._assert_req('/get/user', [ { '_id' : self.manager_id }, { '_id' : 1 } ], { 'error': None, 'records' : [ { '_id' : '' } ] })
+        self._assert_req('/get/user', [ { '_id' : self.manager_id }, { '_id' : 1 }, { } ], { 'error': None, 'records' : [ { '_id' : '' } ] })
  
         # Update itself
         self._assert_req('/update/user', { '_id' : self.manager_id, 'email' : 'NEWEMAIL@NEWDOMAIN.COM' }, { 'error': None })
-        self._assert_req('/get/user', [ { '_id' : self.manager_id }, { 'email' : 1, '_id' : 0 } ], { 'error': None, 'records' : [ { 'email' : 'NEWEMAIL@NEWDOMAIN.COM' } ] })
+        self._assert_req('/get/user', [ { '_id' : self.manager_id }, { 'email' : 1, '_id' : 0 }, { } ], { 'error': None, 'records' : [ { 'email' : 'NEWEMAIL@NEWDOMAIN.COM' } ] })
         self._assert_req('/update/user', { '_id' : self.manager_id, 'email' : 'EMAIL@DOMAIN.COM' }, { 'error': None })
 
         # Get admin
-        self._assert_req('/get/user', [ { '_id' : '1'*24 }, { '_id' : 1 } ], { 'error': None, 'records' : [ { '_id' : '' } ] })
+        self._assert_req('/get/user', [ { '_id' : '1'*24 }, { '_id' : 1 }, { } ], { 'error': None, 'records' : [ { '_id' : '' } ] })
                 
  
     def test_day_ko(self):
         
         # Get admin salary
-        self._assert_req('/get/user', [ { '_id' : '1'*24 }, { 'salary' : 1 } ], { 'error': "TSValidationError: Field 'get.user.salary' is restricted for current user", 'records' : [ ] })
+        self._assert_req('/get/user', [ { '_id' : '1'*24 }, { 'salary' : 1 }, { } ], { 'error': "TSValidationError: Field 'get.user.salary' is restricted for current user", 'records' : [ ] })
         
         # Get its password and salt
-        self._assert_req('/get/user', [ { '_id' : self.manager_id }, { 'password' : 1 } ], { 'error': "TSValidationError: Field 'get.user.password' is restricted for current user", 'records' : [ ] })
-        self._assert_req('/get/user', [ { '_id' : self.manager_id }, { 'salt' : 1 } ], { 'error': "TSValidationError: Field 'get.user.salt' is restricted for current user", 'records' : [ ] })
+        self._assert_req('/get/user', [ { '_id' : self.manager_id }, { 'password' : 1 }, { } ], { 'error': "TSValidationError: Field 'get.user.password' is restricted for current user", 'records' : [ ] })
+        self._assert_req('/get/user', [ { '_id' : self.manager_id }, { 'salt' : 1 }, { } ], { 'error': "TSValidationError: Field 'get.user.salt' is restricted for current user", 'records' : [ ] })
  
         # Delete himself
         self._assert_req('/remove/user', [ {  '_id' : self.manager_id } ], { 'error': "TSValidationError: Access to 'remove.user' is restricted for current user" })

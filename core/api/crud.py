@@ -14,23 +14,23 @@ db = connection[conf_mongodb['db']]
 
 db_log_severity = logging.INFO
 
-def get(collection, criteria_projection):
+def get(collection, criteria_projection_order):
     """Get selected records from collection, and return it as json
     Called by GET /<collection>/"""
       
     # Check request format
-    validate_request('get', criteria_projection)
+    validate_request('get', criteria_projection_order)
       
     # Check permissions  
-    check_get_permissions(collection, criteria_projection[0], criteria_projection[1])
+    check_get_permissions(collection, criteria_projection_order[0], criteria_projection_order[1], criteria_projection_order[2])
     
     # Sanify criteria (to match with sanified documents)
-    sanified_criteria = sanitize_objectify_json(criteria_projection[0])
+    sanified_criteria = sanitize_objectify_json(criteria_projection_order[0])
     
-    cherrypy.log('%s' % (criteria_projection), context = 'TS.GET.%s.criteria_projection' % collection, severity = db_log_severity)
+    cherrypy.log('%s' % (criteria_projection_order), context = 'TS.GET.%s.criteria_projection_order' % collection, severity = db_log_severity)
     
     # Request
-    return stringify_objectid_cursor(db[collection].find(sanified_criteria, criteria_projection[1]))
+    return stringify_objectid_cursor(db[collection].find( { '$query' : sanified_criteria, '$orderby' : criteria_projection_order[2] }, criteria_projection_order[1]))
 
 
 def remove(collection, criterias = []):
