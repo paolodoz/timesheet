@@ -73,7 +73,7 @@ $(document).ready(function() {
 });
 
 function loadCustomersList(list) {
-  var filter = [{},{name:1}];
+  var filter = [{},{name:1},{name:1}];
   customer.load(filter, loadCustomers, list);
 }
 
@@ -107,7 +107,7 @@ function loadCustomers(data, container) {
 }
 
 function createFilterForm(container) {
-  var filter = [{},{}];
+  var filter = [{},{},{name:1}];
   $("#" + container + " input").each(function (){
     var property = $(this).attr("id").substr(4);
     if (property == "_id")

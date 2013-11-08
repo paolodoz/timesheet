@@ -52,12 +52,12 @@ $(document).ready(function() {
 });
 
 function loadProjectsList(list) {
-  var filter = [{},{name:1}];
+  var filter = [{},{name:1},{name:1}];
   project.load(filter, loadProjects, list);
 }
 
 function loadCustomersList(list) {
-  var filter = [{},{name:1}];
+  var filter = [{},{name:1},{name:1}];
   customer.load(filter, loadCustomers, list);
 }
 

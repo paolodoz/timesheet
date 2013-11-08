@@ -81,22 +81,22 @@ function userdata(data) {
 function loadProjectsList(list) {
   var filter;
   if(me.group == "project manager")
-    filter = [{"responsible._id": me._id},{name:1}];
+    filter = [{"responsible._id": me._id},{name:1},{name:1}];
   else
-    filter = [{},{name:1}];
+    filter = [{},{name:1},{name:1}];
   project.load(filter, loadProjects, list);
 }
 function loadCustomersList(list) {
-  var filter = [{},{name:1}];
+  var filter = [{},{name:1},{name:1}];
   customer.load(filter, loadCustomers, list);
 }
 function loadUsersList(list) {
-  var filter = [{},{name:1,surname:1}];
+  var filter = [{},{name:1,surname:1},{surname:1}];
   user.load(filter, loadUsers, list);
 }
 
 function createFilterForm(container) {
-  var filter = [{},{}];
+  var filter = [{},{},{name:1}];
   $("#" + container + " input, #" + container + " select, #" + container + " textarea").each(function (){
     var property = $(this).attr("id").substr(7);
     if (property == "_id")

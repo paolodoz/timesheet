@@ -73,17 +73,17 @@ function uploadFailed(evt) {
 }
 
 function loadOffersList(list) {
-  var filter = [{},{name:1}];
+  var filter = [{},{name:1},{name:1}];
   offer.load(filter, loadOffers, list);
 }
 
 function loadProjectsList(list) {
-  var filter = [{},{name:1}];
+  var filter = [{},{name:1},{name:1}];
   project.load(filter, loadProjects, list);
 }
 
 function createFilterForm(container) {
-  var filter = [{},{}];
+  var filter = [{},{},{name:1}];
   $("#" + container + " input, #" + container + " select, #" + container + " textarea").each(function (){
     var property = $(this).attr("id").substr(5);
     if (property == "_id" || property == "file")

@@ -96,7 +96,7 @@ function resetFormEditHours() {
 
 function userdata(data){
   me = data;
-  var filter = [ { 'employees._id' : me._id }, { name: 1, tasks : 1, bkgcolor: 1, txtcolor:1, description:1 } ];
+  var filter = [ { 'employees._id' : me._id }, { name: 1, tasks : 1, bkgcolor: 1, txtcolor:1, description:1 }, { name: 1 } ];
   project.load(filter,loadprojects,"");
 }
 

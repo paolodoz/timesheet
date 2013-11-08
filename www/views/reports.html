@@ -52,12 +52,12 @@ $(document).ready(function() {
 });
 
 function loadProjectsList(list) {
-  var filter = [{},{name:1}];
+  var filter = [{},{name:1},{name:1}];
   project.load(filter, loadProjects, list);
 }
 
 function loadUsersList(list) {
-  var filter = [{},{name:1,surname:1}];
+  var filter = [{},{name:1,surname:1},{surname:1}];
   user.load(filter, loadUsers, list);
 }
 

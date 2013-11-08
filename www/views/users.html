@@ -56,12 +56,12 @@ $(document).ready(function() {
 });
 
 function loadUsersList(list) {
-  var filter = [{},{name:1,surname:1}];
+  var filter = [{},{name:1,surname:1},{surname:1}];
   user.load(filter, loadUsers, list);
 }
 
 function createFilterForm(container) {
-  var filter = [{},{}];
+  var filter = [{},{},{name:1}];
   $("#" + container + " input, #" + container + " select, #" + container + " textarea").each(function (){
     var property = $(this).attr("id").substr(7);
     if (property == "_id")
@@ -90,7 +90,7 @@ function loadUsers(data, container) {
   }
   $("#" + container).html(htmllist);
   $("#" + container + " .list-group-item").click(function() {
-    var filter = [{},{name:1, surname:1, salary:1, group:1}];
+    var filter = [{},{name:1, surname:1, salary:1, group:1},{surname:1}];
     filter[0]._id = this.id;
     user.load(filter,loadUserDetails, container);
   });

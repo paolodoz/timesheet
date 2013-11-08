@@ -75,12 +75,12 @@ function userdata(data){
 }
 
 function loadProjectsList(list) {
-  var filter = [{ 'employees._id' : me._id },{name:1}];
+  var filter = [{ 'employees._id' : me._id }, { name: 1 }, { name: 1 }];
   project.load(filter, loadProjects, list);
 }
 
 function loadTripsList(list) {
-  var filter = [{ 'employees._id' : me._id ,"trips.user_id":me._id, "trips.status":2},{trips:1}];
+  var filter = [{ 'employees._id' : me._id ,"trips.user_id":me._id, "trips.status":2}, {trips:1},  { name: 1 }];
   trip.load(filter, loadTrips, list);
 }
 

@@ -55,7 +55,7 @@ function userdata(data) {
 }
 
 function loadProjectsList(list) {
-  var filter = [{},{name:1}];
+  var filter = [{},{name:1},{name:1}];
   filter[0]["responsible._id"] = me._id;
   project.load(filter, loadProjects, list);
 }
@@ -81,7 +81,7 @@ function loadProjects(data, container) {
     if(this.id == "")
       return;
     isupdate = true;
-    var filter = [{},{}];
+    var filter = [{},{},{name:1}];
     filter[0]._id = this.id;
     filter[0]["responsible._id"] = me._id;
     filter[1].economics = 1;
