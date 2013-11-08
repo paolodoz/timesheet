@@ -17,7 +17,10 @@ session:
   tools.sessions.storage_type: file
   tools.sessions.storage_path: /tmp/.ts_sessions
   tools.sessions.timeout: 60
-
+  tools.secureheaders.on: true
+  tools.sessions.secure: true
+  tools.sessions.httponly: true
+  
 mongodb:
   hostname: localhost
   port: 27017
