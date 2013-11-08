@@ -85,7 +85,7 @@ function loadTripsList(list) {
 }
 
 function createFilterForm(form) {
-  var filter = [{},{}];
+  var filter = [{},{},{ name: 1 }];
   
   $("#" + form + " input, #" + form + " select, #" + form + " textarea, #" + form + " checkbox" ).each(function (){
     var property = $(this).attr("id").substr(4);
@@ -132,7 +132,7 @@ function loadTrips(data, container) {
     $(this).addClass("active");
     if(this.id == "")
       return;
-    var filter = [{"trips._id": this.id, "employees._id" : me._id },{trips:1}];
+    var filter = [{"trips._id": this.id, "employees._id" : me._id },{trips:1},{name:1}];
     trip.load(filter,loadTripDetails, container);
   });
 }
