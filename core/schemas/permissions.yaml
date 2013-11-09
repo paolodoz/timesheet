@@ -64,6 +64,27 @@ search_trips:
       responsible_id:
         type: string
         pattern: '%%_id%%'          
+
+    
+search_expences:
+  employee:
+    type: object
+    required: [ employee_id, user_id ]
+    properties:
+      employee_id:
+        type: string
+        pattern: '%%_id%%'        
+      user_id:
+        type: string
+        pattern: '%%_id%%'      
+  project manager:
+    required: [ responsible_id ]
+    type: object
+    properties:
+      responsible_id:
+        type: string
+        pattern: '%%_id%%' 
+
     
 search_days:
     employee:

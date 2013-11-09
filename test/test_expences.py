@@ -61,11 +61,12 @@ class ExpencesAPIAsAdmin(TestClassBase, ModuleData):
                 )
 
          # Get inserted expences
-         self._assert_req('/get/project', [ { '_id' : self.projects_ids[0] }, { '_id' : 0, 'expences._id' : 1 }, { }] , {u'error': None, u'records': [{u'expences': [{u'_id': ''}, {u'_id': ''}, {u'_id': ''}, {u'_id': ''}]}]} )
-         
-
+         self._assert_req('/data/search_expences', { "user_id" : self.users_ids[1] }, { 'error' : None, 'records' : [ 
+                                                 { '_id' : '', "user_id" : self.users_ids[1], "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                               ]})
+  
     
-class ReportUsersHoursAPIAsEmployee(TestCaseAsEmployee, ModuleData):
+class ExpencesAPIAsEmployee(TestCaseAsEmployee, ModuleData):
     
     def setUp(self):        
         TestClassBase.setUp(self)
@@ -84,6 +85,8 @@ class ReportUsersHoursAPIAsEmployee(TestCaseAsEmployee, ModuleData):
                                 ] } ], 
                { 'error' : None, 'ids' : [ '' ] }
        )
+
+        self._assert_req('/data/search_expences', { "user_id" : self.employee_id,  "employee_id" : self.employee_id }, {u'error': None, 'records' : [{ '_id' : '', "user_id" : self.employee_id, "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] }]})
         
         
     def test_expences_ko(self):
@@ -115,9 +118,16 @@ class ReportUsersHoursAPIAsEmployee(TestCaseAsEmployee, ModuleData):
                                  ] } ], 
                 {u'error': u"ValidationError: {u'date': u'2005-10-08', u'user_id': u'%s', u'objects': [{}], u'trip_id': u'222222222222222222222222', u'file': {}} is not valid under any of the given schemas" % (self.users_ids[1])}
         )
-        
 
-class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
+        # Search without specify ids
+        self._assert_req('/data/search_expences', {  }, {u'error': u"ValidationError: 'employee_id' is a required property"})
+         
+        # Search with wrong ids
+        self._assert_req('/data/search_expences', { "user_id" : self.users_ids[1],  "employee_id" : self.users_ids[1] }, {u'error': u"ValidationError: u'%s' does not match '^%s$'" % (self.users_ids[1], self.employee_id)})
+ 
+         
+
+class ExpencesAPIAsManager(TestCaseAsManager, ModuleData):
      
     def setUp(self):        
         TestClassBase.setUp(self)
@@ -151,10 +161,14 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
         self._assert_req('/data/push_expences', [ 
                                  { '_id' : self.projects_ids[0], 
                                   "expences" : [ 
-                                                 { "user_id" : self.users_ids[1], "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                                 { "user_id" : self.users_ids[1], "trip_id" : '2'*24, "date" : "2000-10-08", "file" : {}, 'objects' : [{}] },   
                                  ] } ], 
                { 'error' : None, 'ids' : [ '' ] }
         )          
+
+        # Search only last trip specifying time stamp
+        self._assert_req('/data/search_expences', {  "responsible_id" : self.manager_id, 'start' : '1999-01-01', 'end' : '2001-10-08' }, {u'error': None, 'records' : [{ '_id' : '', "user_id" : self.users_ids[1], "trip_id" : '2'*24, "date" : "2000-10-08", "file" : {}, 'objects' : [{}] }]})
+ 
          
     def test_day_ko(self):
         self.maxDiff = None
@@ -183,4 +197,13 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
 #                                                   { "user_id" : self.users_ids[1], "description" : "descr2", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'note' : 'too expensive', 'accommodation' : {} }     
 #                                  ] } ], 
 #                 {u'error': u"ValidationError: {u'status': 2, u'city': u'Austin', u'user_id': u'%s', u'description': u'descr2', u'country': u'USA', u'note': u'too expensive', u'start': u'2009-10-08', u'end': u'2009-10-10', u'accommodation': {}} is not valid under any of the given schemas" % (self.users_ids[1])}
-#         )          
+#         )     
+
+
+        # Search without specify ids
+        self._assert_req('/data/search_expences', {  }, {u'error': u"ValidationError: 'responsible_id' is a required property"})
+          
+        # Search with wrong ids
+        self._assert_req('/data/search_expences', {  "responsible_id" : self.users_ids[1] }, {u'error': u"ValidationError: u'%s' does not match '^%s$'" % (self.users_ids[1], self.manager_id)})
+  
+         

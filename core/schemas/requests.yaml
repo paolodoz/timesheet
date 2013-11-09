@@ -53,6 +53,25 @@ search_trips:
         type: string
         pattern: '[\dabcdef]{24}'    
 
+search_expences:
+  type: object
+  additionalProperties: False
+  properties: 
+    start: 
+      type: string
+      format: date
+    end:
+      type: string
+      format: date
+    user_id:
+      type: string
+    employee_id:
+        type: string
+        pattern: '[\dabcdef]{24}'
+    responsible_id:
+        type: string
+        pattern: '[\dabcdef]{24}' 
+
 push_expences:
   type: array
   minItems: 1

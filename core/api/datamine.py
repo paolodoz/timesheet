@@ -171,7 +171,7 @@ def push_days(documents_list):
 def search_trips(criteria):
     
     """
-    Get day by collection
+    Get trips
     
     POST /data/search_trips/    
     
@@ -218,6 +218,59 @@ def search_trips(criteria):
 
 
     cherrypy.log('%s' % (aggregation_pipe), context = 'TS.SEARCH_TRIPS.aggregation_pipe', severity = logging.INFO)
+    
+    aggregation_result = db.project.aggregate(aggregation_pipe)
+
+    return { 'records' : stringify_objectid_cursor([ record['_id'] for record in aggregation_result['result'] ]) }
+
+
+def search_expences(criteria):
+    
+    """
+    Get expences
+    
+    POST /data/search_expences/    
+    
+    Expects { 'start': data, 'end': data, 'user_id': string, employee_id: string, 'responsible_id' : string }
+    Returns { 'error' : string, 'records' : [ { }, { }, .. ]  } 
+    """
+
+    validate_request('search_expences', criteria)
+    check_datamine_permissions('search_expences', criteria)
+    
+    sanified_criteria = sanitize_objectify_json(criteria)
+
+    # Prepare the aggregation pipe
+    
+    projects_ids_matches = {}
+    employee_id = sanified_criteria.get('employee_id')
+    if employee_id:
+        projects_ids_matches['employees._id'] = ObjectId(employee_id)
+    responsible_id = sanified_criteria.get('responsible_id')
+    if responsible_id:
+        projects_ids_matches['responsible._id'] = ObjectId(responsible_id)
+
+    trips_matches = {}
+    user_id = sanified_criteria.get('user_id')
+    if user_id: 
+        trips_matches['expences.user_id'] = user_id  
+    date_start = sanified_criteria.get('start')
+    if date_start:
+        trips_matches['expences.date'] = { '$gte' : date_start }
+    date_end = sanified_criteria.get('end')
+    if date_end:
+        trips_matches['expences.date'] = { '$lte' : date_end }
+
+
+    aggregation_pipe = [  
+                        { '$match': projects_ids_matches },
+                        { '$unwind' : '$expences' }, 
+                        { '$match' : trips_matches },
+                        { '$group' : { '_id' : '$expences' } }
+                        ]
+
+
+    cherrypy.log('%s' % (aggregation_pipe), context = 'TS.SEARCH_EXPENCES.aggregation_pipe', severity = logging.INFO)
     
     aggregation_result = db.project.aggregate(aggregation_pipe)
 
