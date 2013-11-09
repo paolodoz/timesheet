@@ -168,6 +168,60 @@ def push_days(documents_list):
 
     return { }
 
+def search_trips(criteria):
+    
+    """
+    Get day by collection
+    
+    POST /data/search_trips/    
+    
+    Expects { 'start': data, 'end': data, 'status': integer, 'user_id': string, employee_id: string, 'responsible_id' : string }
+    Returns { 'error' : string, 'records' : [ { }, { }, .. ]  } 
+    """
+
+    validate_request('search_trips', criteria)
+    check_datamine_permissions('search_trips', criteria)
+    
+    sanified_criteria = sanitize_objectify_json(criteria)
+
+    # Prepare the aggregation pipe
+    
+    projects_ids_matches = {}
+    employee_id = sanified_criteria.get('employee_id')
+    if employee_id:
+        projects_ids_matches['employees._id'] = ObjectId(employee_id)
+    responsible_id = sanified_criteria.get('responsible_id')
+    if responsible_id:
+        projects_ids_matches['responsible._id'] = ObjectId(responsible_id)
+
+    trips_matches = {}
+    user_id = sanified_criteria.get('user_id')
+    if user_id: 
+        trips_matches['trips.user_id'] = user_id  
+    status = sanified_criteria.get('status')
+    if status:
+        trips_matches['trips.status'] = status    
+    date_start = sanified_criteria.get('start')
+    if date_start:
+        trips_matches['trips.start'] = { '$gte' : date_start }
+    date_end = sanified_criteria.get('end')
+    if date_end:
+        trips_matches['trips.end'] = { '$lte' : date_end }
+
+
+    aggregation_pipe = [  
+                        { '$match': projects_ids_matches },
+                        { '$unwind' : '$trips' }, 
+                        { '$match' : trips_matches },
+                        { '$group' : { '_id' : '$trips' } }
+                        ]
+
+
+    cherrypy.log('%s' % (aggregation_pipe), context = 'TS.SEARCH_TRIPS.aggregation_pipe', severity = logging.INFO)
+    
+    aggregation_result = db.project.aggregate(aggregation_pipe)
+
+    return { 'records' : stringify_objectid_cursor([ record['_id'] for record in aggregation_result['result'] ]) }
 
 def search_days(criteria):
     
@@ -193,6 +247,8 @@ def search_days(criteria):
     # Prepare the projection to return only date and users.date where user id is correct
     projection = { 'date' : 1, 'users' : { '$elemMatch' : { 'user_id' : user_id }}}
 
+    cherrypy.log('%s\n%s' % (prepared_criteria, projection), context = 'TS.SEARCH_DAYS.criteria_projection', severity = logging.INFO)
+    
     return { 'records' : stringify_objectid_cursor(db.day.find(prepared_criteria, projection)) }
 
 

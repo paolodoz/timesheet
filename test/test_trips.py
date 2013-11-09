@@ -32,7 +32,7 @@ class ModuleData:
  
 
   
-class ExpencesAPIAsAdmin(TestClassBase, ModuleData):
+class TripsAPIAsAdmin(TestClassBase, ModuleData):
       
   
     def setUp(self):        
@@ -51,7 +51,7 @@ class ExpencesAPIAsAdmin(TestClassBase, ModuleData):
                { 'error' : None, 'ids' : [ '' ] }
                )
  
-        # Insert more expences in the same project
+        # Insert more trips in the same project
         self._assert_req('/data/push_trips', [ 
                                 { '_id' : self.projects_ids[0], 
                                  "trips" : [ 
@@ -61,12 +61,15 @@ class ExpencesAPIAsAdmin(TestClassBase, ModuleData):
                { 'error' : None, 'ids' : [ '', '' ] }
                )
  
+
         # Get inserted expences
-        self._assert_req('/get/project', [ { '_id' : self.projects_ids[0] }, { '_id' : 0, 'trips._id' : 1 }, { }] , {u'error': None, u'records': [{u'trips': [{u'_id': ''}, {u'_id': ''}, {u'_id': ''}, {u'_id': ''}]}]} )
+        self._assert_req('/data/search_trips', { "user_id" : self.users_ids[0] }, { 'error' : None, 'records' : [ 
+                                                 { '_id' : '', "user_id" : self.users_ids[0], "description" : "descr3", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", u'city' : "Austin", u'note' : u'too expensive', u'accommodation' : {} },     
+                                                 { '_id' : '', "user_id" : self.users_ids[0], "description" : "descr2", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", u'city' : "Austin", u'note' : u'too expensive', u'accommodation' : {} }     
+                                               ]})
     
     
-    
-class ReportUsersHoursAPIAsEmployee(TestCaseAsEmployee, ModuleData):
+class TripAPIAsEmployee(TestCaseAsEmployee, ModuleData):
     
     def setUp(self):        
         TestClassBase.setUp(self)
@@ -91,9 +94,12 @@ class ReportUsersHoursAPIAsEmployee(TestCaseAsEmployee, ModuleData):
                { 'error' : None, 'ids' : [ '' ] }
        )
         
-        
+        self._assert_req('/data/search_trips', { "user_id" : self.employee_id,  "employee_id" : self.employee_id }, {u'error': None, 'records' : [{ '_id' : '',  "user_id" : self.employee_id, "description" : "descr2", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'note' : 'too expensive', 'accommodation' : {} }]})
+
+         
+         
     def test_trips_ko(self):
-        
+         
         # Insert one expence in unknown project
         self._assert_req('/data/push_trips', [ 
                                 { '_id' : '7'*24, 
@@ -102,7 +108,7 @@ class ReportUsersHoursAPIAsEmployee(TestCaseAsEmployee, ModuleData):
                                 ] } ], 
                { 'error' : "TSValidationError: Access to project '%s' is restricted for current user" % ('7'*24) }
                )          
-        
+         
         # Insert one expence in project where user does not work 
         self._assert_req('/data/push_trips', [ 
                                 { '_id' : self.projects_ids[2], 
@@ -111,7 +117,7 @@ class ReportUsersHoursAPIAsEmployee(TestCaseAsEmployee, ModuleData):
                                 ] } ], 
                { 'error' : "TSValidationError: Access to project '%s' is restricted for current user" % (self.projects_ids[2]) }
                )       
-
+ 
         # Insert a trip in correct project with wrong user_id
         self.maxDiff = None
         self._assert_req('/data/push_trips', [ 
@@ -121,23 +127,29 @@ class ReportUsersHoursAPIAsEmployee(TestCaseAsEmployee, ModuleData):
                                  ] } ], 
                 {u'error': u"ValidationError: {u'status': 2, u'city': u'Austin', u'user_id': u'%s', u'description': u'descr2', u'country': u'USA', u'note': u'too expensive', u'start': u'2009-10-08', u'end': u'2009-10-10', u'accommodation': {}} is not valid under any of the given schemas" % (self.users_ids[1])}
         )
-        
-
-class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
-     
+         
+        # Search without specify ids
+        self._assert_req('/data/search_trips', {  }, {u'error': u"ValidationError: 'employee_id' is a required property"})
+         
+        # Search with wrong ids
+        self._assert_req('/data/search_trips', { "user_id" : self.users_ids[1],  "employee_id" : self.users_ids[1] }, {u'error': u"ValidationError: u'%s' does not match '^%s$'" % (self.users_ids[1], self.employee_id)})
+ 
+ 
+class TripAPIAsManager(TestCaseAsManager, ModuleData):
+      
     def setUp(self):        
         TestClassBase.setUp(self)
         self._add_user_data()
         ModuleData._add_module_data(self, self.manager_id)
         self._log_as_user()
-
+ 
     def test_trips_search(self):
-        
+         
         self._assert_req('/get/project', [ { 'trips._id' :'7'*24, 'responsible._id' : self.manager_id } , { 'trips.description' : 1 }, { } ], { 'error' : None, u'records': [{u'_id': '', u'trips': [{u'description': u'descr1'}]}] })
-        
-
+         
+ 
     def test_trips_ok(self):
-
+ 
         # Insert one trip in a project where user works
         self._assert_req('/data/push_trips', [ 
                                 { '_id' : self.projects_ids[1], 
@@ -146,7 +158,7 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
                                 ] } ], 
                { 'error' : None, 'ids' : [ '' ] }
        )
-
+ 
         # Insert one trip in a project administrated by user
         self._assert_req('/data/push_trips', [ 
                                 { '_id' : self.projects_ids[0], 
@@ -155,18 +167,22 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
                                 ] } ], 
                { 'error' : None, 'ids' : [ '' ] }
        )
-
-
+ 
+ 
         # Insert a trip in correct project with different user_id (project manager can)
         self.maxDiff = None
         self._assert_req('/data/push_trips', [ 
                                  { '_id' : self.projects_ids[0], 
                                   "trips" : [ 
-                                                  { "user_id" : self.users_ids[1], "description" : "descr2", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'note' : 'too expensive', 'accommodation' : {} }     
+                                                  { "user_id" : self.users_ids[1], "description" : "descr2", "status" : 2, "start" : "2000-10-08", "end" : "2000-10-10", "country" : "USA", 'city' : "Austin", 'note' : 'too expensive', 'accommodation' : {} }     
                                  ] } ], 
                { 'error' : None, 'ids' : [ '' ] }
-        )          
-         
+        )   
+        
+        # Search only last trip specifying time stamp
+        self._assert_req('/data/search_trips', {  "responsible_id" : self.manager_id, 'start' : '1999-01-01', 'end' : '2001-10-08' }, {u'error': None, 'records' : [{ '_id' : '',  "user_id" : self.users_ids[1], "description" : "descr2", "status" : 2, "start" : "2000-10-08", "end" : "2000-10-10", "country" : "USA", 'city' : "Austin", 'note' : 'too expensive', 'accommodation' : {} }]})
+       
+          
     def test_trips_ko(self):
         self.maxDiff = None
         # Insert one expence in an unknown project 
@@ -177,7 +193,7 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
                                 ] } ], 
                { u'error' : u"ValidationError: u'%s' is not one of %s" % ('7'*24, [ str(self.projects_ids[1]), str(self.projects_ids[0]) ]) }
         )    
-        
+         
         # Insert one expence in project where user does not work 
         self._assert_req('/data/push_trips', [ 
                                 { '_id' : self.projects_ids[2], 
@@ -186,7 +202,7 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
                                 ] } ], 
                { u'error' : u"ValidationError: u'%s' is not one of %s" % (self.projects_ids[2], [ str(self.projects_ids[1]), str(self.projects_ids[0]) ]) }
                )       
-
+ 
         # Insert a trip in a not administrated project (this should fail) TODO: fix this
 #         self._assert_req('/data/push_trips', [ 
 #                                  { '_id' : self.projects_ids[1], 
@@ -194,4 +210,12 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
 #                                                   { "user_id" : self.users_ids[1], "description" : "descr2", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'note' : 'too expensive', 'accommodation' : {} }     
 #                                  ] } ], 
 #                 {u'error': u"ValidationError: {u'status': 2, u'city': u'Austin', u'user_id': u'%s', u'description': u'descr2', u'country': u'USA', u'note': u'too expensive', u'start': u'2009-10-08', u'end': u'2009-10-10', u'accommodation': {}} is not valid under any of the given schemas" % (self.users_ids[1])}
-#         )          
+#         )       
+
+        # Search without specify ids
+        self._assert_req('/data/search_trips', {  }, {u'error': u"ValidationError: 'responsible_id' is a required property"})
+          
+        # Search with wrong ids
+        self._assert_req('/data/search_trips', {  "responsible_id" : self.users_ids[1] }, {u'error': u"ValidationError: u'%s' does not match '^%s$'" % (self.users_ids[1], self.manager_id)})
+  
+    
