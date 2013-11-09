@@ -20,7 +20,8 @@ class ModuleData:
                                                  { '_id' : '7'*24, "user_id" : '1'*24, "description" : "descr1", "status" : 0, "start" : "2010-10-08", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'note' : 'approved', 'accommodation' : {} }     
                                  ] }, 
                                  { 'customer' : 'CUSTOMER1', 'type' : 'TYPE', 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Manag2'}, 'employees' : [ { '_id' :current_id, 'name' : 'Emp2'} ], 'trips' : [ 
-                                                 { '_id' : '8'*24, "user_id" : '1'*24, "description" : "descr1", "status" : 0, "start" : "2010-10-08", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'note' : 'approved', 'accommodation' : {} }     
+                                                 { '_id' : '8'*24, "user_id" : '1'*24, "description" : "descr1", "status" : 0, "start" : "2010-10-08", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'note' : 'approved', 'accommodation' : {} },     
+                                                 { '_id' : '9'*24, "user_id" : current_id, "description" : "descr1", "status" : 0, "start" : "2010-10-08", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'note' : 'approved', 'accommodation' : {} }     
                                  ] }, 
                                  { 'customer' : 'CUSTOMER3', 'type' : 'TYPE', 'name' : 'PROJECTNAME3', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Manag3'}, 'employees' : [ { '_id' : self.users_ids[2], 'name' : 'Emp3'} ] } 
                                  ], 
@@ -79,9 +80,11 @@ class TripAPIAsEmployee(TestCaseAsEmployee, ModuleData):
 
 
     def test_trips_search(self):
-        
-        self._assert_req('/get/project', [ { 'trips._id' :'8'*24, 'employees._id' : self.employee_id } , { 'trips.description' : 1 }, { } ], { 'error' : None, u'records': [{u'_id': '', u'trips': [{u'description': u'descr1'}]}]})
-                
+         
+                self._assert_req('/data/search_trips', { 'user_id':self.employee_id, "employee_id" : self.employee_id }, {u'error': None, 'records' : [
+                                                                                                                    { '_id' : '', "user_id" : self.employee_id, "description" : "descr1", "status" : 0, "start" : "2010-10-08", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'note' : 'approved', 'accommodation' : {} }
+                                                                                                                    ]})
+                 
         
     def test_trips_ok(self):
 
@@ -94,7 +97,11 @@ class TripAPIAsEmployee(TestCaseAsEmployee, ModuleData):
                { 'error' : None, 'ids' : [ '' ] }
        )
         
-        self._assert_req('/data/search_trips', { "user_id" : self.employee_id,  "employee_id" : self.employee_id }, {u'error': None, 'records' : [{ '_id' : '',  "user_id" : self.employee_id, "description" : "descr2", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'note' : 'too expensive', 'accommodation' : {} }]})
+        self._assert_req('/data/search_trips', { "user_id" : self.employee_id,  "employee_id" : self.employee_id }, {u'error': None, 'records' : [{ '_id' : '',  "user_id" : self.employee_id, "description" : "descr2", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'note' : 'too expensive', 'accommodation' : {} },
+                                                                                                                                                  { '_id' : '', "user_id" : self.employee_id, "description" : "descr1", "status" : 0, "start" : "2010-10-08", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'note' : 'approved', 'accommodation' : {} }     
+
+                                                                                                                                                  
+                                                                                                                                                  ]})
 
          
          
@@ -145,8 +152,9 @@ class TripAPIAsManager(TestCaseAsManager, ModuleData):
  
     def test_trips_search(self):
          
-        self._assert_req('/get/project', [ { 'trips._id' :'7'*24, 'responsible._id' : self.manager_id } , { 'trips.description' : 1 }, { } ], { 'error' : None, u'records': [{u'_id': '', u'trips': [{u'description': u'descr1'}]}] })
-         
+        self._assert_req('/data/search_trips', {  "responsible_id" : self.manager_id }, {u'error': None, 'records' : [
+                                                                                                                    { '_id' : '', "user_id" : '1'*24, "description" : "descr1", "status" : 0, "start" : "2010-10-08", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'note' : 'approved', 'accommodation' : {} } 
+                                                                                                                    ]})
  
     def test_trips_ok(self):
  
