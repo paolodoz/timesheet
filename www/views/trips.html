@@ -25,7 +25,9 @@ $(document).ready(function() {
     trip.remove($("#trip_id").val(),resetTripForm);
     loadTripsList("tripsList");
   });
-  $("#tripForm").submit(function(event) {
+  $("#btnsubmit, #btnsave").click(function(event) {
+    if(this.id == "btnsubmit")
+      $("#tripstatus").val(3);
     event.preventDefault();
     if(!validator.form())
       return;
@@ -211,13 +213,13 @@ function filterlist(list, currenttext) {
         <label for="tripend" class="col-lg-4 control-label">Services</label>
         <div class="col-lg-7">
           <div class="btn-group" data-toggle="buttons">
-            <label class="btn btn-default" id="tripcar">
+            <label class="btn btn-default" for="tripcar">
               <input type="checkbox" id="tripcar" ><span class='icon-car'></span>
             </label>
-            <label id="tripairplane" class="btn btn-default">
+            <label for="tripairplane" class="btn btn-default">
               <input type="checkbox" id="tripairplane" ><span class='icon-airplane'></span>
             </label>
-            <label class="btn btn-default" id="triphotel">
+            <label class="btn btn-default" for="triphotel">
               <input type="checkbox" id="triphotel" ><span class='icon-hotel'></span>
             </label>
           </div>
@@ -243,7 +245,8 @@ function filterlist(list, currenttext) {
       </div>
       <div class="form-group">
         <div class="col-lg-offset-4 col-lg-7">
-          <button type="submit" class="btn btn-primary" id="btnsubmit"><span class="glyphicon glyphicon-plus"></span> Request</button>
+          <button type="submit" class="btn btn-primary" id="btnsubmit"><span class="glyphicon glyphicon-plus"></span> Submit</button>
+          <button type="submit" class="btn btn-primary" id="btnsave"><span class="glyphicon glyphicon-save"></span> Save</button>
           <button type="reset" class="btn" id="btnreset"> Reset</button>
           <button type="button" class="btn btn-danger hidden" id="btnremove"><span class="glyphicon glyphicon-trash"></span> Remove</button>
         </div>

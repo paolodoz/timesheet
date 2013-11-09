@@ -636,7 +636,7 @@ function simpleDate(date) {
   return date.getFullYear() + "-" + month + "-" + day;
 }
 var expcategories = ["", "Hotel", "Transportation", "Food", "Other"];
-var statuses = ["", "Rejected", "Draft", "Pending", "Approved by PM", "Approved by administration"];
+var statuses = ["", "Rejected", "Draft", "Pending", "Approved by PM", "Approved by administration", "Refounded"];
 var tasks = ["","Office","Away","Holiday","Bank Holiday","Leave","Unpaid leave"];
 function getTaskName(id) {
   return tasks[id];
