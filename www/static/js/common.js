@@ -165,15 +165,17 @@ var project = {
     var url;
     url = "/update/project";
     var prod = {};
-    prod.period = $("#productionperiod").val();
-    prod.budget = Number($("#productionbudget").val());
-    prod.extra = Number($("#productionextra").val());
-    prod.note = $("#productionnote").val();
-    prod.invoiced = 0;
     if(!prj.economics) {
       prj.economics = new Array();
     }
-    prj.economics.push(prod);
+    if($("#productionperiod").val() != "") {
+      prod.period = $("#productionperiod").val();
+      prod.budget = Number($("#productionbudget").val());
+      prod.extra = Number($("#productionextra").val());
+      prod.note = $("#productionnote").val();
+      prod.invoiced = 0;
+      prj.economics.push(prod);
+    }
     $.ajax({
       type: "POST",
       url: url,
