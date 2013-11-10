@@ -226,6 +226,23 @@ var trip = {
   load : function (filter, callback, target) {
     $.ajax({
       type: "POST",
+      url: "/data/search_trips",
+      data: JSON.stringify(filter),
+      success: function(data) {
+        if(!data.error) {
+          _trip = data.records;
+          callback(data.records, target);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
+  loaddetails : function (filter, callback, target) {
+    $.ajax({
+      type: "POST",
       url: "/get/project",
       data: JSON.stringify(filter),
       success: function(data) {
@@ -273,7 +290,7 @@ var trip = {
     prj.trips[0].accommodation = {};
     $("#" + form + " input, #" + form + " select, #" + form + " checkbox, #" + form + " textarea").each(function (){
       var property = $(this).attr("id").substr(4);
-      if (property == "project" || property == "_id")
+      if (property == "project" || (property == "_id" && !isupdate))
         return;
       if($(this).is(':checkbox')) {
         prj.trips[0].accommodation[property] = $(this).is(':checked') ? true : false;

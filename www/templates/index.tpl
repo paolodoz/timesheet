@@ -26,7 +26,7 @@
     <div class="col-lg-2">
 <ul class="nav nav-pills nav-stacked">
   <li>
-    <a href="#">
+    <a href="/">
       <span class="badge pull-right">5</span>
       Notifiche
     </a>

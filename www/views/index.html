@@ -1,1 +1,43 @@
-Main Page
+<script type="text/javascript">
+$(document).ready(function() {
+  user.me(userdata);
+});
+
+function userdata(data){
+  me = data;
+  if(me.group == "project manager")
+    loadTripsList("tripreq");
+}
+
+function loadExpences(container) {
+
+}
+
+function loadTripsList(list) {
+ var filter = { start:"2013-01-01", end:"2014-12-31", status:3, responsible_id: me._id };
+  trip.load(filter, loadTrips, list);
+}
+
+function loadTrips(data, container) {
+  var i,j;
+  var htmllist = "";
+  for(i=0;i < data.length; i++) {
+      htmllist += "<li id='" + data[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data[i].city + " " + data[i].start + "</li>";
+  }
+  $("#" + container).html(htmllist);
+  $("#" + container + " .list-group-item").click(function() {
+    resetTripForm();
+    $(this).addClass("active");
+    if(this.id == "")
+      return;
+    var filter = [{"trips._id": this.id, "employees._id" : me._id },{trips:1},{name:1}];
+    trip.loaddetails(filter,loadTripDetails, container);
+  });
+}
+</script>
+
+<p>List of trip waiting for approval</p>
+<ul id="tripreq"></ul>
+<p>List of expences waiting for approval</p>
+<ul id="expreq"></ul>
+
