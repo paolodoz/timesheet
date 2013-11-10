@@ -58,3 +58,10 @@ form .error {
   float: right;
   cursor: pointer;
 }
+
+.filename {
+  min-width: 235px;
+}
+.filename span {
+  cursor: pointer;
+}
