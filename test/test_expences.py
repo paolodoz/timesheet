@@ -17,7 +17,8 @@ class ModuleData:
         projects_json = self._assert_req('/add/project', [ 
                                  { 'customer' : 'CUSTOMER', 'type' : 'TYPE', 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag1'}, 'employees' : [ { '_id' : self.users_ids[1], 'name' : 'Emp1'} ], 
                                   'expences' : [ 
-                                                 { '_id' : '7'*24, "user_id" : '1'*24, "trip_id" : '2'*24, "date" : "2010-10-08", "file" : {}, 'objects' : [{}] }     
+                                                 { '_id' : '7'*24, "user_id" : '1'*24, "trip_id" : '2'*24, 'status' : 0, "date" : "2010-10-08", "file" : {}, 'objects' : [{}] },     
+                                                 { '_id' : '8'*24, "user_id" : '1'*24, "trip_id" : '2'*24, 'status' : 1, "date" : "2010-10-08", "file" : {}, 'objects' : [{}] }     
                                  ] }, 
                                  { 'customer' : 'CUSTOMER1', 'type' : 'TYPE', 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Manag2'}, 'employees' : [ { '_id' : current_id, 'name' : 'Emp2'} ] }, 
                                  { 'customer' : 'CUSTOMER3', 'type' : 'TYPE', 'name' : 'PROJECTNAME3', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Manag3'}, 'employees' : [ { '_id' : self.users_ids[2], 'name' : 'Emp3'} ] } 
@@ -36,14 +37,31 @@ class ExpencesAPIAsAdmin(TestClassBase, ModuleData):
     def setUp(self):        
         TestClassBase.setUp(self)
         ModuleData._add_module_data(self, '1'*24)
-      
+    
+
+    def test_expences_search(self):
+
+        self.maxDiff = None         
+        # Search by project id
+        self._assert_req('/data/search_expences', { 'project_id':  self.projects_ids[0]  }, {u'error': None, 'records' : [
+                                                 { '_id' : '', "user_id" : '1'*24, "trip_id" : '2'*24, 'status' : 1, "date" : "2010-10-08", "file" : {}, 'objects' : [{}] },     
+                                                 { '_id' : '', "user_id" : '1'*24, "trip_id" : '2'*24, 'status' : 0, "date" : "2010-10-08", "file" : {}, 'objects' : [{}] }     
+                                 ]})
+         
+        # Filter by status
+        self._assert_req('/data/search_expences', { 'project_id':  self.projects_ids[0], 'status' : [1]  }, {u'error': None, 'records' : [
+                                                 { '_id' : '', "user_id" : '1'*24, "trip_id" : '2'*24, 'status' : 1, "date" : "2010-10-08", "file" : {}, 'objects' : [{}] }     
+                                 ]})
+         
+         
+ 
     def test_expences_ok(self):
         
          # Insert one expence
          self._assert_req('/data/push_expences', [ 
                                  { '_id' : self.projects_ids[0], 
                                   "expences" : [ 
-                                                 { "user_id" : '1'*24, "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] }     
+                                                 { "user_id" : '1'*24, "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] }     
                                  ] } ], 
                 { 'error' : None, 'ids' : [ '' ] }
                 )
@@ -54,15 +72,15 @@ class ExpencesAPIAsAdmin(TestClassBase, ModuleData):
          self._assert_req('/data/push_expences', [ 
                                  { '_id' : self.projects_ids[0], 
                                   "expences" : [ 
-                                                 { "user_id" : self.users_ids[1], "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
-                                                 { "user_id" : self.users_ids[2], "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] }     
+                                                 { "user_id" : self.users_ids[1], "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                                 { "user_id" : self.users_ids[2], "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] }     
                                  ] } ], 
                 { 'error' : None, 'ids' : [ '', '' ] }
                 )
 
          # Get inserted expences
          self._assert_req('/data/search_expences', { "user_id" : self.users_ids[1] }, { 'error' : None, 'records' : [ 
-                                                 { '_id' : '', "user_id" : self.users_ids[1], "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                                 { '_id' : '', "user_id" : self.users_ids[1], "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
                                                ]})
   
     
@@ -81,12 +99,12 @@ class ExpencesAPIAsEmployee(TestCaseAsEmployee, ModuleData):
         self._assert_req('/data/push_expences', [ 
                                 { '_id' : self.projects_ids[1], 
                                  "expences" : [ 
-                                                 { "user_id" : self.employee_id, "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                                 { "user_id" : self.employee_id, "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
                                 ] } ], 
                { 'error' : None, 'ids' : [ '' ] }
        )
 
-        self._assert_req('/data/search_expences', { "user_id" : self.employee_id,  "employee_id" : self.employee_id }, {u'error': None, 'records' : [{ '_id' : '', "user_id" : self.employee_id, "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] }]})
+        self._assert_req('/data/search_expences', { "user_id" : self.employee_id,  "employee_id" : self.employee_id }, {u'error': None, 'records' : [{ '_id' : '', "user_id" : self.employee_id, "trip_id" : '2'*24, 'status' : 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] }]})
         
         
     def test_expences_ko(self):
@@ -95,7 +113,7 @@ class ExpencesAPIAsEmployee(TestCaseAsEmployee, ModuleData):
         self._assert_req('/data/push_expences', [ 
                                 { '_id' : '7'*24, 
                                  "expences" : [ 
-                                                 { "user_id" : self.employee_id, "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                                 { "user_id" : self.employee_id, "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
                                 ] } ], 
                { 'error' : "TSValidationError: Access to project '%s' is restricted for current user" % ('7'*24) }
                )          
@@ -104,7 +122,7 @@ class ExpencesAPIAsEmployee(TestCaseAsEmployee, ModuleData):
         self._assert_req('/data/push_expences', [ 
                                 { '_id' : self.projects_ids[2], 
                                  "expences" : [ 
-                                                 { "user_id" : self.employee_id, "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                                 { "user_id" : self.employee_id, "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
                                 ] } ], 
                { 'error' : "TSValidationError: Access to project '%s' is restricted for current user" % (self.projects_ids[2]) }
                )       
@@ -114,9 +132,9 @@ class ExpencesAPIAsEmployee(TestCaseAsEmployee, ModuleData):
         self._assert_req('/data/push_expences', [ 
                                  { '_id' : self.projects_ids[1], 
                                   "expences" : [ 
-                                                 { "user_id" : self.users_ids[1], "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                                 { "user_id" : self.users_ids[1], "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
                                  ] } ], 
-                {u'error': u"ValidationError: {u'date': u'2005-10-08', u'user_id': u'%s', u'objects': [{}], u'trip_id': u'222222222222222222222222', u'file': {}} is not valid under any of the given schemas" % (self.users_ids[1])}
+                {u'error': u"ValidationError: {u'status': 0, u'user_id': u'%s', u'objects': [{}], u'file': {}, u'date': u'2005-10-08', u'trip_id': u'222222222222222222222222'} is not valid under any of the given schemas" % (self.users_ids[1])}
         )
 
         # Search without specify ids
@@ -141,7 +159,7 @@ class ExpencesAPIAsManager(TestCaseAsManager, ModuleData):
         self._assert_req('/data/push_expences', [ 
                                 { '_id' : self.projects_ids[1], 
                                  "expences" : [ 
-                                                 { "user_id" : self.manager_id, "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                                 { "user_id" : self.manager_id, "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
                                 ] } ], 
                { 'error' : None, 'ids' : [ '' ] }
        )
@@ -150,7 +168,7 @@ class ExpencesAPIAsManager(TestCaseAsManager, ModuleData):
         self._assert_req('/data/push_expences', [ 
                                 { '_id' : self.projects_ids[0], 
                                  "expences" : [ 
-                                                 { "user_id" : self.manager_id, "trip_id" : '2'*24, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                                 { "user_id" : self.manager_id, "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
                                 ] } ], 
                { 'error' : None, 'ids' : [ '' ] }
        )
@@ -161,13 +179,13 @@ class ExpencesAPIAsManager(TestCaseAsManager, ModuleData):
         self._assert_req('/data/push_expences', [ 
                                  { '_id' : self.projects_ids[0], 
                                   "expences" : [ 
-                                                 { "user_id" : self.users_ids[1], "trip_id" : '2'*24, "date" : "2000-10-08", "file" : {}, 'objects' : [{}] },   
+                                                 { "user_id" : self.users_ids[1], "trip_id" : '2'*24, 'status': 0, "date" : "2000-10-08", "file" : {}, 'objects' : [{}] },   
                                  ] } ], 
                { 'error' : None, 'ids' : [ '' ] }
         )          
 
         # Search only last trip specifying time stamp
-        self._assert_req('/data/search_expences', {  "responsible_id" : self.manager_id, 'start' : '1999-01-01', 'end' : '2001-10-08' }, {u'error': None, 'records' : [{ '_id' : '', "user_id" : self.users_ids[1], "trip_id" : '2'*24, "date" : "2000-10-08", "file" : {}, 'objects' : [{}] }]})
+        self._assert_req('/data/search_expences', {  "responsible_id" : self.manager_id, 'start' : '1999-01-01', 'end' : '2001-10-08' }, {u'error': None, 'records' : [{ '_id' : '', "user_id" : self.users_ids[1], "trip_id" : '2'*24, 'status': 0, "date" : "2000-10-08", "file" : {}, 'objects' : [{}] }]})
  
          
     def test_day_ko(self):

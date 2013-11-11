@@ -199,6 +199,8 @@ project:
             type: string
           trip_id:
             type: string
+          status:
+            type: integer
           date:
             type: string
             format: date

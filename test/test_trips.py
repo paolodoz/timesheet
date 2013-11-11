@@ -51,7 +51,6 @@ class TripsAPIAsAdmin(TestClassBase, ModuleData):
                                  ]})
          
         # Filter by status
-        # Search by project id
         self._assert_req('/data/search_trips', { 'project_id':  self.projects_ids[1], 'status' : [1]  }, {u'error': None, 'records' : [
                                                  { '_id' : '', "user_id" : '1'*24, "description" : "descr1", "status" : 1, "start" : "2010-10-08", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'note' : 'approved', 'accommodation' : {} },     
                                  ]})
