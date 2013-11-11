@@ -175,7 +175,7 @@ def search_trips(criteria):
     
     POST /data/search_trips/    
     
-    Expects { 'start': data, 'end': data, 'status': integer, 'user_id': string, employee_id: string, 'responsible_id' : string }
+    Expects { 'start': data, 'end': data, 'status': [ integer, integer, .. ], 'user_id': string, project_id: string, employee_id: string, 'responsible_id' : string }
     Returns { 'error' : string, 'records' : [ { }, { }, .. ]  } 
     """
 
@@ -188,24 +188,27 @@ def search_trips(criteria):
     
     projects_ids_matches = {}
     employee_id = sanified_criteria.get('employee_id')
-    if employee_id:
+    if employee_id != None:
         projects_ids_matches['employees._id'] = ObjectId(employee_id)
     responsible_id = sanified_criteria.get('responsible_id')
-    if responsible_id:
+    if responsible_id != None:
         projects_ids_matches['responsible._id'] = ObjectId(responsible_id)
+    project_id = sanified_criteria.get('project_id')
+    if project_id != None:
+        projects_ids_matches['_id'] = ObjectId(project_id)
 
     trips_matches = {}
     user_id = sanified_criteria.get('user_id')
-    if user_id: 
+    if user_id != None: 
         trips_matches['trips.user_id'] = user_id  
     status = sanified_criteria.get('status')
-    if status:
-        trips_matches['trips.status'] = status    
+    if status != None:
+        trips_matches['trips.status'] = { '$in' : status }
     date_start = sanified_criteria.get('start')
-    if date_start:
+    if date_start != None:
         trips_matches['trips.start'] = { '$gte' : date_start }
     date_end = sanified_criteria.get('end')
-    if date_end:
+    if date_end != None:
         trips_matches['trips.end'] = { '$lte' : date_end }
 
 
@@ -240,7 +243,7 @@ def search_expences(criteria):
     
     sanified_criteria = sanitize_objectify_json(criteria)
 
-    # Prepare the aggregation pipe
+    # Prepare the aggregation pipeam
     
     projects_ids_matches = {}
     employee_id = sanified_criteria.get('employee_id')

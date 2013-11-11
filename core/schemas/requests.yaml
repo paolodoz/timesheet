@@ -45,7 +45,12 @@ search_trips:
     user_id:
       type: string
     status:
-      type: number
+      type: array
+      items:
+        type: number
+    project_id:
+        type: string
+        pattern: '[\dabcdef]{24}'          
     employee_id:
         type: string
         pattern: '[\dabcdef]{24}'
@@ -65,6 +70,13 @@ search_expences:
       format: date
     user_id:
       type: string
+    status:
+      type: array
+      items:
+        type: number
+    project_id:
+        type: string
+        pattern: '[\dabcdef]{24}'    
     employee_id:
         type: string
         pattern: '[\dabcdef]{24}'
