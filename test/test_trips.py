@@ -80,12 +80,24 @@ class TripsAPIAsAdmin(TestClassBase, ModuleData):
                )
  
 
-        # Get inserted expences
-        self._assert_req('/data/search_trips', { "user_id" : self.users_ids[0] }, { 'error' : None, 'records' : [ 
+        # Get inserted trip
+        found_trips = self._assert_req('/data/search_trips', { "user_id" : self.users_ids[0] }, { 'error' : None, 'records' : [ 
                                                  { '_id' : '', "user_id" : self.users_ids[0], "description" : "descr3", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", u'city' : "Austin", u'note' : u'too expensive', u'accommodation' : {} },     
                                                  { '_id' : '', "user_id" : self.users_ids[0], "description" : "descr2", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", u'city' : "Austin", u'note' : u'too expensive', u'accommodation' : {} }     
                                                ]})
     
+        # Delete one trip
+        self._assert_req('/data/push_trips', [ 
+                                { '_id' : self.projects_ids[0], 
+                                 "trips" : [ { '_id' : found_trips['records'][0]['_id'] } ] } ], 
+               { 'error' : None, 'ids' : [ '' ] }
+           )
+    
+        # Re-Get inserted trip
+        self.maxDiff = None
+        found_trips = self._assert_req('/data/search_trips', { "user_id" : self.users_ids[0] }, { 'error' : None, 'records' : [ 
+                                                 { '_id' : '', "user_id" : self.users_ids[0], "description" : "descr2", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", u'city' : "Austin", u'note' : u'too expensive', u'accommodation' : {} }     
+                                               ]})    
     
 class TripAPIAsEmployee(TestCaseAsEmployee, ModuleData):
     

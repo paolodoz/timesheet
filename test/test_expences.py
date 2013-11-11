@@ -82,7 +82,26 @@ class ExpencesAPIAsAdmin(TestClassBase, ModuleData):
          self._assert_req('/data/search_expences', { "user_id" : self.users_ids[1] }, { 'error' : None, 'records' : [ 
                                                  { '_id' : '', "user_id" : self.users_ids[1], "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
                                                ]})
-  
+
+         self.maxDiff = None
+         # Get all inserted expences
+         found_expences = self._assert_req('/data/search_expences', { "project_id" : self.projects_ids[0], 'start' : '2005-09-09', 'end' : '2005-10-10' }, { 'error' : None, 'records' : [ 
+                                                 { '_id' : '', "user_id" : self.users_ids[2], "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },     
+                                                 { '_id' : '', "user_id" : self.users_ids[1], "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                                 { '_id' : '', "user_id" : '1'*24, "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] }     
+                                               ]})
+    
+        # Delete one expence
+         self._assert_req('/data/push_expences', [ 
+                               { '_id' : self.projects_ids[0], 
+                                "expences" : [ { '_id' : found_expences['records'][0]['_id'] } ] } ], 
+              { 'error' : None, 'ids' : [ '' ] }
+          )
+
+         self._assert_req('/data/search_expences', { "project_id" : self.projects_ids[0], 'start' : '2005-09-09', 'end' : '2005-10-10' }, { 'error' : None, 'records' : [ 
+                                                 { '_id' : '', "user_id" : self.users_ids[1], "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                                 { '_id' : '', "user_id" : '1'*24, "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] }     
+                                               ]})
     
 class ExpencesAPIAsEmployee(TestCaseAsEmployee, ModuleData):
     

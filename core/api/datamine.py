@@ -51,14 +51,20 @@ def push_expences(documents_list):
         # If found
         if found:
             for expence in sanified_document['expences']:
-    
-                 # Add just generated expence_id to the object             
-                 expence_id = ObjectId()
+
+                 expence_id = expence.get('_id')
+                 if expence_id != None:
+                     # If expence._id is already set, drop old expence data
+                     db.project.update({'_id': project_id }, {'$pull': {'expences': {'_id': expence_id }}})
+                 else:
+                     # Else, generate random expence_id             
+                     expence_id = ObjectId()
                  
                  expence['_id'] = expence_id
                  
-                 # Push new one
-                 db.project.update({'_id': project_id }, {'$push' : { 'expences' : expence }})
+                 # Push new one, only if other elements than _id are provided
+                 if len(expence.keys()) > 1:
+                     db.project.update({'_id': project_id }, {'$push' : { 'expences' : expence }})
 
                  expences_ids.append(str(expence_id))
 
@@ -103,15 +109,21 @@ def push_trips(documents_list):
 
         # If found
         if found:
-            for expence in sanified_document['trips']:
+            for trip in sanified_document['trips']:
     
-                 # Add just generated trip_id to the object             
-                 trip_id = ObjectId()
+                 trip_id = trip.get('_id')
+                 if trip_id != None:
+                     # If trip._id is already set, drop old trip data
+                     db.project.update({'_id': project_id }, {'$pull': {'trips': {'_id': trip_id }}})
+                 else:
+                     # Else, generate random trip_id             
+                     trip_id = ObjectId()
                  
-                 expence['_id'] = trip_id
+                 trip['_id'] = trip_id
                  
-                 # Push new one
-                 db.project.update({'_id': project_id }, {'$push' : { 'trips' : expence }})
+                 # Push new one, only if other elements than _id are provided
+                 if len(trip.keys()) > 1:
+                     db.project.update({'_id': project_id }, {'$push' : { 'trips' : trip }})
 
                  trips_ids.append(str(trip_id))
 
