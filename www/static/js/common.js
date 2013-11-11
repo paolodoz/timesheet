@@ -330,6 +330,125 @@ var trip = {
   }
 }
 
+var expence = {
+  _expence: new Array(),
+  load : function (filter, callback, target) {
+    $.ajax({
+      type: "POST",
+      url: "/data/search_expences",
+      data: JSON.stringify(filter),
+      success: function(data) {
+        if(!data.error) {
+          _trip = data.records;
+          callback(data.records, target);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
+  loaddetails : function (filter, callback, target) {
+    $.ajax({
+      type: "POST",
+      url: "/get/project",
+      data: JSON.stringify(filter),
+      success: function(data) {
+        if(!data.error) {
+          _trip = data.records;
+          callback(data.records, target);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
+  remove : function (id, callback) {
+    if (id == 0)
+      return;
+    var filter = [{}];
+    filter[0]._id = id;
+    $.ajax({
+      type: "POST",
+      url: "/remove/expences",
+      data: JSON.stringify(filter),
+      success: function(data) {
+        if(!data.error) {
+          callback(data);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
+  update : function (isupdate, form, callback) {
+    var i = 0, prj = [{}], url;
+    url = "/data/push_expences";
+    prj[0]._id = $("#expprj").val();
+    prj[0].expences = new Array();
+    prj[0].expences[0] = {};
+    var expence = prj[0].expences[0];
+    expence.trip_id = $("#exptrip").val();
+    expence.user_id = me._id;
+    expence.date = $("#expdate").val();
+    //file
+    if(!$("#offerfile").next("p").hasClass("hidden")) {
+      expence.file = {};
+      expence.file._id = $("#offerfile").next("p").attr("id");
+      expence.file.name = $("#offerfile").next("p").text();
+    }
+    expence.objects = new Array();
+    $("#exptable tbody tr").each(function() {
+      expence.objects[i] = {};
+      var index = Number($(this).find("td:eq(0)").text());
+      var elem = expence.objects[i];
+      elem.date = $(this).find("input[name='" + index + "exp_date']").val();
+      elem.city = $(this).find("input[name='" + index + "exp_city']").val();
+      elem.amount = parseFloat($(this).find("input[name='" + index + "exp_amount']").val());
+      elem.category = Number($(this).find("select[name='" + index + "exp_category']").val());
+      elem.description = $(this).find("input[name='" + index + "exp_description']").val();
+      if($(this).find("input[type='checkbox']").is(":checked"))
+        elem.paidby = 1;
+      else
+        elem.paidby = 0;
+      if(!$(this).find("p").hasClass("hidden")) {
+        elem.file = {};
+        elem.file._id = $(this).find("p").attr("id");
+        elem.file.name = $(this).find("p").text();
+      }
+      i++;
+    });
+    $.ajax({
+      type: "POST",
+      url: url,
+      data: JSON.stringify(prj),
+      success: function(data) {
+        if(!data.error) {
+          callback(data);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
+  getname : function(id) {
+    var i;
+    for(i = 0; i < _trip.length; i++) {
+      if(_trip[i]._id == id)
+        return _trip[i].name;
+    }
+    return "error";
+  }
+}
+
+
 var customer = {
   load : function (filter, callback, target) {
     $.ajax({
