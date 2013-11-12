@@ -23,7 +23,11 @@ $(document).ready(function() {
     resetTripForm();
   });
   $("#btnremove").click(function() {
-    trip.remove($("#trip_id").val(),resetTripForm);
+    var filter = [{}];
+    filter[0]._id = $("#tripproject").val()
+    filter[0].trips = [{}];
+    filter[0].trips[0]._id = $("#trip_id").val()
+    trip.remove(filter,resetTripForm);
     loadTripsList("tripsList");
   });
   $("#btnsubmit, #btnsave").click(function(event) {
@@ -83,7 +87,7 @@ function loadProjectsList(list) {
 }
 
 function loadTripsList(list) {
-  var filter = { start:"2013-01-01", end:"2014-12-31", status:2, user_id: me._id, employee_id:me._id };
+  var filter = { start:"2013-01-01", end:"2014-12-31", status:[2], user_id: me._id, employee_id:me._id };
   trip.load(filter, loadTrips, list);
 }
 
