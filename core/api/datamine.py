@@ -1,5 +1,6 @@
 from core.validation.validation import TSValidationError, validate_request, update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
 from core.validation.permissions import check_datamine_permissions
+from core.config import conf_reports
 from bson.objectid import ObjectId
 from core.api.crud import db
 import cherrypy, logging
@@ -134,7 +135,8 @@ def report_projects(criteria):
                               { '_id' : { 
                                          'user_id' : '$users.user_id', 
                                          'date' : '$date',
-                                         'project' : '$users.hours.project'
+                                         'project' : '$users.hours.project',
+                                         'isextra' : '$users.hours.isextra'
                                          }, 
                                'hours' : { '$sum' : '$users.hours.amount'  } 
                                } 
@@ -170,10 +172,11 @@ def report_projects(criteria):
         
         for day in days_result:
             
-            user_record = day.get('_id',{})
-            user_id = user_record.get('user_id')
-            project = user_record.get('project')
-            user_date = user_record.get('date')
+            user_hours_record = day.get('_id',{})
+            user_id = user_hours_record.get('user_id')
+            project = user_hours_record.get('project')
+            isextra = user_hours_record.get('isextra')
+            user_date = user_hours_record.get('date')
             user_YM = '-'.join(user_date.split('-')[:2])
             user_hours = day.get('hours', 0)
     
@@ -182,11 +185,15 @@ def report_projects(criteria):
             budget, extra = next(( (budg['_id']['budget'], budg['_id']['extra']) for budg in budget_result if budg['_id']['project_id'] == ObjectId(project) and budg['_id']['period'].startswith(user_YM)), (0,0))
             
             if cost or budget or extra:
-                
+
+                # If the hour block is extra, add the multiplier_on_extras to itself
+                if isextra:
+                    cost *= conf_reports['multiplier_on_extras']
+
                 if not total_costs.get(user_YM):
                     total_costs[user_YM] = { 'cost' : 0, 'budget' : budget, 'extra' : extra}
              
-                total_costs[user_YM]['cost'] = total_costs[user_YM]['cost']  + ( cost * user_hours )
+                total_costs[user_YM]['cost'] = total_costs[user_YM]['cost']  + round( cost * user_hours, 2 )
                  
         ## ORDER
         
@@ -204,10 +211,11 @@ def report_projects(criteria):
         
         for day in days_result:
             
-            user_record = day.get('_id',{})
-            user_id = user_record.get('user_id')
-            project = user_record.get('project')
-            user_date = user_record.get('date')
+            user_hours_record = day.get('_id',{})
+            user_id = user_hours_record.get('user_id')
+            project = user_hours_record.get('project')
+            isextra = user_hours_record.get('isextra')
+            user_date = user_hours_record.get('date')
             user_YM = '-'.join(user_date.split('-')[:2])
             user_hours = day.get('hours', 0)
     
@@ -221,9 +229,13 @@ def report_projects(criteria):
                     project_costs[project] = { user_YM : {}}
                 if not project_costs[project].get(user_YM):
                     project_costs[project][user_YM] = { 'cost' : 0, 'budget' : budget, 'extra' : extra}
-                    
+                
+                # If the hour block is extra, add the multiplier_on_extras to itself
+                if isextra:
+                    cost *= conf_reports['multiplier_on_extras']
+                
                 # While can exists multiple costs for a project-month, cannot exists multiple badges or extras
-                project_costs[project][user_YM]['cost'] = project_costs[project][user_YM]['cost']  + ( cost * user_hours )
+                project_costs[project][user_YM]['cost'] = project_costs[project][user_YM]['cost']  + round( cost * user_hours, 2 )
              
              
         ## ORDER

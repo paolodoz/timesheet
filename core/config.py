@@ -50,6 +50,7 @@ conf_auth_ldap = conf['auth_ldap']
 conf_mongodb = conf['mongodb']
 conf_logging = conf['logging']
 conf_uploads = conf['uploads']
+conf_reports = conf['reports']
 
 # Create configurations folders if do not exist
 paths =  [ conf_session['tools.sessions.storage_path'], conf_uploads['folder'] ]

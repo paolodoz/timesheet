@@ -51,3 +51,7 @@ logging:
 
 uploads:
   folder: uploads/
+  
+reports:
+  multiplier_on_extras: 1.15
+  
