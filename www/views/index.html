@@ -14,7 +14,7 @@ function loadExpences(container) {
 }
 
 function loadTripsList(list) {
- var filter = { start:"2013-01-01", end:"2014-12-31", status:3, responsible_id: me._id };
+ var filter = { start:"2013-01-01", end:"2014-12-31", status:[3], responsible_id: me._id };
   trip.load(filter, loadTrips, list);
 }
 

@@ -259,15 +259,11 @@ var trip = {
       dataType: "json",
     });
   },
-  remove : function (id, callback) {
-    if (id == 0)
-      return;
-    var filter = [{}];
-    filter[0]._id = id;
+  remove : function (obj, callback) {
     $.ajax({
       type: "POST",
-      url: "/remove/trip",
-      data: JSON.stringify(filter),
+      url: "/data/push_trips",
+      data: JSON.stringify(obj),
       success: function(data) {
         if(!data.error) {
           callback(data);
