@@ -7,7 +7,7 @@ Setup
 
   1. If required, install Python package installer
 
-        sudo apt-get install pip
+        sudo apt-get install python-pip
 
   2. Install the dependencies
 
