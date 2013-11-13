@@ -65,3 +65,9 @@ form .error {
 .filename span {
   cursor: pointer;
 }
+.popover-content dt {
+  width:80px;
+}
+.popover-content .dl-horizontal dd {
+  margin-left:100px;
+}

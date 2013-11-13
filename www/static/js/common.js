@@ -796,3 +796,8 @@ Date.locale = {
 String.prototype.bool = function() {
     return (/^true$/i).test(this);
 };
+
+function capFirstLet(string)
+{
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}

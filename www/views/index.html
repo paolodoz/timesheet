@@ -1,4 +1,6 @@
 <script type="text/javascript">
+var cur_trips, trip_id, cur_expences;
+var labels = ["from","city","country","start","end","description","accommodation"];
 $(document).ready(function() {
   user.me(userdata);
 });
@@ -21,21 +23,41 @@ function loadTripsList(list) {
 function loadTrips(data, container) {
   var i,j;
   var htmllist = "";
+  cur_trips = data;
   for(i=0;i < data.length; i++) {
-      htmllist += "<li id='" + data[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data[i].city + " " + data[i].start + "</li>";
+      htmllist += "<li id='" + data[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data[i].city + " " + data[i].start + " <button data-toggle='popover' type='button' class='btn btn-default btn-sm'><span class='glyphicon glyphicon-info-sign'></span>  Details</button> <button type='button' class='btn btn-success btn-sm'><span class='glyphicon glyphicon-thumbs-up'></span>  Accept</button>  <button type='button' class='btn btn-danger btn-sm'><span class='glyphicon glyphicon-thumbs-down'></span>  Reject</button></li>";
   }
   $("#" + container).html(htmllist);
-  $("#" + container + " .list-group-item").click(function() {
-    resetTripForm();
-    $(this).addClass("active");
-    if(this.id == "")
-      return;
-    var filter = [{"trips._id": this.id, "employees._id" : me._id },{trips:1},{name:1}];
-    trip.loaddetails(filter,loadTripDetails, container);
+  $("#" + container + " .list-group-item button.btn-default").each(function() {
+    var curid = $(this).parent().attr("id");
+    $(this).popover({
+        html: true,
+        placement: 'top',
+        content: generateTripPopover(curid, cur_trips),
+    });
   });
 }
-</script>
 
+function generateTripPopover(id, ctrips) {
+  var html = '<h4>Trip Details:</h4><dl class="dl-horizontal">';
+  var i,j;
+  for(i=0; i < ctrips.length; i++) {
+    if(ctrips[i]._id == id) {
+      for(j=0; j<labels.length; j++) {
+        key = labels[j];
+        if(key=="accommodation") {
+          html += "services requested";
+        } else {
+          html += '<dt>' + capFirstLet(key) + '</dt><dd>' + ctrips[i][key] + '</dd>';
+        }
+      }
+      break;
+    }
+  }
+  return html;
+}
+</script>
+<div style="min-height:200px;display:block"></div>
 <p>List of trip waiting for approval</p>
 <ul id="tripreq"></ul>
 <p>List of expences waiting for approval</p>
