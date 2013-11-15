@@ -86,25 +86,31 @@ def report_projects(criteria):
     
     POST /data/report_projects/
     
-    Expects { 'start' : '', 'end' : '', 'customer' : '', 'projects' : [], 'mode' : 'total|project' } 
+    Expects { 'start' : '', 'end' : '', 'customers' : [], 'projects' : [], 'types' : [], 'mode' : 'total|project' } 
     Returns with mode total
        { 'error' : string, 'records' : [ [ 'YYYY-MM', 2 ], [ 'YYYY-MM', 4 ], .. ]  } 
     Returns with mode total
        { 'error' : string, 'records' : {  'proj1' : [ [ 'YYYY-MM', 2 ], [ 'YYYY-MM', 4 ] ], .. }  } 
     """
     
-    def _find_project_list_by_customer(sanified_criteria):
+    def _find_project_list_by_customers_types(sanified_criteria):
         
-        # Get projects by customer
-        customer_input = sanified_criteria.get('customer')
-        if customer_input:
-            projects_input = []
-            customer_projects = db.project.find( { 'customer' : customer_input }, { '_id' : 1 })
+        projects_input = sanified_criteria.get('projects', [])
+        
+        # Add projects by customers
+        customers_input = sanified_criteria.get('customers')
+        if customers_input:
+            customer_projects = db.project.find( { 'customer' : {  '$in' : customers_input } }, { '_id' : 1 })
             for project in customer_projects:
                 projects_input.append(str(project['_id'])) 
-        else:
-            projects_input = sanified_criteria.get('projects', [])
             
+        # Add projects by types
+        types_input = sanified_criteria.get('types')
+        if types_input:
+            types_projects = db.project.find( { 'type' : {  '$in' : types_input } }, { '_id' : 1 })
+            for project in types_projects:
+                projects_input.append(str(project['_id'])) 
+        
         return projects_input
     
     def _find_days_by_projects(projects_input, sanified_criteria):
@@ -256,7 +262,7 @@ def report_projects(criteria):
     aggregation_mode = sanified_criteria.get('mode', 'total')  
 
     # Find project list 
-    projects_input = _find_project_list_by_customer(sanified_criteria)
+    projects_input = _find_project_list_by_customers_types(sanified_criteria)
     
     # Day mining
     days_result = _find_days_by_projects(projects_input, sanified_criteria)['result'] 

@@ -15,13 +15,13 @@ class ModuleData:
         
         # Add projects
         projects_json = self._assert_req('/add/project', [ 
-                                 { 'customer' : 'CUSTOMER', 'type' : [ 'TYPE' ], 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag1'}, 'employees' : [ { '_id' : self.users_ids[1], 'name' : 'Emp1'} ], 
+                                 { 'customer' : 'CUSTOMER', 'type' : [ 'TYPE1' ], 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag1'}, 'employees' : [ { '_id' : self.users_ids[1], 'name' : 'Emp1'} ], 
                                   "economics" : [ 
                                                  { "note" : "mynote1", "budget" : 3, "invoiced" : 0, "period" : "2005-10-08", "extra" : 1 },     
                                                  { "note" : "mynote2", "budget" : 5, "invoiced" : 0,  "period" : "2005-11-08", "extra" : 4 }, 
                                                  { "note" : "mynote3", "budget" : 20, "invoiced" : 0,  "period" : "2005-12-08", "extra" : 8 } ] },
-                                 { 'customer' : 'CUSTOMER1', 'type' : [ 'TYPE' ], 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag2'}, 'employees' : [ { '_id' : self.users_ids[0], 'name' : 'Emp2'} ] }, 
-                                 { 'customer' : 'CUSTOMER3', 'type' : [ 'TYPE' ], 'name' : 'PROJECTNAME3', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Manag3'}, 'employees' : [ { '_id' : self.users_ids[2], 'name' : 'Emp3'} ] } 
+                                 { 'customer' : 'CUSTOMER1', 'type' : [ 'TYPE2' ], 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag2'}, 'employees' : [ { '_id' : self.users_ids[0], 'name' : 'Emp2'} ] }, 
+                                 { 'customer' : 'CUSTOMER3', 'type' : [ 'TYPE3' ], 'name' : 'PROJECTNAME3', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Manag3'}, 'employees' : [ { '_id' : self.users_ids[2], 'name' : 'Emp3'} ] } 
                                  ], 
                 { 'error' : None, 'ids' : [ '', '', '' ] }
                 )
@@ -85,7 +85,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'start': '1999-01-01', 
                                                       'end' : '2020-02-02',
                                                       'projects' : [],
-                                                      'customer' : ''
+                                                      'customers' : []
                                       }
                                     , {u'error': None, u'records': [[u'2005-10', {u'budget': 0, u'cost': 5*8, u'extra': 0}], [u'2009-10', {u'budget': 0, u'cost': 100*8 + 100*8*0.15, u'extra': 0}]]}
                                     )
@@ -95,7 +95,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'start': '1999-01-01', 
                                                       'end' : '2006-02-02',
                                                       'projects' : [],
-                                                      'customer' : ''
+                                                      'customers' : []
                                       }
                                     , {u'error': None, u'records': [[u'2005-10', {u'budget': 0, u'cost': 5*8, u'extra': 0}]]}
                                     )
@@ -105,11 +105,46 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'start': '1999-01-01', 
                                                       'end' : '2020-02-02',
                                                       'projects' : [ self.projects_ids[0] ],
-                                                      'customer' : ''
+                                                      'customers' : []
                                       }
                                     , {u'error': None, u'records': [[u'2005-10', {u'budget': 3, u'cost': 5*4, u'extra': 1}], [u'2009-10', {u'budget': 0, u'cost': 100*8 + 100*8*0.15, u'extra': 0}]]}
                                     )
 
+
+        # Search by type
+        self._assert_req('/data/report_projects', {
+                                                      'start': '1999-01-01', 
+                                                      'end' : '2020-02-02',
+                                                      'projects' : [],
+                                                      'customers' : [],
+                                                      'types' : [ 'TYPE1' ]
+                                      }
+                                    , {u'error': None, u'records': [[u'2005-10', {u'budget': 3, u'cost': 5*4, u'extra': 1}], [u'2009-10', {u'budget': 0, u'cost': 100*8 + 100*8*0.15, u'extra': 0}]]}
+                                    )
+
+        # Search by types
+        self._assert_req('/data/report_projects', {
+                                                      'start': '1999-01-01', 
+                                                      'end' : '2020-02-02',
+                                                      'projects' : [],
+                                                      'customers' : [],
+                                                      'types' : [ 'TYPE1', 'TYPE2', 'TYPE3' ]
+                                      }
+                                    , {u'error': None, u'records': [[u'2005-10', {u'budget': 0, u'cost': 5*8, u'extra': 0}], [u'2009-10', {u'budget': 0, u'cost': 100*8 + 100*8*0.15, u'extra': 0}]]}
+                                    )
+        
+        # Search using multiple factors
+        self._assert_req('/data/report_projects', {
+                                                      'start': '1999-01-01', 
+                                                      'end' : '2020-02-02',
+                                                      'projects' : [ self.projects_ids[2] ],
+                                                      'customers' : [ 'CUSTOMER1' ],
+                                                      'types' : [ 'TYPE1' ]
+                                      }
+                                    , {u'error': None, u'records': [[u'2005-10', {u'budget': 0, u'cost': 5*8, u'extra': 0}], [u'2009-10', {u'budget': 0, u'cost': 100*8 + 100*8*0.15, u'extra': 0}]]}
+                                    )
+        
+        
 
     def test_report_project_modeproject_ok(self):
           
@@ -119,7 +154,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'start': '1999-01-01', 
                                                       'end' : '2020-02-02',
                                                       'projects' : [],
-                                                      'customer' : '',
+                                                      'customers' : [],
                                                       'mode' : 'project'
                                       }
                                     , {u'error': None, u'records': { self.projects_ids[0] : [[u'2005-10', {u'budget': 3, u'cost': 5*4, u'extra': 1}], [u'2009-10', {u'budget': 0, u'cost': 100*8 + 100*8*0.15, u'extra': 0}]], 
@@ -131,7 +166,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'start': '1999-01-01', 
                                                       'end' : '2006-02-02',
                                                       'projects' : [],
-                                                      'customer' : '',
+                                                      'customers' : [],
                                                       'mode' : 'project'
                                       }
                                     , {u'error': None,  u'records': { self.projects_ids[0] : [[u'2005-10', {u'budget': 3, u'cost': 5*4, u'extra': 1}]], self.projects_ids[1]: [[u'2005-10', {u'budget': 0, u'cost': 5*4, u'extra': 0}]]}}
@@ -142,7 +177,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'start': '1999-01-01', 
                                                       'end' : '2020-02-02',
                                                       'projects' : [ self.projects_ids[0] ],
-                                                      'customer' : '',
+                                                      'customers' : [],
                                                       'mode' : 'project'
                                       }
                                     , {u'error': None, u'records': { self.projects_ids[0] : [[u'2005-10', {u'budget': 3, u'cost': 5*4, u'extra': 1}], [u'2009-10', {u'budget': 0, u'cost': 100*8 + 100*8*0.15, u'extra': 0}]] } }
@@ -168,7 +203,7 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
                                                       'start': '1999-01-01', 
                                                       'end' : '2020-02-02',
                                                       'projects' : [ self.projects_ids[0] ],
-                                                      'customer' : ''
+                                                      'customers' : []
                                       }
                                     , {u'error': None, u'records': [[u'2005-10', {u'budget': 3, u'cost': 20, u'extra': 1}], [u'2009-10', {u'budget': 0, u'cost': 800 + 800*0.15, u'extra': 0}]]}
                                     )
@@ -178,7 +213,7 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
                                                       'start': '1999-01-01', 
                                                       'end' : '2020-02-02',
                                                       'projects' : [  ],
-                                                      'customer' : 'CUSTOMER'
+                                                      'customers' : [ 'CUSTOMER' ]
                                       }
                                     , {u'error': None, u'records': [[u'2005-10', {u'budget': 3, u'cost': 20, u'extra': 1}], [u'2009-10', {u'budget': 0, u'cost': 800 + 800*0.15, u'extra': 0}]]}
                                     )
@@ -190,7 +225,7 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
                                                       'start': '1999-03-03', 
                                                       'end' : '2020-03-03',
                                                       'projects' : [  ],
-                                                      'customer' : ''
+                                                      'customers' : []
                                       }
                                     , {u'error': "ValidationError: 'users.hours.project' is a required property" }
                                     )
@@ -200,7 +235,7 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
                                                       'start': '1999-01-01', 
                                                       'end' : '2020-02-02',
                                                       'projects' : [ self.projects_ids[2] ],
-                                                      'customer' : ''
+                                                      'customers' : []
                                       }
                                     , {u'error': "ValidationError: u'%s' is not one of ['%s', '%s']" % (self.projects_ids[2], self.projects_ids[0], self.projects_ids[1])}
                                     )
@@ -210,7 +245,7 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
                                                       'start': '1999-01-01', 
                                                       'end' : '2020-02-02',
                                                       'projects' : [  ],
-                                                      'customer' : 'CUSTOMER2'
+                                                      'customers' : [ 'CUSTOMER2' ]
                                       }
                                     , {u'error': "ValidationError: 'users.hours.project' is a required property" }
                                     )
@@ -233,7 +268,7 @@ class ReportUsersHoursAPIAsUser(TestCaseAsEmployee, ModuleData):
                                                       'start': '1999-01-01', 
                                                       'end' : '2020-02-02',
                                                       'projects' : [ self.projects_ids[0] ],
-                                                      'customer' : ''
+                                                      'customers' : []
                                       }
                                     , {u'error': "TSValidationError: Access to 'report_projects' is restricted for current user"}
                                     )  
