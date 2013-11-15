@@ -87,7 +87,9 @@ project:
       type: string
       minLength: 1
     type:
-      type: string
+      type: array
+      items:
+        type: string
     name: 
       type: string
       minLength: 1
