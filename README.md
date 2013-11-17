@@ -11,7 +11,7 @@ Setup
 
   2. Install the dependencies
 
-        sudo pip install cherrypy yaml pymongo bson mako jsonschema
+        sudo pip install yaml pymongo bson mako jsonschema
 
   3. Install and run [mongodb](http://docs.mongodb.org/manual/installation/) database
 
