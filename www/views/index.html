@@ -1,8 +1,14 @@
 <script type="text/javascript">
-var cur_trips, trip_id, cur_expences;
+var cur_trips, trip_id, cur_expences, cur_id, motivation;
 var labels = ["from","city","country","start","end","description","accommodation"];
 $(document).ready(function() {
   user.me(userdata);
+  $("#btnreject").click(function() {
+    motivation = $("#tripnote").text();
+    var filter = [{"trips._id": cur_id, "responsible._id" : me._id },{trips:1},{name:1}];
+    trip.loaddetails(filter, rejectTrip, "");
+    $('#rejecttrip').modal('hide');
+  });
 });
 
 function userdata(data){
@@ -36,6 +42,31 @@ function loadTrips(data, container) {
         content: generateTripPopover(curid, cur_trips),
     });
   });
+  $("#" + container + " .list-group-item button.btn-success").click(function() {
+    cur_id = $(this).parent().attr("id");
+    var filter = [{"trips._id": cur_id, "responsible._id" : me._id },{trips:1},{name:1}];
+    trip.loaddetails(filter, authorizeTrip, "");
+  });
+  $("#" + container + " .list-group-item button.btn-danger").click(function() {
+    cur_id = $(this).parent().attr("id");
+    $('#rejecttrip').modal('show');
+  });
+}
+
+function authorizeTrip(data, container) {
+  data[0].trips[0].status = 4;
+  data[0].trips[0].note = "";
+  trip.updatestatus(data, removeElement);
+}
+
+function rejectTrip(data, container) {
+  data[0].trips[0].status = 4;
+  data[0].trips[0].note = motivation;
+  trip.updatestatus(data, removeElement);
+}
+
+function removeElement() {
+  $("#" + cur_id).remove();
 }
 
 function generateTripPopover(id, ctrips) {
@@ -62,4 +93,21 @@ function generateTripPopover(id, ctrips) {
 <ul id="tripreq"></ul>
 <p>List of expences waiting for approval</p>
 <ul id="expreq"></ul>
-
+<div class="modal fade" id="rejecttrip" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+          <h4 class="modal-title">Reject trip request</h4>
+        </div>
+        <div class="modal-body">
+          Motivation:
+          <textarea class="form-control" id="tripnote" name="tripnote" rows="3" placeholder="Description"></textarea>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
+          <button type="button" class="btn btn-primary" id="btnreject">Reject</button>
+        </div>
+      </div><!-- /.modal-content -->
+    </div><!-- /.modal-dialog -->
+  </div><!-- /.modal -->
