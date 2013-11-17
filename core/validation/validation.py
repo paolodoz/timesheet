@@ -1,13 +1,6 @@
 import cgi, yaml, random, string, hashlib, types, jsonschema
 from core.config import schema, core_folder, requests_schema
-
-# Dirty hack to avoid the bug 
-# http://stackoverflow.com/questions/10401499/mongokit-importerror-no-module-named-objectid-error
-# Old pymongo versions uses pymongo.objectid.ObjectId while new uses bson.ObjectId
-try:
-    from pymongo.objectid import ObjectId
-except ImportError as e:
-    from bson import ObjectId
+from bson.objectid import ObjectId
 
 class TSValidationError(Exception):
     pass
