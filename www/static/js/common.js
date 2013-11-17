@@ -276,7 +276,7 @@ var trip = {
     });
   },
   update : function (isupdate, form, callback) {
-    var trip, prj_arr = new Array(), url;
+    var prj_arr = new Array(), url;
     prj_arr[0] = {};
     prj = prj_arr[0];
     url = "/data/push_trips";
@@ -301,10 +301,16 @@ var trip = {
           prj.trips[0][property] = value;
       }
     });
+    trip._update(url, prj_arr, callback);
+  },
+  updatestatus : function (prj_arr, callback) {
+    trip._update("/data/push_trips", prj_arr, callback);
+  },
+  _update : function (url, prj, callback) {
     $.ajax({
       type: "POST",
       url: url,
-      data: JSON.stringify(prj_arr),
+      data: JSON.stringify(prj),
       success: function(data) {
         if(!data.error) {
           callback(data);
