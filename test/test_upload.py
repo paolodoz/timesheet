@@ -105,8 +105,8 @@ class Upload(TestClassBase):
         
     
     def test_text(self):
-        json_upload = self._assert_upload('/etc/motd')
-        self._assert_download(json_upload['upload_id'], '/etc/motd')
+        json_upload = self._assert_upload('/etc/protocols')
+        self._assert_download(json_upload['upload_id'], '/etc/protocols')
         
         self._assert_req('/file/remove', [ json_upload['upload_id'] ] , { 'error' : None })
         self._assert_download(json_upload['upload_id'], '')
