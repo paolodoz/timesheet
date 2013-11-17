@@ -5,13 +5,13 @@ Setup
 -----
 
 
-  1. If required, install Python package installer
+  1. Install Python package installer and some libraries
 
-        sudo apt-get install python-pip
+        sudo apt-get install python-dev libldap2-dev libsasl2-dev
 
-  2. Install the dependencies
+  2. Install the main dependencies
 
-        sudo pip install yaml pymongo bson mako jsonschema
+        sudo pip install --upgrade PyYAML pymongo mako jsonschema python-ldap
 
   3. Install and run [mongodb](http://docs.mongodb.org/manual/installation/) database
 
