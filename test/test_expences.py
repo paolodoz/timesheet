@@ -206,6 +206,10 @@ class ExpencesAPIAsManager(TestCaseAsManager, ModuleData):
         # Search only last trip specifying time stamp
         self._assert_req('/data/search_expences', {  "responsible_id" : self.manager_id, 'start' : '1999-01-01', 'end' : '2001-10-08' }, {u'error': None, 'records' : [{ '_id' : '', "user_id" : self.users_ids[1], "trip_id" : '2'*24, 'status': 0, "date" : "2000-10-08", "file" : {}, 'objects' : [{}] }]})
  
+        # Search by employee_id
+        self._assert_req('/data/search_expences', {  "employee_id" : self.manager_id }, {u'error': None, 'records' : [{ '_id' : '', "user_id" : self.manager_id, "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] }]})
+        
+ 
          
     def test_day_ko(self):
         self.maxDiff = None
@@ -238,9 +242,11 @@ class ExpencesAPIAsManager(TestCaseAsManager, ModuleData):
 
 
         # Search without specify ids
-        self._assert_req('/data/search_expences', {  }, {u'error': u"ValidationError: 'responsible_id' is a required property"})
+        self._assert_req('/data/search_expences', {  }, {u'error': u"ValidationError: {} is not valid under any of the given schemas"})
           
         # Search with wrong ids
-        self._assert_req('/data/search_expences', {  "responsible_id" : self.users_ids[1] }, {u'error': u"ValidationError: u'%s' does not match '^%s$'" % (self.users_ids[1], self.manager_id)})
+        self._assert_req('/data/search_expences', {  "responsible_id" : self.users_ids[1] }, {u'error': u"ValidationError: {u'responsible_id': u'%s'} is not valid under any of the given schemas" % (self.users_ids[1])})
   
+         
+         
          
