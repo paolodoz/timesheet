@@ -11,8 +11,8 @@ def get_user_restrictions():
                     '%%_id%%' : '^%s$' % (str(cherrypy.session['_ts_user']['_id'])),
                     '%%managed_projects%%' : (cherrypy.session['_ts_user']['managed_projects']),
                     '%%employed_projects%%' : (cherrypy.session['_ts_user']['employed_projects']),
-                    '%%projects%%' : (cherrypy.session['_ts_user']['employed_projects'] + 
-                                      cherrypy.session['_ts_user']['managed_projects']),
+                    '%%projects%%' : list(set(cherrypy.session['_ts_user']['employed_projects'] + 
+                                      cherrypy.session['_ts_user']['managed_projects'])),
                     }
 
     def _replace_function_permissions_schema(container):
