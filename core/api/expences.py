@@ -2,6 +2,7 @@ from core.validation.permissions import check_datamine_permissions
 from core.validation.validation import TSValidationError, validate_request, update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
 from bson.objectid import ObjectId
 from core.api.crud import db
+from core.config import schema
 import cherrypy, logging
 
 def push_expences(documents_list):
@@ -110,10 +111,15 @@ def search_expences(criteria):
     if status != None:
         trips_matches['expences.status'] = { '$in' : status }
 
+    expences_rename = { 'expences.project_id' : '$_id' }
+    for expence_key in schema['project']['properties']['expences']['items']['properties'].keys():
+        expences_rename['expences.%s' % expence_key] = 1
+
     aggregation_pipe = [  
                         { '$match': projects_ids_matches },
                         { '$unwind' : '$expences' }, 
                         { '$match' : trips_matches },
+                        { '$project' : expences_rename },
                         { '$group' : { '_id' : '$expences' } }
                         ]
 
