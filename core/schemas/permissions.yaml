@@ -58,13 +58,17 @@ search_trips:
         type: string
         pattern: '%%_id%%'      
   project manager:
-    required: [ responsible_id ]
-    type: object
-    properties:
-      responsible_id:
-        type: string
-        pattern: '%%_id%%'          
-
+    oneOf:
+      - required: [ responsible_id ]
+        properties:
+          responsible_id:
+            type: string
+            pattern: '%%_id%%'          
+      - required: [ employee_id ]
+        properties:
+          employee_id:
+            type: string
+            pattern: '%%_id%%' 
     
 search_expences:
   employee:

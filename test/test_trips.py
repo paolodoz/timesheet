@@ -186,9 +186,19 @@ class TripAPIAsManager(TestCaseAsManager, ModuleData):
  
     def test_trips_search(self):
          
+        # Search trips by responsible
         self._assert_req('/data/search_trips', {  "responsible_id" : self.manager_id }, {u'error': None, 'records' : [
                                                                                                                     { 'project_id':  self.projects_ids[0], '_id' : '', "user_id" : '1'*24, "description" : "descr1", "status" : 0, "start" : "2010-10-08", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'note' : 'approved', 'accommodation' : {} } 
                                                                                                                     ]})
+ 
+        # Search trips by employee
+ 
+        self._assert_req('/data/search_trips', {  "employee_id" : self.manager_id }, {u'error': None, 'records' : [
+                                                 { 'project_id':  self.projects_ids[1], '_id' : '', "user_id" : self.manager_id, "description" : "descr1", "status" : 1, "start" : "2010-10-08", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'note' : 'approved', 'accommodation' : {} },
+                                                 
+                                                 { 'project_id':  self.projects_ids[1], '_id' : '', "user_id" : '1'*24, "description" : "descr1", "status" : 0, "start" : "2010-10-08", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'note' : 'approved', 'accommodation' : {} },     
+                                                                                                               ]})
+ 
  
     def test_trips_ok(self):
  
@@ -255,9 +265,9 @@ class TripAPIAsManager(TestCaseAsManager, ModuleData):
 #         )       
 
         # Search without specify ids
-        self._assert_req('/data/search_trips', {  }, {u'error': u"ValidationError: 'responsible_id' is a required property"})
+        self._assert_req('/data/search_trips', {  }, {u'error': u"ValidationError: {} is not valid under any of the given schemas"})
           
         # Search with wrong ids
-        self._assert_req('/data/search_trips', {  "responsible_id" : self.users_ids[1] }, {u'error': u"ValidationError: u'%s' does not match '^%s$'" % (self.users_ids[1], self.manager_id)})
+        self._assert_req('/data/search_trips', {  "responsible_id" : self.users_ids[1] }, {u'error': "ValidationError: {u'responsible_id': u'%s'} is not valid under any of the given schemas" % (self.users_ids[1])})
   
     
