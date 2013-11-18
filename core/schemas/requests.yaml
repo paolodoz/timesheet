@@ -48,6 +48,9 @@ search_trips:
       type: array
       items:
         type: number
+    trip_id:
+        type: string
+        pattern: '[\dabcdef]{24}'          
     project_id:
         type: string
         pattern: '[\dabcdef]{24}'          

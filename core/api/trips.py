@@ -2,6 +2,7 @@ from core.validation.permissions import check_datamine_permissions
 from core.validation.validation import TSValidationError, validate_request, update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
 from bson.objectid import ObjectId
 from core.api.crud import db
+from core.config import schema 
 import cherrypy, logging
 
 
@@ -72,7 +73,7 @@ def search_trips(criteria):
     
     POST /data/search_trips/    
     
-    Expects { 'start': data, 'end': data, 'status': [ integer, integer, .. ], 'user_id': string, project_id: string, employee_id: string, 'responsible_id' : string }
+    Expects { 'start': data, 'end': data, 'status': [ integer, integer, .. ], 'trip_id' : string, 'user_id': string, 'project_id': string, 'employee_id': string, 'responsible_id' : string }
     Returns { 'error' : string, 'records' : [ { }, { }, .. ]  } 
     """
 
@@ -82,7 +83,6 @@ def search_trips(criteria):
     sanified_criteria = sanitize_objectify_json(criteria)
 
     # Prepare the aggregation pipe
-    
     projects_ids_matches = {}
     employee_id = sanified_criteria.get('employee_id')
     if employee_id != None:
@@ -94,7 +94,11 @@ def search_trips(criteria):
     if project_id != None:
         projects_ids_matches['_id'] = ObjectId(project_id)
 
+
     trips_matches = {}
+    trip_id = sanified_criteria.get('trip_id')
+    if trip_id != None:
+        trips_matches['trips._id'] = ObjectId(trip_id)
     user_id = sanified_criteria.get('user_id')
     if user_id != None: 
         trips_matches['trips.user_id'] = user_id  
@@ -108,11 +112,15 @@ def search_trips(criteria):
     if date_end != None:
         trips_matches['trips.end'] = { '$lte' : date_end }
 
+    trips_rename = { 'trips.project_id' : '$_id' }
+    for trip_key in schema['project']['properties']['trips']['items']['properties'].keys():
+        trips_rename['trips.%s' % trip_key] = 1
 
     aggregation_pipe = [  
                         { '$match': projects_ids_matches },
                         { '$unwind' : '$trips' }, 
                         { '$match' : trips_matches },
+                        { '$project' : trips_rename },
                         { '$group' : { '_id' : '$trips' } }
                         ]
 

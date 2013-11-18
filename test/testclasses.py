@@ -22,6 +22,7 @@ class TestClassBase(unittest.TestCase):
     
     def setUp(self):
 
+        self.maxDiff = None
         self.execOnTearDown = []
         
         self.cookies = CookieJar()

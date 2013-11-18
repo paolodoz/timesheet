@@ -80,11 +80,13 @@ def sanitize_objectify_json(json_in):
 def _replace_function_stringify_objectid_json(container):
     """Callback for stringify_objectid_cursor"""
     
-    if isinstance(container, types.DictType) and '_id' in container and isinstance(container['_id'],ObjectId):
+    if isinstance(container, types.DictType):
         # Objectify id string and continue with recursive replace
-        container['_id'] = str(container['_id'])
+        for id_key in (k for k in container.keys() if isinstance(container[k],ObjectId) and (k == '_id' or k.endswith('_id'))):
+                container[id_key] = str(container[id_key])
+        
         t = container.__class__
-        return t((x,recursive_replace(container[x], _replace_function_stringify_objectid_json)) for x in container)
+        return t((x,recursive_replace(container[x], _replace_function_sanitize_objectify_json)) for x in container)
     elif isinstance(container, basestring):
         return container
 

@@ -2,6 +2,11 @@ import yaml, cherrypy, types, jsonschema
 from core.validation.validation import TSValidationError, recursive_replace, ObjectId
 from core.config import restrictions_schema
 
+def _unique_keeping_order(seq):
+    seen = set()
+    seen_add = seen.add
+    return [ x for x in seq if x not in seen and not seen_add(x)]
+
 def get_user_restrictions():
     """Format restriction schemas. Saved on auth login to speedup following accesses"""
     
@@ -11,8 +16,8 @@ def get_user_restrictions():
                     '%%_id%%' : '^%s$' % (str(cherrypy.session['_ts_user']['_id'])),
                     '%%managed_projects%%' : (cherrypy.session['_ts_user']['managed_projects']),
                     '%%employed_projects%%' : (cherrypy.session['_ts_user']['employed_projects']),
-                    '%%projects%%' : list(set(cherrypy.session['_ts_user']['employed_projects'] + 
-                                      cherrypy.session['_ts_user']['managed_projects'])),
+                    '%%projects%%' : _unique_keeping_order(cherrypy.session['_ts_user']['employed_projects'] + 
+                                      cherrypy.session['_ts_user']['managed_projects']),
                     }
 
     def _replace_function_permissions_schema(container):
