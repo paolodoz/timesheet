@@ -128,8 +128,12 @@ var project = {
       var property = $(this).attr("id").substr(7);
       if (property == "_id" && !isupdate)
         return;
+      if (property == "type")
+        return;
       project[property] = $(this).val();
     });
+    project.type = new Array();
+    project.type[0] = $("#projecttype").val();
     for(i = 0; i < project.tasks.length; i++) {
       project.tasks[i] = Number(project.tasks[i]);
     }
