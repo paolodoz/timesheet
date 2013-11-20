@@ -86,7 +86,7 @@ def _replace_function_stringify_objectid_json(container):
                 container[id_key] = str(container[id_key])
         
         t = container.__class__
-        return t((x,recursive_replace(container[x], _replace_function_sanitize_objectify_json)) for x in container)
+        return t((x,recursive_replace(container[x], _replace_function_stringify_objectid_json)) for x in container)
     elif isinstance(container, basestring):
         return container
 
