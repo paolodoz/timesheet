@@ -82,7 +82,7 @@ def _replace_function_stringify_objectid_json(container):
     
     if isinstance(container, types.DictType):
         # Objectify id string and continue with recursive replace
-        for id_key in (k for k in container.keys() if isinstance(container[k],ObjectId) and (k == '_id' or k.endswith('_id'))):
+        for id_key in (k for k in container.keys() if isinstance(container[k],ObjectId)):
                 container[id_key] = str(container[id_key])
         
         t = container.__class__
