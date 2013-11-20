@@ -4,9 +4,8 @@ var labels = ["from","city","country","start","end","description","accommodation
 $(document).ready(function() {
   user.me(userdata);
   $("#btnreject").click(function() {
-    motivation = $("#tripnote").text();
-    var filter = [{"trips._id": cur_id, "responsible._id" : me._id },{trips:1},{name:1}];
-    trip.loaddetails(filter, rejectTrip, "");
+    motivation = $("#tripnote").val();
+    updateTripStatus(cur_id, 1, motivation)
     $('#rejecttrip').modal('hide');
   });
 });
@@ -44,8 +43,7 @@ function loadTrips(data, container) {
   });
   $("#" + container + " .list-group-item button.btn-success").click(function() {
     cur_id = $(this).parent().attr("id");
-    var filter = [{"trips._id": cur_id, "responsible._id" : me._id },{trips:1},{name:1}];
-    trip.loaddetails(filter, authorizeTrip, "");
+    updateTripStatus(cur_id, 4, "");
   });
   $("#" + container + " .list-group-item button.btn-danger").click(function() {
     cur_id = $(this).parent().attr("id");
@@ -53,16 +51,25 @@ function loadTrips(data, container) {
   });
 }
 
-function authorizeTrip(data, container) {
-  data[0].trips[0].status = 4;
-  data[0].trips[0].note = "";
-  trip.updatestatus(data, removeElement);
+function findTrip(id) {
+  var i;
+  for(i=0; i<cur_trips.length; i++) {
+    if(cur_trips[i]._id == id)
+      return cur_trips[i];
+  }
 }
 
-function rejectTrip(data, container) {
-  data[0].trips[0].status = 4;
-  data[0].trips[0].note = motivation;
-  trip.updatestatus(data, removeElement);
+function updateTripStatus(id, status, motivation) {
+  var seltrip = findTrip(id);
+  var prj = [{}];
+  prj[0]._id = seltrip.project_id;
+  seltrip.status = status;
+  seltrip.note = motivation;
+  delete seltrip.project_id;
+  prj[0].trips = new Array();
+  prj[0].trips[0] = {};
+  prj[0].trips[0] = seltrip;
+  trip.updatestatus(prj, removeElement);
 }
 
 function removeElement() {
