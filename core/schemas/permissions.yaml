@@ -265,3 +265,8 @@ push_expences:
         _id:
           type: string
           enum: '%%projects%%'
+          
+          
+search_tags:
+  project manager:
+      True

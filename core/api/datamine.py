@@ -8,6 +8,7 @@ import cherrypy, logging
 from expences import search_expences, push_expences
 from trips import search_trips, push_trips
 from days import search_days, push_days
+from tags import search_tags
 
 def report_users_hours(criteria):
     

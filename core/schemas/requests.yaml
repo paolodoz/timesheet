@@ -194,3 +194,11 @@ file_download:
   properties: 
     upload_id:
       type: string
+      
+search_tags:
+    type: object
+    required: [ count ]
+    properties:
+      count:
+        type: number
+        
