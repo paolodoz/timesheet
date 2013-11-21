@@ -27,6 +27,7 @@ $(document).ready(function() {
     project.remove($("#project_id").val(),resetProjectsForm);
     loadProjectsList("projectsList");
   });
+  tag.load("taglist",30);
   $("#projectForm").submit(function(event) {
     event.preventDefault();
     if(!validator.form())
@@ -113,7 +114,7 @@ function resetProjectsForm()
   $("#projectForm")[0].reset();
   $("#project_id").val(0);
   $("#btnremove").addClass("hidden");
-  $("#projectsList li").removeClass("active");
+  $("#projectsList li, #taglist li").removeClass("active");
   $("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
   $("#usersList li").removeClass("active");
   $("#responsibleid").val(0);
@@ -171,17 +172,22 @@ function loadProjectDetails(data,container) {
   }
   $("#usersForm h4 span").text(data.records[0].responsible.name);
   $("#responsibleid").val(data.records[0].responsible._id);
-  setActiveUsers(data.records[0].employees);
+  setActive(data.records[0], "tags", "taglist");
+  setActive(data.records[0], "employees", "");
+  $("#projecttags").val("");
   $("#projectbkgcolor").prev("span").css("background-color",$("#projectbkgcolor").val());
   $("#projecttxtcolor").prev("span").css("background-color",$("#projecttxtcolor").val());
   $(".btn-danger").removeClass("hidden");
   $("#btnsubmit").html("<span class='glyphicon glyphicon-edit'></span> Update");
 }
 
-function setActiveUsers(employees) {
+function setActive(records, field, container) {
   var i;
-  for (i = 0; i < employees.length; i++) {
-    $("#" + employees[i]._id).addClass("active");
+  for (i = 0; i < records[field].length; i++) {
+    if(field == "tags")
+      $('#' + container + ' li:contains("' + records[field][i] + '")').addClass("active")
+    else
+      $("#" + records[field][i]._id).addClass("active");
   }
 }
 
@@ -234,14 +240,9 @@ function filterlist(list, currenttext) {
     </div>
   </div>
 <div class="form-group">
-    <label for="projecttype" class="col-lg-4 control-label">Type</label>
+    <label for="projecttype" class="col-lg-4 control-label">Tags</label>
     <div class="col-lg-6">
-      <select class="form-control" id="projecttype">
-  <option value="1">Development</option>
-  <option value="2">Research</option>
-  <option value="3">Business</option>
-  <option value="4">Organization</option>
-      </select>
+      <ul id="taglist"></ul>
     </div>
   </div>
 <div class="form-group">

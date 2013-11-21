@@ -71,3 +71,25 @@ form .error {
 .popover-content .dl-horizontal dd {
   margin-left:100px;
 }
+#taglist {
+  padding:0px;
+  width:auto;
+}
+#taglist li {
+  border:1px solid #DDD;
+  border-radius: 4px;
+  cursor:pointer;
+  display:block;
+  float:left;
+  list-style-type:none;
+  margin-left:5px;
+  margin-top:5px;
+  padding:5px;
+}
+#taglist li.active {
+  background-color: #428BCA;
+  color: #FFFFFF;
+}
+#taglist li input {
+  width:80px;
+}
