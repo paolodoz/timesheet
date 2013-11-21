@@ -86,7 +86,7 @@ def report_projects(criteria):
     
     POST /data/report_projects/
     
-    Expects { 'start' : '', 'end' : '', 'customers' : [], 'projects' : [], 'types' : [], 'mode' : 'total|project' } 
+    Expects { 'start' : '', 'end' : '', 'customers' : [], 'projects' : [], 'tags' : [], 'mode' : 'total|project' } 
     Returns with mode total
        { 'error' : string, 'records' : [ [ 'YYYY-MM', 2 ], [ 'YYYY-MM', 4 ], .. ]  } 
     Returns with mode total
@@ -104,10 +104,10 @@ def report_projects(criteria):
             for project in customer_projects:
                 projects_input.append(str(project['_id'])) 
             
-        # Add projects by types
-        types_input = sanified_criteria.get('types')
+        # Add projects by tags
+        types_input = sanified_criteria.get('tags')
         if types_input:
-            types_projects = db.project.find( { 'type' : {  '$in' : types_input } }, { '_id' : 1 })
+            types_projects = db.project.find( { 'tags' : {  '$in' : types_input } }, { '_id' : 1 })
             for project in types_projects:
                 projects_input.append(str(project['_id'])) 
         

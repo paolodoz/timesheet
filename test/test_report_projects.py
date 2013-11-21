@@ -15,13 +15,13 @@ class ModuleData:
         
         # Add projects
         projects_json = self._assert_req('/add/project', [ 
-                                 { 'customer' : 'CUSTOMER', 'type' : [ 'TYPE1' ], 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag1'}, 'employees' : [ { '_id' : self.users_ids[1], 'name' : 'Emp1'} ], 
+                                 { 'customer' : 'CUSTOMER', 'tags' : [ 'TYPE1' ], 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag1'}, 'employees' : [ { '_id' : self.users_ids[1], 'name' : 'Emp1'} ], 
                                   "economics" : [ 
                                                  { "note" : "mynote1", "budget" : 3, "invoiced" : 0, "period" : "2005-10-08", "extra" : 1 },     
                                                  { "note" : "mynote2", "budget" : 5, "invoiced" : 0,  "period" : "2005-11-08", "extra" : 4 }, 
                                                  { "note" : "mynote3", "budget" : 20, "invoiced" : 0,  "period" : "2005-12-08", "extra" : 8 } ] },
-                                 { 'customer' : 'CUSTOMER1', 'type' : [ 'TYPE2' ], 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag2'}, 'employees' : [ { '_id' : self.users_ids[0], 'name' : 'Emp2'} ] }, 
-                                 { 'customer' : 'CUSTOMER3', 'type' : [ 'TYPE3' ], 'name' : 'PROJECTNAME3', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Manag3'}, 'employees' : [ { '_id' : self.users_ids[2], 'name' : 'Emp3'} ] } 
+                                 { 'customer' : 'CUSTOMER1', 'tags' : [ 'TYPE2' ], 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag2'}, 'employees' : [ { '_id' : self.users_ids[0], 'name' : 'Emp2'} ] }, 
+                                 { 'customer' : 'CUSTOMER3', 'tags' : [ 'TYPE3' ], 'name' : 'PROJECTNAME3', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Manag3'}, 'employees' : [ { '_id' : self.users_ids[2], 'name' : 'Emp3'} ] } 
                                  ], 
                 { 'error' : None, 'ids' : [ '', '', '' ] }
                 )
@@ -117,7 +117,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'end' : '2020-02-02',
                                                       'projects' : [],
                                                       'customers' : [],
-                                                      'types' : [ 'TYPE1' ]
+                                                      'tags' : [ 'TYPE1' ]
                                       }
                                     , {u'error': None, u'records': [[u'2005-10', {u'budget': 3, u'cost': 5*4, u'extra': 1}], [u'2009-10', {u'budget': 0, u'cost': 100*8 + 100*8*0.15, u'extra': 0}]]}
                                     )
@@ -128,7 +128,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'end' : '2020-02-02',
                                                       'projects' : [],
                                                       'customers' : [],
-                                                      'types' : [ 'TYPE1', 'TYPE2', 'TYPE3' ]
+                                                      'tags' : [ 'TYPE1', 'TYPE2', 'TYPE3' ]
                                       }
                                     , {u'error': None, u'records': [[u'2005-10', {u'budget': 0, u'cost': 5*8, u'extra': 0}], [u'2009-10', {u'budget': 0, u'cost': 100*8 + 100*8*0.15, u'extra': 0}]]}
                                     )
@@ -139,7 +139,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'end' : '2020-02-02',
                                                       'projects' : [ self.projects_ids[2] ],
                                                       'customers' : [ 'CUSTOMER1' ],
-                                                      'types' : [ 'TYPE1' ]
+                                                      'tags' : [ 'TYPE1' ]
                                       }
                                     , {u'error': None, u'records': [[u'2005-10', {u'budget': 0, u'cost': 5*8, u'extra': 0}], [u'2009-10', {u'budget': 0, u'cost': 100*8 + 100*8*0.15, u'extra': 0}]]}
                                     )

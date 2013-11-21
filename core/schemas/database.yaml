@@ -86,7 +86,7 @@ project:
     customer:
       type: string
       minLength: 1
-    type:
+    tags:
       type: array
       items:
         type: string
