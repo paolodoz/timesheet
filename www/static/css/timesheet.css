@@ -96,3 +96,7 @@ form .error {
 #pm h3 {
   clear:both;
 }
+#expreq .details {
+  padding-top:10px;
+  clear:both;
+}

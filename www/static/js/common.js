@@ -397,16 +397,21 @@ var expence = {
     });
   },
   update : function (isupdate, form, status, callback) {
-    var i = 0, prj = [{}], url;
+    var i = 0, prj_arr = [{}], url;
     url = "/data/push_expences";
-    prj[0]._id = $("#expprj").val();
-    prj[0].expences = new Array();
-    prj[0].expences[0] = {};
-    var expence = prj[0].expences[0];
+    prj_arr[0]._id = $("#expprj").val();
+    prj_arr[0].expences = new Array();
+    prj_arr[0].expences[0] = {};
+    var expence = prj_arr[0].expences[0];
     expence.trip_id = $("#exptrip").val();
-    expence.user_id = me._id;
+    if($("#expuser_id").is(":checked")) {
+      expence.user_id = me._id;
+    } else {
+      expence.user_id = "0";
+    }
     expence.date = $("#expdate").val();
     expence.status = status;
+    expence.note = "";
     //file
     if(!$("#offerfile").next("p").hasClass("hidden")) {
       expence.file = {};
@@ -423,10 +428,11 @@ var expence = {
       elem.amount = parseFloat($(this).find("input[name='" + index + "exp_amount']").val());
       elem.category = Number($(this).find("select[name='" + index + "exp_category']").val());
       elem.description = $(this).find("input[name='" + index + "exp_description']").val();
-      if($(this).find("input[type='checkbox']").is(":checked"))
+      if($(this).find("input[name='" + index + "exp_paidby']").is(":checked"))
         elem.paidby = 1;
       else
         elem.paidby = 0;
+      elem.invoice = $(this).find("input[name='" + index + "exp_invoice']").is(":checked");
       if(!$(this).find("p").hasClass("hidden")) {
         elem.file = {};
         elem.file._id = $(this).find("p").attr("id");
@@ -434,6 +440,12 @@ var expence = {
       }
       i++;
     });
+    expence._update(url, prj_arr, callback);
+  },
+  updatestatus : function (prj_arr, callback) {
+    expence._update("/data/push_expences", prj_arr, callback);
+  },
+  _update : function (url, prj, callback) {
     $.ajax({
       type: "POST",
       url: url,
@@ -866,3 +878,5 @@ function capFirstLet(string)
 {
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
+
+function nop(){};

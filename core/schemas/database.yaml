@@ -207,6 +207,8 @@ project:
           date:
             type: string
             format: date
+          note:
+            type: string
           file:
             type: object
             additionalProperties: False
@@ -234,14 +236,16 @@ project:
                   type: string
                 paidby:
                   type: integer
+                invoice:
+                  type: boolean
                 file:
                   type: object
                   additionalProperties: False
-                properties:
-                  _id:
-                    type: string
-                  name:
-                    type: string
+                  properties:
+                    _id:
+                      type: string
+                    name:
+                      type: string
 
 day:
   type: object
