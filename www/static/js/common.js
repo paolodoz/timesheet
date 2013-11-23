@@ -396,7 +396,7 @@ var expence = {
       dataType: "json",
     });
   },
-  update : function (isupdate, form, callback) {
+  update : function (isupdate, form, status, callback) {
     var i = 0, prj = [{}], url;
     url = "/data/push_expences";
     prj[0]._id = $("#expprj").val();
@@ -406,6 +406,7 @@ var expence = {
     expence.trip_id = $("#exptrip").val();
     expence.user_id = me._id;
     expence.date = $("#expdate").val();
+    expence.status = status;
     //file
     if(!$("#offerfile").next("p").hasClass("hidden")) {
       expence.file = {};

@@ -22,11 +22,16 @@ $(document).ready(function() {
     required: true,
     dateISO: true
   });
-  $("#expForm").submit(function(event) {
+  $("#btnsubmit, #btnsave").click(function(event) {
     event.preventDefault();
+    var status;
+    if(this.id == "btnsubmit")
+      status = 3;
+    else
+      status = 2;
     if(!validator.form())
       return;
-    expence.update(false,"expForm",resetExpForm);
+    expence.update(false, "expForm", status, resetExpForm);
   });
   newtableline();
   user.me(userdata);
@@ -51,10 +56,10 @@ function loadProjects(data, container) {
     htmlselect += "<option value='" + data.records[i]._id + "'>" + data.records[i].name + "</option>";
   }
   $("#" + container).html(htmlselect);
-  var filter = { start:"2013-01-01", end:"2014-12-31", status: 4, user_id: me._id, employee_id:me._id };//missing prj_id
+  var filter = { start:"2013-01-01", end:"2014-12-31", status: [4], user_id: me._id, employee_id:me._id, project_id: $("#" + container).val() };
   trip.load(filter,loadTrips, "exptrip");
   $("#" + container).change(function() {
-    var filter = { start:"2013-01-01", end:"2014-12-31", status: 4, user_id: me._id, employee_id:me._id };//missing prj_id
+    var filter = { start:"2013-01-01", end:"2014-12-31", status: [4], user_id: me._id, employee_id:me._id, project_id: $("#" + container).val() };
     trip.load(filter,loadTrips, "exptrip");
   });
 }
@@ -73,9 +78,7 @@ function loadTrips(data, container) {
   var i,j;
   var htmlselect = "<option value='0'>General expences</option>";
   for(i=0;i < data.length; i++) {
-    for(j=0; j < data[i].trips.length; j++) {
-      htmlselect += "<option value='" + data[i].trips[j]._id + "'>" + data[i].trips[j].city + " -- " + data[i].trips[j].start + "</option>";
-    }
+      htmlselect += "<option value='" + data[i]._id + "'>" + data[i].city + " -- " + data[i].start + "</option>";
   }
   $("#" + container).html(htmlselect);
 }
@@ -239,5 +242,7 @@ function generateSelect(ref) {
     </tbody>
   </table>
   <button type="submit" class="btn btn-primary" id="btnsubmit"><span class="glyphicon glyphicon-plus"></span> Submit</button>
+  <button type="submit" class="btn btn-primary" id="btnsave"><span class="glyphicon glyphicon-save"></span> Save Draft</button>
+  <button type="reset" class="btn" id="btnreset"> Reset</button>
 </div>
 </form>
