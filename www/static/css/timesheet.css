@@ -93,3 +93,6 @@ form .error {
 #taglist li input {
   width:80px;
 }
+#pm h3 {
+  clear:both;
+}

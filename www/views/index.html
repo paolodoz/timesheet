@@ -12,8 +12,10 @@ $(document).ready(function() {
 
 function userdata(data){
   me = data;
-  if(me.group == "project manager")
+  if(me.group != "employee") {
     loadTripsList("tripreq");
+    $("#pm").removeClass("hidden");
+  }
 }
 
 function loadExpences(container) {
@@ -77,14 +79,19 @@ function removeElement() {
 }
 
 function generateTripPopover(id, ctrips) {
-  var html = '<h4>Trip Details:</h4><dl class="dl-horizontal">';
-  var i,j;
+  var html = '<dl class="dl-horizontal">';
+  var i,j,active;
   for(i=0; i < ctrips.length; i++) {
     if(ctrips[i]._id == id) {
       for(j=0; j<labels.length; j++) {
         key = labels[j];
         if(key=="accommodation") {
-          html += "services requested";
+          html += '<dt>Services</dt>';
+          for(var value in ctrips[i][key]) {
+            if(ctrips[i][key][value])
+              html += '<span class="icon-' + value + '"></span>';
+          }
+          html += '</div></dd>';
         } else {
           html += '<dt>' + capFirstLet(key) + '</dt><dd>' + ctrips[i][key] + '</dd>';
         }
@@ -96,10 +103,12 @@ function generateTripPopover(id, ctrips) {
 }
 </script>
 <div style="min-height:200px;display:block"></div>
-<p>List of trip waiting for approval</p>
-<ul id="tripreq"></ul>
-<p>List of expences waiting for approval</p>
-<ul id="expreq"></ul>
+<div id="pm" class="hidden">
+<h3>List of trip waiting for approval</h3>
+<ul id="tripreq" class="col-lg-5"></ul>
+<h3>List of expences waiting for approval</h3>
+<ul id="expreq" class="col-lg-5"></ul>
+</div>
 <div class="modal fade" id="rejecttrip" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
     <div class="modal-dialog">
       <div class="modal-content">
