@@ -27,7 +27,7 @@ $(document).ready(function() {
     project.remove($("#project_id").val(),resetProjectsForm);
     loadProjectsList("projectsList");
   });
-  tag.load("taglist",30);
+  tag.load("taglist", 30, true);
   $("#projectForm").submit(function(event) {
     event.preventDefault();
     if(!validator.form())
@@ -240,7 +240,7 @@ function filterlist(list, currenttext) {
     </div>
   </div>
 <div class="form-group">
-    <label for="projecttype" class="col-lg-4 control-label">Tags</label>
+    <label for="projecttags" class="col-lg-4 control-label">Tags</label>
     <div class="col-lg-6">
       <ul id="taglist"></ul>
     </div>

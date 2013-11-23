@@ -702,7 +702,7 @@ var report = {
     });
   },
   byproject: function (form, callback) {
-    var report, url, hours, i;
+    var report, url, hours, i=0;
     report = {};
     url = "/data/report_projects";
     report.start = $("#reportstart").val();
@@ -712,7 +712,15 @@ var report = {
     $("#projectsList li.active").each(function() {
       report.projects[i++] = $(this).attr("id");
     });
-    report.customer= $("#reportcustomer").val();
+    report.customers = new Array();
+    if($("#reportcustomer").val() != "") {
+      report.customers[0] = $("#reportcustomer").val();
+    }
+    i = 0;
+    report.tags = new Array();
+    $("#taglist li.active").each(function() {
+      report.tags[i++] = $(this).text();
+    });
     $.ajax({
       type: "POST",
       url: url,
@@ -762,7 +770,7 @@ var file = {
 }
 
 var tag = {
-  load: function(container, count) {
+  load: function(container, count, edit) {
     var filter = { 'count':count };
     $.ajax({
       type: "POST",
@@ -774,7 +782,9 @@ var tag = {
           for(var i = 0; i < data.records.length; i++) {
             htmlli += "<li>" + data.records[i] + "</li>";
           }
-          htmlli += '<li><div class="input-group"><input type="text" class="form-control input-sm" id="projecttags" name="projecttags" placeholder="New tag"><span class="input-group-addon">Add</span></div></li>';
+          if(edit) {
+            htmlli += '<li><div class="input-group"><input type="text" class="form-control input-sm" id="projecttags" name="projecttags" placeholder="New tag"><span class="input-group-addon">Add</span></div></li>';
+          }
           $("#" + container).html(htmlli);
           $("#" + container + " li").click(function() {
             $(this).toggleClass("active");
