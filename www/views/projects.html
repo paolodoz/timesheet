@@ -172,7 +172,8 @@ function loadProjectDetails(data,container) {
   }
   $("#usersForm h4 span").text(data.records[0].responsible.name);
   $("#responsibleid").val(data.records[0].responsible._id);
-  setActive(data.records[0], "tags", "taglist");
+  if(data.records[0].tags)
+    setActive(data.records[0], "tags", "taglist");
   setActive(data.records[0], "employees", "");
   $("#projecttags").val("");
   $("#projectbkgcolor").prev("span").css("background-color",$("#projectbkgcolor").val());
