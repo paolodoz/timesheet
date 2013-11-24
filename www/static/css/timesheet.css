@@ -100,3 +100,9 @@ form .error {
   padding-top:10px;
   clear:both;
 }
+#expreq p {
+  padding-top:10px;
+}
+#expreq span {
+  padding-top:5px;
+}
