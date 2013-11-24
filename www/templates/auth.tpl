@@ -44,8 +44,6 @@
   </div>
 </form>
 
-
-
 </div>
 </div>
     
@@ -54,7 +52,9 @@
     <script src="/static/js/jquery-1.10.2.js"></script>
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/static/js/bootstrap.min.js"></script>
-
+    <script type="text/javascript">
+      document.getElementById("inputEmail").focus();
+    </script>
     <!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) 
     <script src="/static/js/respond.js"></script> -->
   </body>
