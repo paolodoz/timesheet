@@ -402,27 +402,27 @@ var expence = {
     prj_arr[0]._id = $("#expprj").val();
     prj_arr[0].expences = new Array();
     prj_arr[0].expences[0] = {};
-    var expence = prj_arr[0].expences[0];
-    expence.trip_id = $("#exptrip").val();
+    var expence_el = prj_arr[0].expences[0];
+    expence_el.trip_id = $("#exptrip").val();
     if($("#expuser_id").is(":checked")) {
-      expence.user_id = me._id;
+      expence_el.user_id = me._id;
     } else {
-      expence.user_id = "0";
+      expence_el.user_id = "0";
     }
-    expence.date = $("#expdate").val();
-    expence.status = status;
-    expence.note = "";
+    expence_el.date = $("#expdate").val();
+    expence_el.status = status;
+    expence_el.note = "";
     //file
     if(!$("#offerfile").next("p").hasClass("hidden")) {
-      expence.file = {};
-      expence.file._id = $("#offerfile").next("p").attr("id");
-      expence.file.name = $("#offerfile").next("p").text();
+      expence_el.file = {};
+      expence_el.file._id = $("#offerfile").next("p").attr("id");
+      expence_el.file.name = $("#offerfile").next("p").text();
     }
-    expence.objects = new Array();
+    expence_el.objects = new Array();
     $("#exptable tbody tr").each(function() {
-      expence.objects[i] = {};
+      expence_el.objects[i] = {};
       var index = Number($(this).find("td:eq(0)").text());
-      var elem = expence.objects[i];
+      var elem = expence_el.objects[i];
       elem.date = $(this).find("input[name='" + index + "exp_date']").val();
       elem.city = $(this).find("input[name='" + index + "exp_city']").val();
       elem.amount = parseFloat($(this).find("input[name='" + index + "exp_amount']").val());
