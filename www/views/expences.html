@@ -44,6 +44,9 @@ function userdata(data){
 
 function resetExpForm(data) {
   elemnum = 0;
+  $("#offerfile").val();
+  $("#offerfile").removeClass("hidden");
+  $("#offerfile").next("p").addClass("hidden");
   $("#exptable tbody").html("");
   $("#expForm")[0].reset();
   newtableline();
