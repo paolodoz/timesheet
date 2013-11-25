@@ -37,6 +37,17 @@ $(document).ready( function() {
       $("#hoursamount").val( ui.value );
     }
   });
+  $(document).keypress(function(e) {
+    if(e.keyCode == 13) {
+      if($('#edithours').attr("aria-hidden") == "false") {
+        $("#btnsave").trigger("click");
+      }
+      if($('#removehours').attr("aria-hidden") == "false") {
+        $("#btnremove").trigger("click");
+      }
+      return;
+    }
+  });
   $("#btnsave").click(function () {
     if(!validator.form())
       return;
