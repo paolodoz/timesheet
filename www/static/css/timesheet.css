@@ -44,8 +44,8 @@ form .error {
   z-index: 1;
 }
 
-#usersList {
-  height: 400px;
+#custList, #projectsList, #usersList {
+  height: 450px;
   overflow: auto;
 }
 
