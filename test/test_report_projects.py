@@ -87,7 +87,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'projects' : [],
                                                       'customers' : []
                                       }
-                                    , {u'error': None, u'records': [[u'2005-10', {u'budget': 0, u'cost': 5*8, u'extra': 0}], [u'2009-10', {u'budget': 0, u'cost': 100*8 + 100*8*0.15, u'extra': 0}]]}
+                                    , {u'records': [[u'2005-10', {u'cost': 40.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}], [u'2009-10', {u'cost': 920.0, u'budget': 0, u'extra': 0}]], u'error': None}
                                     )
         
         # Restrict time span             
@@ -97,7 +97,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'projects' : [],
                                                       'customers' : []
                                       }
-                                    , {u'error': None, u'records': [[u'2005-10', {u'budget': 0, u'cost': 5*8, u'extra': 0}]]}
+                                    , {u'records': [[u'2005-10', {u'cost': 40.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}]], u'error': None}
                                     )
 
         # Restrict projects
@@ -107,7 +107,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'projects' : [ self.projects_ids[0] ],
                                                       'customers' : []
                                       }
-                                    , {u'error': None, u'records': [[u'2005-10', {u'budget': 3, u'cost': 5*4, u'extra': 1}], [u'2009-10', {u'budget': 0, u'cost': 100*8 + 100*8*0.15, u'extra': 0}]]}
+                                    , {u'records': [[u'2005-10', {u'cost': 20.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}], [u'2009-10', {u'cost': 920.0, u'budget': 0, u'extra': 0}]], u'error': None}
                                     )
 
 
@@ -119,7 +119,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'customers' : [],
                                                       'tags' : [ 'TYPE1' ]
                                       }
-                                    , {u'error': None, u'records': [[u'2005-10', {u'budget': 3, u'cost': 5*4, u'extra': 1}], [u'2009-10', {u'budget': 0, u'cost': 100*8 + 100*8*0.15, u'extra': 0}]]}
+                                    , {u'records': [[u'2005-10', {u'cost': 20.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}], [u'2009-10', {u'cost': 920.0, u'budget': 0, u'extra': 0}]], u'error': None}
                                     )
 
         # Search by types
@@ -130,7 +130,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'customers' : [],
                                                       'tags' : [ 'TYPE1', 'TYPE2', 'TYPE3' ]
                                       }
-                                    , {u'error': None, u'records': [[u'2005-10', {u'budget': 0, u'cost': 5*8, u'extra': 0}], [u'2009-10', {u'budget': 0, u'cost': 100*8 + 100*8*0.15, u'extra': 0}]]}
+                                    , {u'records': [[u'2005-10', {u'cost': 40.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}], [u'2009-10', {u'cost': 920.0, u'budget': 0, u'extra': 0}]], u'error': None}
                                     )
         
         # Search using multiple factors
@@ -141,7 +141,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'customers' : [ 'CUSTOMER1' ],
                                                       'tags' : [ 'TYPE1' ]
                                       }
-                                    , {u'error': None, u'records': [[u'2005-10', {u'budget': 0, u'cost': 5*8, u'extra': 0}], [u'2009-10', {u'budget': 0, u'cost': 100*8 + 100*8*0.15, u'extra': 0}]]}
+                                    , {u'records': [[u'2005-10', {u'cost': 40.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}], [u'2009-10', {u'cost': 920.0, u'budget': 0, u'extra': 0}]], u'error': None}
                                     )
         
         
@@ -157,8 +157,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'customers' : [],
                                                       'mode' : 'project'
                                       }
-                                    , {u'error': None, u'records': { self.projects_ids[0] : [[u'2005-10', {u'budget': 3, u'cost': 5*4, u'extra': 1}], [u'2009-10', {u'budget': 0, u'cost': 100*8 + 100*8*0.15, u'extra': 0}]], 
-                                                                    self.projects_ids[1]: [[u'2005-10', {u'budget': 0, u'cost': 5*4, u'extra': 0}]]}}
+                                    , {u'records': { self.projects_ids[1]: [[u'2005-10', {u'cost': 20.0, u'budget': 0, u'extra': 0}]], self.projects_ids[0]: [[u'2005-10', {u'cost': 20.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}], [u'2009-10', {u'cost': 920.0, u'budget': 0, u'extra': 0}]]}, u'error': None}
                                     )
         
         # Restrict time span             
@@ -169,7 +168,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'customers' : [],
                                                       'mode' : 'project'
                                       }
-                                    , {u'error': None,  u'records': { self.projects_ids[0] : [[u'2005-10', {u'budget': 3, u'cost': 5*4, u'extra': 1}]], self.projects_ids[1]: [[u'2005-10', {u'budget': 0, u'cost': 5*4, u'extra': 0}]]}}
+                                    , {u'error': None,  u'records': { self.projects_ids[0] : [[u'2005-10', {u'cost': 20.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}]], self.projects_ids[1]: [[u'2005-10', {u'budget': 0, u'cost': 5*4, u'extra': 0}]]}}
                                     )
 
         # Restrict projects
@@ -180,7 +179,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'customers' : [],
                                                       'mode' : 'project'
                                       }
-                                    , {u'error': None, u'records': { self.projects_ids[0] : [[u'2005-10', {u'budget': 3, u'cost': 5*4, u'extra': 1}], [u'2009-10', {u'budget': 0, u'cost': 100*8 + 100*8*0.15, u'extra': 0}]] } }
+                                    , {u'error': None, u'records': { self.projects_ids[0]: [[u'2005-10', {u'cost': 20.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}], [u'2009-10', {u'cost': 920.0, u'budget': 0, u'extra': 0}]] } }
                                     )
 
 
@@ -205,7 +204,7 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
                                                       'projects' : [ self.projects_ids[0] ],
                                                       'customers' : []
                                       }
-                                    , {u'error': None, u'records': [[u'2005-10', {u'budget': 3, u'cost': 20, u'extra': 1}], [u'2009-10', {u'budget': 0, u'cost': 800 + 800*0.15, u'extra': 0}]]}
+                                    , {u'records': [[u'2005-10', {u'cost': 20.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}], [u'2009-10', {u'cost': 920.0, u'budget': 0, u'extra': 0}]], u'error': None}
                                     )
 
         # Search by customer
@@ -215,7 +214,7 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
                                                       'projects' : [  ],
                                                       'customers' : [ 'CUSTOMER' ]
                                       }
-                                    , {u'error': None, u'records': [[u'2005-10', {u'budget': 3, u'cost': 20, u'extra': 1}], [u'2009-10', {u'budget': 0, u'cost': 800 + 800*0.15, u'extra': 0}]]}
+                                    , {u'records': [[u'2005-10', {u'cost': 20.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}], [u'2009-10', {u'cost': 920.0, u'budget': 0, u'extra': 0}]], u'error': None}
                                     )
          
     def test_report_project_ko(self):

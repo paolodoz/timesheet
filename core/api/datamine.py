@@ -189,18 +189,26 @@ def report_projects(criteria):
     
             cost = next((sal['salary'][0]['cost'] for sal in salaries_result if sal['_id'] == ObjectId(user_id) and sal['salary'][0]['from'] <= user_date and sal['salary'][0]['to'] >= user_date ), 0)
             
-            budget, extra = next(( (budg['_id']['budget'], budg['_id']['extra']) for budg in budget_result if budg['_id']['project_id'] == ObjectId(project) and budg['_id']['period'].startswith(user_YM)), (0,0))
-            
-            if cost or budget or extra:
+            if cost:
 
                 # If the hour block is extra, add the multiplier_on_extras to itself
                 if isextra:
                     cost *= conf_reports['multiplier_on_extras']
 
                 if not total_costs.get(user_YM):
-                    total_costs[user_YM] = { 'cost' : 0, 'budget' : budget, 'extra' : extra}
+                    total_costs[user_YM] = { 'cost' : 0, 'budget' : 0, 'extra' : 0 }
              
                 total_costs[user_YM]['cost'] = total_costs[user_YM]['cost']  + round( cost * user_hours, 2 )
+        
+        for budget in budget_result:
+            budget_YM = '-'.join(budget['_id']['period'].split('-')[:2])
+            
+            if not total_costs.get(budget_YM):
+                 total_costs[budget_YM] = { 'cost' : 0 }
+            
+            total_costs[budget_YM]['budget'] = budget['_id']['budget']
+            total_costs[budget_YM]['extra'] = budget['_id']['extra']
+             
                  
         ## ORDER
         
@@ -228,14 +236,12 @@ def report_projects(criteria):
     
             cost = next((sal['salary'][0]['cost'] for sal in salaries_result if sal['_id'] == ObjectId(user_id) and sal['salary'][0]['from'] <= user_date and sal['salary'][0]['to'] >= user_date ), 0)
             
-            budget, extra = next(( (budg['_id']['budget'], budg['_id']['extra']) for budg in budget_result if budg['_id']['project_id'] == ObjectId(project) and budg['_id']['period'].startswith(user_YM)), (0,0))
-            
-            if cost or budget or extra:
+            if cost:
                     
                 if not project_costs.get(project):
                     project_costs[project] = { user_YM : {}}
                 if not project_costs[project].get(user_YM):
-                    project_costs[project][user_YM] = { 'cost' : 0, 'budget' : budget, 'extra' : extra}
+                    project_costs[project][user_YM] = { 'cost' : 0, 'budget' : 0, 'extra' : 0}
                 
                 # If the hour block is extra, add the multiplier_on_extras to itself
                 if isextra:
@@ -243,7 +249,18 @@ def report_projects(criteria):
                 
                 # While can exists multiple costs for a project-month, cannot exists multiple badges or extras
                 project_costs[project][user_YM]['cost'] = project_costs[project][user_YM]['cost']  + round( cost * user_hours, 2 )
-             
+        
+        for budget in budget_result:
+            budget_YM = '-'.join(budget['_id']['period'].split('-')[:2])
+            project = str(budget['_id']['project_id'])
+            
+            if not project_costs.get(project):
+                project_costs[project] = { budget_YM : {}}
+            if not project_costs[project].get(budget_YM):
+                project_costs[project][budget_YM] = { 'cost' : 0, 'budget' : 0, 'extra' : 0}
+            
+            project_costs[project][budget_YM]['budget'] = budget['_id']['budget']
+            project_costs[project][budget_YM]['extra'] = budget['_id']['extra']        
              
         ## ORDER
         output_costs_dict = {}
