@@ -1,21 +1,18 @@
 <script type="text/javascript">
 var validator, isupdate = false;
 $(document).ready(function() {
-  loadCustomersList("custList");
+  resetCustomerForm();
   $("#custForm").submit(function(event) {
     event.preventDefault();
     if(!validator.form())
       return;
     customer.update(isupdate, "custForm", resetCustomerForm);
-    loadCustomersList("custList");
   });
   $("#btnreset").click(function() {
-    resetCustomerForm();
-    isupdate = false;
+    resetCustomerForm(true);
   });
   $("#btnremove").click(function() {
     customer.remove($("#cust_id").val(),resetCustomerForm);
-    loadCustomersList("custList");
   });
   validator = $("#custForm").validate({
     rules: {
@@ -77,7 +74,9 @@ function loadCustomersList(list) {
   customer.load(filter, loadCustomers, list);
 }
 
-function resetCustomerForm() {
+function resetCustomerForm(load) {
+  if(!load)
+    loadCustomersList("custList");
   isupdate = false;
   $("#cust_id").val(0);
   $("#custForm")[0].reset();
@@ -95,7 +94,7 @@ function loadCustomers(data, container) {
   htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Customer ...</li>";
   $("#" + container).html(htmllist);
   $(".list-group-item").click(function() {
-    resetCustomerForm();
+    resetCustomerForm(true);
     $(this).addClass("active");
     if(this.id == "")
       return;

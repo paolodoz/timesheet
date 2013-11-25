@@ -1,7 +1,7 @@
 <script type="text/javascript">
 var validator, isupdate = false;
 $(document).ready(function() {
-  loadOffersList("offersList");
+  resetOfferForm();
   loadProjectsList("offerproject");
   $('.rapidsearch').keyup(function () {
     var list = this.id.substr(3);
@@ -13,18 +13,16 @@ $(document).ready(function() {
     filterlist($('#' + list + 'List li'), currenttext);
   });
   $("#btnreset").click(function() {
-    resetOfferForm();
+    resetOfferForm(true);
   });
   $("#btnremove").click(function() {
     offer.remove($("#offer_id").val(),resetOfferForm);
-    loadOffersList("offersList");
   });
   $("#offerForm").submit(function(event) {
     event.preventDefault();
     if(!validator.form())
       return;
     offer.update(isupdate, "offerForm", resetOfferForm);
-    loadOffersList("offersList");
   });
   $("#fileupload").click(function() {
     var value = $("#offerfile").val();
@@ -93,8 +91,9 @@ function createFilterForm(container) {
   filter[1].upload_files = 1;
   return filter;
 }
-function resetOfferForm()
-{
+function resetOfferForm(load) {
+  if(!load)
+    loadOffersList("offersList");
   isupdate = false;
   $("#offerForm")[0].reset();
   $("#offer_id").val(0);
@@ -123,7 +122,7 @@ function loadOffers(data, container) {
   htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Project ...</li>";
   $("#" + container).html(htmllist);
   $("#" + container + " .list-group-item").click(function() {
-    resetOfferForm();
+    resetOfferForm(true);
     $(this).addClass("active");
     if(this.id == "")
       return;

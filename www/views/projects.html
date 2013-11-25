@@ -21,11 +21,10 @@ $(document).ready(function() {
     filterlist($('#' + list + 'List li'), currenttext);
   });
   $("#btnreset").click(function() {
-    resetProjectsForm();
+    resetProjectsForm(true);
   });
   $("#btnremove").click(function() {
     project.remove($("#project_id").val(),resetProjectsForm);
-    loadProjectsList("projectsList");
   });
   tag.load("taglist", 30, true);
   $("#projectForm").submit(function(event) {
@@ -33,7 +32,6 @@ $(document).ready(function() {
     if(!validator.form())
       return;
     project.update(isupdate, "projectForm", resetProjectsForm);
-    loadProjectsList("projectsList");
   });
   $("#projectbkgcolor").colorPicker({pickerDefault: '#008000'});
   $("#projecttxtcolor").colorPicker({pickerDefault: '#FFFFFF'});
@@ -74,7 +72,7 @@ $(document).ready(function() {
 
 function userdata(data) {
   me = data;
-  loadProjectsList("projectsList");
+  resetProjectsForm();
   loadCustomersList("projectcustomer");
   loadUsersList("usersList");
 }
@@ -108,8 +106,9 @@ function createFilterForm(container) {
   filter[1].employees = 1;
   return filter;
 }
-function resetProjectsForm()
-{
+function resetProjectsForm(load) {
+  if(!load)
+    loadProjectsList("projectsList");
   isupdate = false;
   $("#projectForm")[0].reset();
   $("#project_id").val(0);
@@ -152,7 +151,7 @@ function loadProjects(data, container) {
     htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Project ...</li>";
   $("#" + container).html(htmllist);
   $("#" + container + " .list-group-item").click(function() {
-    resetProjectsForm();
+    resetProjectsForm(true);
     $(this).addClass("active");
     if(this.id == "")
       return;
