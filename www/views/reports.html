@@ -1,8 +1,13 @@
 <script type="text/javascript">
-var validator;
+var validator,htmltasks;
 $(document).ready(function() {
   loadProjectsList("reportproject");
   loadUsersList("usersList");
+  htmltasks = "";
+  for(i=1; i < tasks.length; i++) {
+    htmltasks += "<option value='" + i + "'>" + tasks[i] + "</option>";
+  }
+  $("#reporttasks").html(htmltasks);
   $("div.results").hide();
   $(".datepicker").datepicker();
   $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
@@ -194,10 +199,7 @@ function filterlist(list, currenttext) {
       <div class="form-group">
         <label for="reporttasks" class="col-lg-4 control-label">Tasks</label>
         <div class="col-lg-6">
-          <select multiple class="form-control" id="reporttasks">
-            <option value="1">Office</option>
-            <option value="2">Away</option>
-          </select>
+          <select multiple class="form-control" id="reporttasks"></select>
         </div>
       </div>
       <div class="form-group">
