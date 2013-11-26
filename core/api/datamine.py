@@ -1,6 +1,6 @@
 from core.validation.validation import TSValidationError, validate_request, update_password_salt_user_list, validate_json_list, sanitize_objectify_json, stringify_objectid_cursor, stringify_objectid_list
 from core.validation.permissions import check_datamine_permissions
-from core.config import conf_reports
+from core.config import conf_reports, conf_approved
 from bson.objectid import ObjectId
 from core.api.crud import db
 import cherrypy, logging
@@ -184,6 +184,7 @@ def report_projects(criteria):
 
         aggregation_pipe = [ { '$match' : match_projects }, 
                             { '$unwind' : '$expences'}, 
+                            { '$match' : { 'expences.status' : conf_approved } }, 
                             { '$unwind' : '$expences.objects'}, 
                             { '$match' : { 'expences.objects.date' : { '$gte' : start, '$lte' : end } } }, 
                             { '$group' : { '_id' : { 'project_id' : '$_id', 
