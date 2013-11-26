@@ -1,14 +1,25 @@
 import yaml, cherrypy, types, jsonschema
 from core.validation.validation import TSValidationError, recursive_replace, ObjectId
-from core.config import restrictions_schema
+from core.config import restrictions_schema, conf_approval_flow
 
 def _unique_keeping_order(seq):
     seen = set()
     seen_add = seen.add
     return [ x for x in seq if x not in seen and not seen_add(x)]
 
+def _approval_flow(group):
+
+    if group == 'administrator':
+        return 0
+    elif group in conf_approval_flow:
+        return conf_approval_flow.index(group)
+    else:
+        return 100
+    
+
 def get_user_restrictions():
     """Format restriction schemas. Saved on auth login to speedup following accesses"""
+    
     
     # Recursively replace needs a condition_function and replace_function
     replacements = { 
@@ -17,7 +28,8 @@ def get_user_restrictions():
                     '%%managed_projects%%' : (cherrypy.session['_ts_user']['managed_projects']),
                     '%%employed_projects%%' : (cherrypy.session['_ts_user']['employed_projects']),
                     '%%projects%%' : _unique_keeping_order(cherrypy.session['_ts_user']['employed_projects'] + 
-                                      cherrypy.session['_ts_user']['managed_projects']),
+                                          cherrypy.session['_ts_user']['managed_projects']),
+                    '%%approval_flow%%' : _approval_flow(cherrypy.session['_ts_user']['group']),
                     }
 
     def _replace_function_permissions_schema(container):
@@ -29,6 +41,8 @@ def get_user_restrictions():
                     return str(replacement)
                 # Replace managed_projects with project list
                 elif isinstance(replacement, types.ListType):
+                    return replacement
+                else:
                     return replacement
         
     formatted_schemas = {}

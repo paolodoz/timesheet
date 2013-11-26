@@ -211,11 +211,19 @@ project:
  
     update:
       type: object
+      required: [ _id ]
       properties:
         _id:
           type: string
           enum: '%%managed_projects%%'
-
+        expences:
+          type: array
+          items:
+            required: [ status ]
+            properties:
+              status:
+                type: integer
+                minimum: '%%approval_flow%%'
 
 push_trips:
   # employees._id is validated manually

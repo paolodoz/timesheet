@@ -45,8 +45,6 @@ class ProjectsAPIAsAdmin(TestClassBase, ModuleData):
         # Get projects with reverse ordering by name
         self._assert_req('/get/project', [ { } , { 'name' : 1, '_id' : 0 }, { 'name' : -1 } ], { 'error': None, 'records' : [ { 'name' : 'PROJECTNAME3' }, { 'name' : 'PROJECTNAME2' }, { 'name' : 'PROJECTNAME1' } ] })
         
-        
-
     def test_project_types_ko(self):
         
         # Wrong type on main project struct
@@ -70,6 +68,15 @@ class ProjectsAPIAsAdmin(TestClassBase, ModuleData):
              {u'error': u"ValidationError: u'STR_NOT_INT' is not of type 'number'"}
         )
 
+    def test_project_flow_ok(self):
+        self._assert_req('/update/project',  
+             { '_id' : self.projects_ids[0], 'expences' : [ 
+                                                 { '_id' : '6'*24, "user_id" : '1'*24, "trip_id" : '3'*24, 'status' : 0, "date" : "2010-10-08", "file" : {}, 'objects' : [{ 'date' : '2005-10-04', 'amount' : 5}, { 'date' : '2000-01-05', 'amount' : 10}] },
+                                                 # Following expence is not approved     
+                                                 { '_id' : '5'*24, "user_id" : '1'*24, "trip_id" : '4'*24, 'status' : 2, "date" : "2010-10-09", "file" : {}, 'objects' : [{ 'date' : '2005-10-09', 'amount' : 5}, { 'date' : '2000-01-09', 'amount' : 10}] }     
+                                 ]
+              }, {u'error': None}
+        )
         
 class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
     
@@ -116,7 +123,15 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
         self._assert_req('/update/project', { '_id' : self.projects_ids[0], 'customer' : 'CUSTOMERZ', 'tags' : [ 'TYPE' ], 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person1', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsible' : { '_id' : self.manager_id, 'name' : 'Manag1'}, 'employees' : [ { '_id' : self.manager_id, 'name' : 'Emp1'} ] },  { 'error' : None } )
         self._assert_req('/get/project', [ { '_id' : self.projects_ids[0], 'responsible._id' : self.manager_id } , { 'customer' : 1, '_id' : 0 }, { } ], {u'error': None, u'records': [{u'customer': u'CUSTOMERZ'}]})
         
-
+    def test_project_flow_ko(self):
+        self._assert_req('/update/project',  
+             { '_id' : self.projects_ids[0], 'expences' : [ 
+                                                 { '_id' : '6'*24, "user_id" : '1'*24, "trip_id" : '3'*24, 'status' : 0, "date" : "2010-10-08", "file" : {}, 'objects' : [{ 'date' : '2005-10-04', 'amount' : 5}, { 'date' : '2000-01-05', 'amount' : 10}] },
+                                                 # Following expence is not approved     
+                                                 { '_id' : '5'*24, "user_id" : '1'*24, "trip_id" : '4'*24, 'status' : 2, "date" : "2010-10-09", "file" : {}, 'objects' : [{ 'date' : '2005-10-09', 'amount' : 5}, { 'date' : '2000-01-09', 'amount' : 10}] }     
+                                 ]
+              }, {u'error': u'ValidationError: 0.0 is less than the minimum of 1'}
+        )
 
 class ReportUsersHoursAPIAsEmployee(TestCaseAsEmployee, ModuleData):
     

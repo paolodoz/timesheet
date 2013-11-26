@@ -57,6 +57,5 @@ reports:
   
 approval_flow:
   - approved
-  - administrator
   - project manager
   - employee
