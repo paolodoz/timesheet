@@ -178,8 +178,10 @@ project:
             type: string
           from:
             type: string
-          note:
-            type: string
+          notes:
+            type: array
+            items:
+              type: string
           accommodation:
             type: object
             additionalProperties: False
@@ -207,8 +209,10 @@ project:
           date:
             type: string
             format: date
-          note:
-            type: string
+          notes:
+            type: array
+            items:
+              type: string
           file:
             type: object
             additionalProperties: False
@@ -275,7 +279,6 @@ day:
                 isextra:
                   type: boolean
                 note:
-                  optional: True
                   type: string
                 task:
                   type: integer
