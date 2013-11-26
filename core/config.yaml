@@ -55,3 +55,8 @@ uploads:
 reports:
   multiplier_on_extras: 1.15
   
+approval_flow:
+  approved: 0
+  administrator: 1
+  project manager: 2
+  employee: 3

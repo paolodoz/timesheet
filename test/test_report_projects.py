@@ -19,8 +19,18 @@ class ModuleData:
                                   "economics" : [ 
                                                  { "note" : "mynote1", "budget" : 3, "invoiced" : 0, "period" : "2005-10-08", "extra" : 1 },     
                                                  { "note" : "mynote2", "budget" : 5, "invoiced" : 0,  "period" : "2005-11-08", "extra" : 4 }, 
-                                                 { "note" : "mynote3", "budget" : 20, "invoiced" : 0,  "period" : "2005-12-08", "extra" : 8 } ] },
-                                 { 'customer' : 'CUSTOMER1', 'tags' : [ 'TYPE2' ], 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag2'}, 'employees' : [ { '_id' : self.users_ids[0], 'name' : 'Emp2'} ] }, 
+                                                 { "note" : "mynote3", "budget" : 20, "invoiced" : 0,  "period" : "2005-12-08", "extra" : 8 } ],
+                                  'expences' : [ 
+                                                 { '_id' : '6'*24, "user_id" : '1'*24, "trip_id" : '3'*24, 'status' : 2, "date" : "2010-10-08", "file" : {}, 'objects' : [{ 'date' : '2005-10-04', 'amount' : 5}, { 'date' : '2000-01-05', 'amount' : 10}] }     
+                                 ]
+                                   
+                                   },
+                                 { 'customer' : 'CUSTOMER1', 'tags' : [ 'TYPE2' ], 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag2'}, 'employees' : [ { '_id' : self.users_ids[0], 'name' : 'Emp2'} ], 
+                                  'expences' : [ 
+                                                 { '_id' : '7'*24, "user_id" : '1'*24, "trip_id" : '2'*24, 'status' : 0, "date" : "2010-10-08", "file" : {}, 'objects' : [{ 'date' : '2003-04-10', 'amount' : 15}, { 'date' : '2005-01-05', 'amount' : 20}] },     
+                                                 { '_id' : '8'*24, "user_id" : '1'*24, "trip_id" : '2'*24, 'status' : 1, "date" : "2010-10-08", "file" : {}, 'objects' : [{ 'date' : '2009-01-04', 'amount' : 7}] }     
+                                 ] 
+                                   }, 
                                  { 'customer' : 'CUSTOMER3', 'tags' : [ 'TYPE3' ], 'name' : 'PROJECTNAME3', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Manag3'}, 'employees' : [ { '_id' : self.users_ids[2], 'name' : 'Emp3'} ] } 
                                  ], 
                 { 'error' : None, 'ids' : [ '', '', '' ] }
@@ -87,7 +97,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'projects' : [],
                                                       'customers' : []
                                       }
-                                    , {u'records': [[u'2005-10', {u'cost': 40.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}], [u'2009-10', {u'cost': 920.0, u'budget': 0, u'extra': 0}]], u'error': None}
+                                    , {u'records': [[u'2000-01', { 'costs' : 10, u'salary': 0, u'budget': 0, u'extra_budget': 0}], [u'2003-04', { 'costs' : 15, u'salary': 0, u'budget': 0, u'extra_budget': 0}], [u'2005-01', { 'costs' : 20, u'salary': 0, u'budget': 0, u'extra_budget': 0}], [u'2005-10', { 'costs' : 5, u'salary': 40.0, u'budget': 3, u'extra_budget': 1}], [u'2005-11', { 'costs' : 0, u'salary': 0, u'budget': 5, u'extra_budget': 4}], [u'2005-12', { 'costs' : 0, u'salary': 0, u'budget': 20, u'extra_budget': 8}], [u'2009-01', { 'costs' : 7, u'salary': 0, u'budget': 0, u'extra_budget': 0}], [u'2009-10', { 'costs' : 0, u'salary': 920.0, u'budget': 0, u'extra_budget': 0}]], u'error': None}
                                     )
         
         # Restrict time span             
@@ -97,7 +107,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'projects' : [],
                                                       'customers' : []
                                       }
-                                    , {u'records': [[u'2005-10', {u'cost': 40.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}]], u'error': None}
+                                    , {u'records': [[u'2000-01', { 'costs' : 10, u'salary': 0, u'budget': 0, u'extra_budget': 0}], [u'2003-04', { 'costs' : 15, u'salary': 0, u'budget': 0, u'extra_budget': 0}], [u'2005-01', { 'costs' : 20, u'salary': 0, u'budget': 0, u'extra_budget': 0}], [u'2005-10', { 'costs' : 5, u'salary': 40.0, u'budget': 3, u'extra_budget': 1}], [u'2005-11', { 'costs' : 0, u'salary': 0, u'budget': 5, u'extra_budget': 4}], [u'2005-12', { 'costs' : 0, u'salary': 0, u'budget': 20, u'extra_budget': 8}]], u'error': None}
                                     )
 
         # Restrict projects
@@ -107,7 +117,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'projects' : [ self.projects_ids[0] ],
                                                       'customers' : []
                                       }
-                                    , {u'records': [[u'2005-10', {u'cost': 20.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}], [u'2009-10', {u'cost': 920.0, u'budget': 0, u'extra': 0}]], u'error': None}
+                                    , {u'records': [[u'2000-01', { 'costs' : 10, u'salary': 0, u'budget': 0, u'extra_budget': 0}], [u'2005-10', { 'costs' : 5, u'salary': 20.0, u'budget': 3, u'extra_budget': 1}], [u'2005-11', { 'costs' : 0, u'salary': 0, u'budget': 5, u'extra_budget': 4}], [u'2005-12', { 'costs' : 0, u'salary': 0, u'budget': 20, u'extra_budget': 8}], [u'2009-10', { 'costs' : 0, u'salary': 920.0, u'budget': 0, u'extra_budget': 0}]], u'error': None}
                                     )
 
 
@@ -119,7 +129,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'customers' : [],
                                                       'tags' : [ 'TYPE1' ]
                                       }
-                                    , {u'records': [[u'2005-10', {u'cost': 20.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}], [u'2009-10', {u'cost': 920.0, u'budget': 0, u'extra': 0}]], u'error': None}
+                                    , {u'records': [[u'2000-01', {u'salary': 0, u'costs': 10, u'budget': 0, u'extra_budget': 0}], [u'2005-10', {u'salary': 20.0, u'costs': 5, u'budget': 3, u'extra_budget': 1}], [u'2005-11', {u'salary': 0, u'costs': 0, u'budget': 5, u'extra_budget': 4}], [u'2005-12', {u'salary': 0, u'costs': 0, u'budget': 20, u'extra_budget': 8}], [u'2009-10', {u'salary': 920.0, u'costs': 0, u'budget': 0, u'extra_budget': 0}]], u'error': None}
                                     )
 
         # Search by types
@@ -130,7 +140,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'customers' : [],
                                                       'tags' : [ 'TYPE1', 'TYPE2', 'TYPE3' ]
                                       }
-                                    , {u'records': [[u'2005-10', {u'cost': 40.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}], [u'2009-10', {u'cost': 920.0, u'budget': 0, u'extra': 0}]], u'error': None}
+                                    , {u'records': [[u'2000-01', {u'salary': 0, u'costs': 10, u'budget': 0, u'extra_budget': 0}], [u'2003-04', {u'salary': 0, u'costs': 15, u'budget': 0, u'extra_budget': 0}], [u'2005-01', {u'salary': 0, u'costs': 20, u'budget': 0, u'extra_budget': 0}], [u'2005-10', {u'salary': 40.0, u'costs': 5, u'budget': 3, u'extra_budget': 1}], [u'2005-11', {u'salary': 0, u'costs': 0, u'budget': 5, u'extra_budget': 4}], [u'2005-12', {u'salary': 0, u'costs': 0, u'budget': 20, u'extra_budget': 8}], [u'2009-01', {u'salary': 0, u'costs': 7, u'budget': 0, u'extra_budget': 0}], [u'2009-10', {u'salary': 920.0, u'costs': 0, u'budget': 0, u'extra_budget': 0}]], u'error': None}
                                     )
         
         # Search using multiple factors
@@ -141,7 +151,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'customers' : [ 'CUSTOMER1' ],
                                                       'tags' : [ 'TYPE1' ]
                                       }
-                                    , {u'records': [[u'2005-10', {u'cost': 40.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}], [u'2009-10', {u'cost': 920.0, u'budget': 0, u'extra': 0}]], u'error': None}
+                                    , {u'records': [[u'2000-01', {u'salary': 0, u'costs': 10, u'budget': 0, u'extra_budget': 0}], [u'2003-04', {u'salary': 0, u'costs': 15, u'budget': 0, u'extra_budget': 0}], [u'2005-01', {u'salary': 0, u'costs': 20, u'budget': 0, u'extra_budget': 0}], [u'2005-10', {u'salary': 40.0, u'costs': 5, u'budget': 3, u'extra_budget': 1}], [u'2005-11', {u'salary': 0, u'costs': 0, u'budget': 5, u'extra_budget': 4}], [u'2005-12', {u'salary': 0, u'costs': 0, u'budget': 20, u'extra_budget': 8}], [u'2009-01', {u'salary': 0, u'costs': 7, u'budget': 0, u'extra_budget': 0}], [u'2009-10', {u'salary': 920.0, u'costs': 0, u'budget': 0, u'extra_budget': 0}]], u'error': None}
                                     )
         
         
@@ -157,7 +167,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'customers' : [],
                                                       'mode' : 'project'
                                       }
-                                    , {u'records': { self.projects_ids[1]: [[u'2005-10', {u'cost': 20.0, u'budget': 0, u'extra': 0}]], self.projects_ids[0]: [[u'2005-10', {u'cost': 20.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}], [u'2009-10', {u'cost': 920.0, u'budget': 0, u'extra': 0}]]}, u'error': None}
+                                    , {u'records': { self.projects_ids[1]: [[u'2003-04', {u'salary': 0, u'costs': 15, u'budget': 0, u'extra_budget': 0}], [u'2005-01', {u'salary': 0, u'costs': 20, u'budget': 0, u'extra_budget': 0}], [u'2005-10', {u'salary': 20.0, u'costs': 0, u'budget': 0, u'extra_budget': 0}], [u'2009-01', {u'salary': 0, u'costs': 7, u'budget': 0, u'extra_budget': 0}]], self.projects_ids[0]: [[u'2000-01', { 'costs' : 10, u'salary': 0, u'budget': 0, u'extra_budget': 0}], [u'2005-10', { 'costs' : 5, u'salary': 20.0, u'budget': 3, u'extra_budget': 1}], [u'2005-11', { 'costs' : 0, u'salary': 0, u'budget': 5, u'extra_budget': 4}], [u'2005-12', { 'costs' : 0, u'salary': 0, u'budget': 20, u'extra_budget': 8}], [u'2009-10', { 'costs' : 0, u'salary': 920.0, u'budget': 0, u'extra_budget': 0}]]}, u'error': None}
                                     )
         
         # Restrict time span             
@@ -168,7 +178,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'customers' : [],
                                                       'mode' : 'project'
                                       }
-                                    , {u'error': None,  u'records': { self.projects_ids[0] : [[u'2005-10', {u'cost': 20.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}]], self.projects_ids[1]: [[u'2005-10', {u'budget': 0, u'cost': 5*4, u'extra': 0}]]}}
+                                    , {u'error': None,  u'records': { self.projects_ids[0] : [[u'2000-01', {u'salary': 0, u'costs': 10, u'budget': 0, u'extra_budget': 0}], [u'2005-10', {u'salary': 20.0, u'costs': 5, u'budget': 3, u'extra_budget': 1}], [u'2005-11', {u'salary': 0, u'costs': 0, u'budget': 5, u'extra_budget': 4}], [u'2005-12', {u'salary': 0, u'costs': 0, u'budget': 20, u'extra_budget': 8}]], self.projects_ids[1]: [[u'2003-04', {u'salary': 0, u'costs': 15, u'budget': 0, u'extra_budget': 0}], [u'2005-01', {u'salary': 0, u'costs': 20, u'budget': 0, u'extra_budget': 0}], [u'2005-10', {u'salary': 20.0, u'costs': 0, u'budget': 0, u'extra_budget': 0}]]}}
                                     )
 
         # Restrict projects
@@ -179,7 +189,7 @@ class ReportProjectsAPIAsAdmin(TestClassBase, ModuleData):
                                                       'customers' : [],
                                                       'mode' : 'project'
                                       }
-                                    , {u'error': None, u'records': { self.projects_ids[0]: [[u'2005-10', {u'cost': 20.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}], [u'2009-10', {u'cost': 920.0, u'budget': 0, u'extra': 0}]] } }
+                                    , {u'error': None, u'records': { self.projects_ids[0]: [[u'2000-01', { 'costs' : 10, u'salary': 0, u'budget': 0, u'extra_budget': 0}], [u'2005-10', { 'costs' : 5, u'salary': 20.0, u'budget': 3, u'extra_budget': 1}], [u'2005-11', { 'costs' : 0, u'salary': 0, u'budget': 5, u'extra_budget': 4}], [u'2005-12', { 'costs' : 0, u'salary': 0, u'budget': 20, u'extra_budget': 8}], [u'2009-10', { 'costs' : 0, u'salary': 920.0, u'budget': 0, u'extra_budget': 0}]] } }
                                     )
 
 
@@ -204,7 +214,7 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
                                                       'projects' : [ self.projects_ids[0] ],
                                                       'customers' : []
                                       }
-                                    , {u'records': [[u'2005-10', {u'cost': 20.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}], [u'2009-10', {u'cost': 920.0, u'budget': 0, u'extra': 0}]], u'error': None}
+                                    , {u'records': [[u'2000-01', { 'costs' : 10, u'salary': 0, u'budget': 0, u'extra_budget': 0}], [u'2005-10', { 'costs' : 5, u'salary': 20.0, u'budget': 3, u'extra_budget': 1}], [u'2005-11', { 'costs' : 0, u'salary': 0, u'budget': 5, u'extra_budget': 4}], [u'2005-12', { 'costs' : 0, u'salary': 0, u'budget': 20, u'extra_budget': 8}], [u'2009-10', { 'costs' : 0, u'salary': 920.0, u'budget': 0, u'extra_budget': 0}]], u'error': None}
                                     )
 
         # Search by customer
@@ -214,7 +224,7 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
                                                       'projects' : [  ],
                                                       'customers' : [ 'CUSTOMER' ]
                                       }
-                                    , {u'records': [[u'2005-10', {u'cost': 20.0, u'budget': 3, u'extra': 1}], [u'2005-11', {u'cost': 0, u'budget': 5, u'extra': 4}], [u'2005-12', {u'cost': 0, u'budget': 20, u'extra': 8}], [u'2009-10', {u'cost': 920.0, u'budget': 0, u'extra': 0}]], u'error': None}
+                                    , {u'records': [[u'2000-01', { 'costs' : 10, u'salary': 0, u'budget': 0, u'extra_budget': 0}], [u'2005-10', { 'costs' : 5, u'salary': 20.0, u'budget': 3, u'extra_budget': 1}], [u'2005-11', { 'costs' : 0, u'salary': 0, u'budget': 5, u'extra_budget': 4}], [u'2005-12', { 'costs' : 0, u'salary': 0, u'budget': 20, u'extra_budget': 8}], [u'2009-10', { 'costs' : 0, u'salary': 920.0, u'budget': 0, u'extra_budget': 0}]], u'error': None}
                                     )
          
     def test_report_project_ko(self):
