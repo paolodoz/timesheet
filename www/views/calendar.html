@@ -326,3 +326,53 @@ function loadCalendarHours(list) {
     </div><!-- /.modal-content -->
   </div><!-- /.modal-dialog -->
 </div><!-- /.modal -->
+<div id="help" class="hidden">
+  <h4>This view is needed to set the amount of worker's days/hours spent on the job.</h4>
+  <dl>
+    <dt>SETTING DAYS/HOURS:</dt>
+    <dd>To SET the spent time there are two different ways:
+      <ul>
+        <li>click on a single day cell, and fill the prompt window with the requested data (project, task, number of spent hours, check if the hours are extra time, eventually some note)</li>
+        <li>drag and drop along the whole month table and fill the prompt window with the requested data.</li>
+      </ul>
+    </dd>
+    <dt>NOTES: </dt>
+    <dd>
+      <ul>
+        <li>the first way allows to fill even saturday and sundays</li>
+        <li>Using the drag-and-drop way saturday, sundays and not-current-month days will be SKIPPED. All filled days will contain the same values</li>
+        <li>It is possible to set more hours-item per day</li>
+      </ul>
+    </dd>
+    <dt>PROMPT WINDOW :</dt>
+    <dd>This popup window will ask to fill the main information about a single work day. Basically the first two fields are required: 
+      <ul>
+        <li>The Project dropdown has to be filled with the project name to which you have worked</li>
+        <li>the Task dropdown allows to choose different options about the project. For example, "Office" or "Away", based on the workplace</li>
+      </ul>
+      The other fields are not required to be filled:
+      <ul>
+        <li>Hours slider is set to 8 as Default, it's the number of worked hours during the selected day</li>
+        <li>"Is extra hour" checkbox has to be checked in case of overtime work</li>
+        <li>Notes textbox can contain some annotation (for example, "Holiday justified by medical certificate) </li>
+      </ul>
+      [ABINSULA] Filling a leave day is slightly different:
+      <ul>
+        <li>the Project dropdown has to be set as ABI_H000 -- Holidays and leaves</li>
+        <li>the Task dropdown can contain different values:
+          <ul>
+            <li>"holiday", vacation day</li>
+            <li>"bank holiday", national vacation day</li>
+            <li>"leave", paid leave</li>
+            <li>"unpaid leave", leave hours not paid</li>
+          </ul>
+        </li>
+        <li>the Hours slider indicates how many vacation hours have been spent</li>
+        <li>Is extra hour is unuseful to this view</li>
+      </ul>
+        <li>Notes can contain some annotation, as usual</li>
+    </dd>
+    <dt>REMOVING DAYS/HOURS</dt>
+    <dd>To REMOVE the spent hours Click on the hours-item and select REMOVE</dd>
+  </dl>
+</div>

@@ -138,6 +138,9 @@
 
 <li><hr></li>
 	
+<li id="helplink">
+  <a href="/index/help"><span class="glyphicon glyphicon-question-sign"></span> Help</a>
+</li>
 
 <li>
   <a href="/auth/logout">Logout</a>

@@ -879,4 +879,15 @@ function capFirstLet(string)
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+$(document).ready(function() {
+  $("#helplink a").click(function(e) {
+    e.preventDefault();
+  });
+  $("#helplink a").popover({
+        html: true,
+        placement: 'right',
+        content: $("#help").html(),
+    });
+});
+
 function nop(){};

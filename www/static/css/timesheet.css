@@ -65,11 +65,15 @@ form .error {
 .filename span {
   cursor: pointer;
 }
-.popover-content dt {
+#tripreq .popover-content dt {
   width:80px;
 }
-.popover-content .dl-horizontal dd {
+#tripreq  .popover-content .dl-horizontal dd {
   margin-left:100px;
+}
+#tripreq  .popover-content dd div span {
+  margin-top:5px;
+  margin-right:5px;
 }
 #taglist {
   padding:0px;
@@ -105,4 +109,10 @@ form .error {
 }
 #expreq span {
   padding-top:5px;
+}
+#helplink div.popover {
+  max-width:800px;
+}
+#helplink div.popover dl {
+  width:700px;
 }
