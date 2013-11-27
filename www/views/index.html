@@ -189,7 +189,7 @@ function generateTripPopover(id, ctrips) {
       for(j=0; j<labels.length; j++) {
         key = labels[j];
         if(key=="accommodation") {
-          html += '<dt>Services</dt>';
+          html += '<dt>Services</dt><dd><div>';
           for(var value in ctrips[i][key]) {
             if(ctrips[i][key][value])
               html += '<span class="icon-' + value + '"></span>';
