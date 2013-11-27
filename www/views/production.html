@@ -94,11 +94,7 @@ function loadProjects(data, container) {
 function loadProjectDetails(data,container) {
   var currentdate = startdate = new Date(data.records[0].start);
   var enddate = new Date(data.records[0].end);
-  var htmlselect = "<option value=''></option>";
-  for (currentdate = startdate; currentdate < enddate;) {
-    htmlselect += "<option value='" + simpleDate(currentdate) + "'>" + currentdate.getMonthName() + " " + currentdate.getFullYear() + "</option>";
-    currentdate = new Date(currentdate.setMonth(currentdate.getMonth() + 1));
-  }
+  $("#productionperiod").html(generateDropDate(currentdate,enddate));
   var table = generateEconomicsTable(data.records[0].economics);
   $("#economics").html(table);
   $("#economics table span").click(function() {
@@ -110,7 +106,6 @@ function loadProjectDetails(data,container) {
   cur_prj = {};
   cur_prj._id = data.records[0]._id;
   cur_prj.economics = data.records[0].economics;
-  $("#productionperiod").html(htmlselect);
   isupdate = false;
 }
 

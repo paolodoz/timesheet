@@ -846,6 +846,16 @@ function simpleDate(date) {
   month = (month < 10 ) ? "0" + month : month;
   return date.getFullYear() + "-" + month + "-" + day;
 }
+
+function generateDropDate(from,to) {
+  var htmlselect = "<option value=''></option>";
+  while (from < to) {
+    htmlselect += "<option value='" + simpleDate(from) + "'>" + from.getMonthName() + " " + from.getFullYear() + "</option>";
+    from = new Date(from.setMonth(from.getMonth() + 1));
+  }
+  return htmlselect;
+}
+
 var expcategories = ["", "Hotel", "Transportation", "Food", "Other"];
 var statuses = ["", "Rejected", "Draft", "Pending", "Approved by PM", "Approved by administration", "Refounded"];
 var tasks = ["","Office","Away","Holiday","Bank Holiday","Leave","Unpaid leave"];
