@@ -2,8 +2,6 @@
 var validator, elemnum = 0, cur_file;
 var totals = new Array();
 $(document).ready(function() {
-  $(".datepicker").datepicker();
-  $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
   $("#exptable tbody tr td:last").click(function() {
     edittableline(this);
   });
@@ -18,7 +16,7 @@ $(document).ready(function() {
     newtableline();
   });
   validator = $("#expForm").validate();
-  $("input[name='expdate']").rules("add", {
+  $("select[name='expdate']").rules("add", {
     required: true,
     dateISO: true
   });
@@ -34,6 +32,12 @@ $(document).ready(function() {
     expence.update(false, "expForm", status, resetExpForm);
   });
   newtableline();
+  var today = new Date();
+  today = new Date(today.setDate(1));
+  var from =  new Date(today.setMonth(today.getMonth() - 2));
+  var to = new Date(today.setMonth(today.getMonth() + 4));
+  $("#expdate").html(generateDropDate(from,to));
+  $("#expdate")[0].selectedIndex = 3;
   user.me(userdata);
 });
 
@@ -212,7 +216,7 @@ function generateSelect(ref) {
     <div class="form-group">
       <label for="exptrip" class="col-lg-6 control-label">Month of competence</label>
       <div class="col-lg-6">
-        <input type="text" class="form-control datepicker" id="expdate" name="expdate" placeholder="2013-01-31">
+        <select class="form-control" id="expdate" name="expdate"></select>
       </div>
     </div>
   </div>
