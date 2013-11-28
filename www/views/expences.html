@@ -37,6 +37,7 @@ $(document).ready(function() {
   var from =  new Date(today.setMonth(today.getMonth() - 2));
   var to = new Date(today.setMonth(today.getMonth() + 4));
   $("#expdate").html(generateDropDate(from,to));
+  $("#expdate")[0].selectedIndex = 3;
   user.me(userdata);
 });
 
