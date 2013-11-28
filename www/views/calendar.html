@@ -58,8 +58,13 @@ $(document).ready( function() {
     obj.task = Number($('#hourstask').find('option:selected').val());
     obj.isextra = $("#hoursisextra").is(':checked') ? true : false;
     obj.note = $("#hoursnotes").val();
-    addCalEvent(datestart, dateend, obj, true);
+    var result = addCalEvent(datestart, dateend, obj, true);
     $('#edithours').modal('hide');
+    if(result!="") {
+      var text = "<ul>" + result + "</ul>";
+      $('#modalbox .modal-body').html(text);
+      $('#modalbox').modal('show');
+    }
   });
   $("#btnremove").click(function () {
     var cday = cevent.start.getDate() - 1;
@@ -173,7 +178,7 @@ function addCalEvent(start, end, event, allDay) {
     end = new Date(lastday);
   }
   var diffdays = end.getDate() - start.getDate();
-  var cday, i, j, found;
+  var cday, i, j, found, cur_hours, result="";
   for(i = 0; i <= diffdays; i++) {
     if ( (start.getDay() == 6 || start.getDay() == 0) && diffdays != 0) {
       start = new Date(start);
@@ -183,6 +188,14 @@ function addCalEvent(start, end, event, allDay) {
     cday = start.getDate()-1;
     if (myhours[cday].users) {
       found = false;
+      //calculate current hours for day
+      if(!event.isextra) {
+        cur_hours = calculateDayHours(myhours[cday].users[0].hours, false );
+        if(cur_hours + event.amount > 8) {
+          result += "<li>Day " + (cday+1) + " was not updated because exceding maximum number of hours in a day (8)</li>";
+          continue;
+        }
+      }
       //search for same event data
       for(j = 0; j < myhours[cday].users[0].hours.length; j++) {
         if(myhours[cday].users[0].hours[j].project == event.project) {
@@ -211,6 +224,17 @@ function addCalEvent(start, end, event, allDay) {
   calendar.fullCalendar('unselect');
   //reset form
   resetFormEditHours();
+  return result;
+}
+
+function calculateDayHours(hours, isextra) {
+  var i, total=0;
+  for(i=0; i < hours.length; i++) {
+    if(hours[i].isextra == isextra) {
+      total += hours[i].amount;
+    }
+  }
+  return total;
 }
 
 function saveEvent(arrayEl, event) {
@@ -272,7 +296,20 @@ function loadCalendarHours(list) {
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
   </div><!-- /.modal -->
-
+<div class="modal fade" id="modalbox" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h4 class="modal-title">Error</h4>
+      </div>
+      <div class="modal-body"></div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal">Ok</button>
+      </div>
+    </div><!-- /.modal-content -->
+  </div><!-- /.modal-dialog -->
+</div><!-- /.modal -->
 <div class="modal fade" id="edithours">
   <div class="modal-dialog">
     <div class="modal-content">
