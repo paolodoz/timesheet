@@ -49,8 +49,9 @@ class TestClassBase(unittest.TestCase):
         
     def _assert_req(self, uri, json_in, json_expected):
         json_out = self._request(uri, json_in)
-#         print 'RETURNED:', json_out
-#         print 'EXPECTED:', json_expected
+#         import pprint
+#         print 'RETURNED:', pprint.pprint(clean_id(copy.deepcopy(json_out)))
+#         print 'EXPECTED:', pprint.pprint(json_expected)
 #         print 'EQ:', clean_id(copy.deepcopy(json_out)) == json_expected
         self.assertEqual(clean_id(copy.deepcopy(json_out)), json_expected)
         return json_out

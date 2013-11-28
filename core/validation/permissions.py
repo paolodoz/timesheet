@@ -7,7 +7,7 @@ def _unique_keeping_order(seq):
     seen_add = seen.add
     return [ x for x in seq if x not in seen and not seen_add(x)]
 
-def _approval_flow(group):
+def approval_flow(group):
 
     if group == 'administrator':
         return 0
@@ -29,7 +29,7 @@ def get_user_restrictions():
                     '%%employed_projects%%' : (cherrypy.session['_ts_user']['employed_projects']),
                     '%%projects%%' : _unique_keeping_order(cherrypy.session['_ts_user']['employed_projects'] + 
                                           cherrypy.session['_ts_user']['managed_projects']),
-                    '%%approval_flow%%' : _approval_flow(cherrypy.session['_ts_user']['group']),
+                    '%%approval_flow%%' : approval_flow(cherrypy.session['_ts_user']['group']),
                     }
 
     def _replace_function_permissions_schema(container):

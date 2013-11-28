@@ -278,3 +278,27 @@ push_expences:
 search_tags:
   project manager:
       True
+
+approval:
+  project manager:
+      type: object
+      required: [ project_id ]
+      properties:
+        project_id:
+          type: string
+          enum: '%%managed_projects%%'
+
+search_approval:
+  project manager:
+      type: object
+      properties:
+        project_id:
+          type: string
+          enum: '%%projects%%'
+
+  employee:
+      type: object
+      properties:
+        project_id:
+          type: string
+          enum: '%%employed_projects%%'
