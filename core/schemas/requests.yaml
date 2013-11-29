@@ -243,5 +243,7 @@ search_approvals:
     status:
       type: string
       enum:
+        - toapprove
+        - approved
         - rejected
         - any      
