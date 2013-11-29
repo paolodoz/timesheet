@@ -292,7 +292,6 @@ var trip = {
     prj.trips = new Array();
     prj.trips[0] = {}
     prj.trips[0].user_id = me._id;
-    prj.trips[0].note = "";
     prj.trips[0].accommodation = {};
     $("#" + form + " input, #" + form + " select, #" + form + " checkbox, #" + form + " textarea").each(function (){
       var property = $(this).attr("id").substr(4);
@@ -411,7 +410,6 @@ var expence = {
     }
     expence_el.date = $("#expdate").val();
     expence_el.status = status;
-    expence_el.note = "";
     //file
     if(!$("#offerfile").next("p").hasClass("hidden")) {
       expence_el.file = {};
