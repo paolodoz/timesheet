@@ -28,24 +28,27 @@ def approval(criteria):
     expence_type = 'expences' if exp_id else 'trips'
     expence_id = exp_id if exp_id else trp_id
     
+    # Define search criteria
     search_criteria = { 
                         '_id' : ObjectId(criteria['project_id']),
-                        '%s._id' % expence_type : ObjectId(expence_id),
-                        '%s.status' % expence_type : { '$gte' : owner_status } 
+                        '%s._id' % expence_type : ObjectId(expence_id)
                         }
+    # Define a status limit only if is not adminstrator
+    if owner_status != 0:
+        search_criteria['%s.status' % expence_type] = owner_status 
     
     search_projection = { '_id' : 0 , '%s' % expence_type : { '$elemMatch' : { '_id' : ObjectId(expence_id)  } } }
 
-    
     found_expence = db.project.find_one( search_criteria , search_projection)
-    original_found_expence = found_expence.copy()
     if not found_expence:
         raise TSValidationError("Can't found selected expence")
+    
+    original_found_expence = found_expence.copy()
     
     # Approved
     if sanified_criteria['action'] == 'approve':
         if found_expence[expence_type][0]['status'] > 0:
-            found_expence[expence_type][0]['status'] -= 1
+            found_expence[expence_type][0]['status'] = found_expence[expence_type][0]['status'] - 1
     # Rejected
     else:
         found_expence[expence_type][0]['status'] = -abs(found_expence[expence_type][0]['status'])
@@ -68,20 +71,21 @@ def approval(criteria):
 def search_approvals(criteria):
     
     """
-    Search pending expences
+    Search expences
     
     POST /data/search_approvals/
     
-    Expects { 'project_id' : string, 'type': trips|expences, 'status': rejected|any  }
+    Expects { 'project_id' : string, 'type': trips|expences, 'status': toapprove|approved|rejected|any  }
     Returns { 'error' : string, 'records' : [] }
     """
     
     validate_request('search_approvals', criteria)
     sanified_criteria = sanitize_objectify_json(criteria)
 
-    # Current user can approve only approvals with status >= conf_approval_flow.index(group)
+    # Get flow status number relative to current user
     owner_status = approval_flow(cherrypy.session['_ts_user']['group'])
 
+    # Search only expences or trips or both
     type_requested = sanified_criteria.get('type', 'any' )
     if type_requested == 'any':
         aggregations_types = [ 'trips', 'expences']
@@ -92,15 +96,33 @@ def search_approvals(criteria):
     
     for aggregation_type in aggregations_types:
 
-        status_requested = sanified_criteria.get('status', 'approved')
-        if status_requested == 'approved':
-            match_project_status = { '%s.status' % aggregation_type : { '$gte' : owner_status } }
-        elif status_requested == 'rejected':
-            match_project_status = { '%s.status' % aggregation_type : { '$lte' : -abs(owner_status if owner_status else 1)  } }
+        # Prepare status filter
+        status_requested = sanified_criteria.get('status', 'toapprove')
+
+        # If is administrator, can see whole ranges
+        if owner_status == 0:
+            if status_requested == 'toapprove':
+                match_project_status = { '%s.status' % aggregation_type : { '$gt' : 0 } }
+            elif status_requested == 'approved':
+                match_project_status = { '%s.status' % aggregation_type : 0 }
+            elif status_requested == 'rejected':
+                match_project_status = { '%s.status' % aggregation_type : { '$lt' : 0 } }
+            else:
+                match_project_status = { }             
+
+        # If it is a permitted user, can see only specific status
         else:
-            match_project_status = { '$or' : [  { '%s.status' % aggregation_type : { '$gte' : owner_status } }, 
-                                                { '%s.status' % aggregation_type : { '$lte' : -abs(owner_status if owner_status else 1) } } 
-                                            ] } 
+            if status_requested == 'toapprove':
+                match_project_status = { '%s.status' % aggregation_type : owner_status }
+            elif status_requested == 'approved':
+                match_project_status = { '%s.status' % aggregation_type : owner_status - 1 }
+            elif status_requested == 'rejected':
+                match_project_status = { '%s.status' % aggregation_type : -abs(owner_status) }
+            else:
+                match_project_status = { '$or' : [  { '%s.status' % aggregation_type : owner_status }, 
+                                                    { '%s.status' % aggregation_type : 0 },
+                                                    { '%s.status' % aggregation_type : -abs(owner_status) }
+                                                ] } 
 
         project_requested = sanified_criteria.get('project_id')
         if project_requested:

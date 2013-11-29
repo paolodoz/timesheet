@@ -17,7 +17,7 @@ class ModuleData:
         projects_json = self._assert_req('/add/project', [ 
                                  { 'customer' : 'CUSTOMER', 'tags' : [ 'TYPE1' ], 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag1'}, 'employees' : [ { '_id' : self.users_ids[1], 'name' : 'Emp1'} ], 
                                   'expences' : [ 
-                                                 { '_id' : '6'*24, "user_id" : '1'*24, "trip_id" : '3'*24, 'status' : 0, "date" : "2010-10-08", "file" : {}, 'objects' : [{ 'date' : '2005-10-04', 'amount' : 5}, { 'date' : '2000-01-05', 'amount' : 10}] },
+                                                 { '_id' : '6'*24, "user_id" : '1'*24, "trip_id" : '3'*24, 'status' : 1, "date" : "2010-10-08", "file" : {}, 'objects' : [{ 'date' : '2005-10-04', 'amount' : 5}, { 'date' : '2000-01-05', 'amount' : 10}] },
                                                  { '_id' : '5'*24, "user_id" : '1'*24, "trip_id" : '4'*24, 'status' : 2, "date" : "2010-10-09", "file" : {}, 'objects' : [{ 'date' : '2005-10-09', 'amount' : 5}, { 'date' : '2000-01-09', 'amount' : 10}] }     
                                  ]
                                    
@@ -56,17 +56,17 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'asd'  }, 
                { 'error' : None, 'status' : 0 }
            )
-        
+         
         # Decrement again (should remain 0) of '6'*24
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'asd2'  }, 
                { 'error' : None, 'status' : 0 }
            )
-   
+    
         # Reject '5'*24
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '5'*24, 'action' : 'reject', 'note' : 'asd3'  }, 
                { 'error' : None, 'status' : -2 }
            )
- 
+  
         # Search all approvals with project_id
         self._assert_req('/data/search_approvals',  { 'project_id' : self.projects_ids[0], 'status' : 'any' }, 
                {u'error': None,
@@ -92,10 +92,10 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
                                 u'user_id': u'111111111111111111111111'}],
                  u'trips': []}
            )
- 
+  
     def test_approval_search_ok(self):
- 
-        # Search all approvals
+  
+        # Search all with pendance approvation
         self._assert_req('/data/search_approvals',  {  }, 
                {'error': None, 'expences': [
                         {'_id': '',
@@ -109,15 +109,6 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
                            'status': 1,
                            'trip_id': '222222222222222222222222',
                            'user_id': '111111111111111111111111'},
-                          {
-                           '_id': '',
-                           'date': '2010-10-08',
-                           'file': {},
-                           'objects': [{'amount': 7, 'date': '2009-01-04'}],
-                           'project_id': self.projects_ids[1],
-                           'status': 0,
-                           'trip_id': '222222222222222222222222',
-                           'user_id': '111111111111111111111111'},
                           {'_id': '',
                            'date': '2010-10-08',
                            'file': {},
@@ -125,7 +116,7 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
                                        {'amount': 10,
                                         'date': '2000-01-05'}],
                            'project_id': self.projects_ids[0],
-                           'status': 0,
+                           'status': 1,
                            'trip_id': '333333333333333333333333',
                            'user_id': '111111111111111111111111'},
                           {'_id': '',
@@ -150,23 +141,13 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
                         'project_id': self.projects_ids[2],
                         'start': '2010-10-08',
                         'status': 1,
-                        'user_id': '111111111111111111111111'},
-                       {'_id': '',
-                        'accommodation': {},
-                        'city': 'Rome',
-                        'country': 'Italy',
-                        'description': 'trip1',
-                        'end': '2010-10-10',
-                        'notes': ['approved'],
-                        'project_id': self.projects_ids[2],
-                        'start': '2010-10-08',
-                        'status': 0,
                         'user_id': '111111111111111111111111'},]}
            )
+  
+   
+  
  
-  
-  
-        # Search approvals with project_id
+        # Search the ones to approve with project_id
         self._assert_req('/data/search_approvals',  { 'project_id' : self.projects_ids[2] }, 
                {'error': None,  
              'expences' : [],
@@ -181,24 +162,14 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
                         'project_id': self.projects_ids[2],
                         'start': '2010-10-08',
                         'status': 1,
-                        'user_id': '111111111111111111111111'},
-                       {'_id': '',
-                        'accommodation': {},
-                        'city': 'Rome',
-                        'country': 'Italy',
-                        'description': 'trip1',
-                        'end': '2010-10-10',
-                        'notes': ['approved'],
-                        'project_id': self.projects_ids[2],
-                        'start': '2010-10-08',
-                        'status': 0,
-                        'user_id': '111111111111111111111111'},]}
+                        'user_id': '111111111111111111111111'}
+                       ]}
            )
-         
-  
-  
-        # Search only expences
-        self._assert_req('/data/search_approvals',  { 'type' : 'expences' }, 
+          
+   
+   
+        # Search any expences
+        self._assert_req('/data/search_approvals',  { 'type' : 'expences', 'status' : 'any' }, 
                {'error': None, 'expences': [
                         {'_id': '',
                            'date': '2010-10-07',
@@ -227,7 +198,7 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
                                        {'amount': 10,
                                         'date': '2000-01-05'}],
                            'project_id': self.projects_ids[0],
-                           'status': 0,
+                           'status': 1,
                            'trip_id': '333333333333333333333333',
                            'user_id': '111111111111111111111111'},
                           {'_id': '',
@@ -243,7 +214,7 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
                                             ], 'trips' : []
                 },
            )
-   
+    
         # Search both trips approved and rejected 
         self._assert_req('/data/search_approvals',  {  'type' : 'trips', 'status' : 'any' }, 
                {'error': None,  
@@ -282,11 +253,11 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
                          'notes' : [ 'approved' ], 
                          'accommodation' : {},
                          'project_id': self.projects_ids[2] }     
- 
+  
                        ]}
            ) 
-         
-         
+
+       
         # Search only rejected 
         self._assert_req('/data/search_approvals',  {  'status' : 'rejected' }, 
                {'error': None,  
@@ -303,17 +274,19 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
                          'notes' : [ 'approved' ], 
                          'accommodation' : {},
                          'project_id': self.projects_ids[2] }     
- 
+  
                        ]}
            )         
-          
-    def test_approve_ko(self):
+        
            
+    def test_approve_ko(self):
+            
         # Insert one expence
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'action' : 'approve', 'note' : 'asd'  }, 
                { 'error' : "ValidationError: {u'action': u'approve', u'note': u'asd', u'project_id': u'%s'} is not valid under any of the given schemas" % self.projects_ids[0]}
            )
- 
+  
+
 class ApprovalAPIAsManager(TestCaseAsManager, ModuleData):
      
     def setUp(self):        
