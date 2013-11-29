@@ -153,7 +153,7 @@ class ExpencesAPIAsEmployee(TestCaseAsEmployee, ModuleData):
                                   "expences" : [ 
                                                  { "user_id" : self.users_ids[1], "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
                                  ] } ], 
-                {u'error': u"ValidationError: {u'status': 0, u'user_id': u'%s', u'objects': [{}], u'file': {}, u'date': u'2005-10-08', u'trip_id': u'222222222222222222222222'} is not valid under any of the given schemas" % (self.users_ids[1])}
+                {u'error': u"ValidationError: u'%s' does not match '^%s$'" % (self.users_ids[1], self.employee_id)}
         )
 
         # Search without specify ids

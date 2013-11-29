@@ -166,7 +166,7 @@ class TripAPIAsEmployee(TestCaseAsEmployee, ModuleData):
                                   "trips" : [ 
                                                   { "user_id" : self.users_ids[1], "description" : "descr2", "status" : 2, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'notes' : [ 'too expensive' ], 'accommodation' : {} }     
                                  ] } ], 
-                                 {u'error': u"ValidationError: {u'status': 2, u'city': u'Austin', u'end': u'2009-10-10', u'description': u'descr2', u'country': u'USA', u'notes': [u'too expensive'], u'start': u'2009-10-08', u'user_id': u'%s', u'accommodation': {}} is not valid under any of the given schemas" % self.users_ids[1]}
+                                 {u'error': u"ValidationError: u'%s' does not match '^%s$'" % (self.users_ids[1], self.employee_id)}
                                  )
         # Search without specify ids
         self._assert_req('/data/search_trips', {  }, {u'error': u"ValidationError: 'employee_id' is a required property"})

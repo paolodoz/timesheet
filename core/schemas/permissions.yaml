@@ -234,13 +234,12 @@ push_trips:
           trips:
             type: array
             items:
-              oneOf:
-                - type: object
-                  required: [ user_id ]
-                  properties:
-                    user_id: 
-                      type: string
-                      pattern: '%%_id%%'
+              type: object
+              required: [ user_id ]
+              properties:
+                user_id: 
+                  type: string
+                  pattern: '%%_id%%'
               
   project manager:
       type: object
@@ -259,13 +258,12 @@ push_expences:
           expences:
             type: array
             items:
-              oneOf:
-                - type: object
-                  required: [ user_id ]
-                  properties:
-                    user_id: 
-                      type: string
-                      pattern: '%%_id%%'
+              type: object
+              required: [ user_id ]
+              properties:
+                user_id: 
+                  type: string
+                  pattern: '%%_id%%'
               
   project manager:
       type: object
