@@ -107,8 +107,9 @@ function createFilterForm(container) {
   return filter;
 }
 function resetProjectsForm(load) {
-  if(!load)
+  if(load == true) {} else {
     loadProjectsList("projectsList");
+  }
   isupdate = false;
   $("#projectForm")[0].reset();
   $("#project_id").val(0);
