@@ -1,4 +1,5 @@
 from testclasses import TestClassBase, TestCaseAsEmployee, TestCaseAsManager
+from core.config import conf_approval_flow
 
 class ModuleData:
 
@@ -126,12 +127,12 @@ class TripAPIAsEmployee(TestCaseAsEmployee, ModuleData):
         self._assert_req('/data/push_trips', [ 
                                 { '_id' : self.projects_ids[1], 
                                  "trips" : [ 
-                                                 { "user_id" : self.employee_id, "description" : "descr2", "status" : 1000, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'notes' : [ 'draft' ], 'accommodation' : {} }     
+                                                 { "user_id" : self.employee_id, "description" : "descr2", "status" : conf_approval_flow.index('draft'), "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'notes' : [ 'draft' ], 'accommodation' : {} }     
                                 ] } ], 
                { 'error' : None, 'ids' : [ '' ] }
        )
         
-        self._assert_req('/data/search_trips', { "user_id" : self.employee_id,  "employee_id" : self.employee_id }, {u'error': None, 'records' : [{ '_id' : '', 'project_id' : self.projects_ids[1],  "user_id" : self.employee_id, "description" : "descr2", "status" : 1000, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'notes' : [ 'draft' ], 'accommodation' : {} },
+        self._assert_req('/data/search_trips', { "user_id" : self.employee_id,  "employee_id" : self.employee_id }, {u'error': None, 'records' : [{ '_id' : '', 'project_id' : self.projects_ids[1],  "user_id" : self.employee_id, "description" : "descr2", "status" : conf_approval_flow.index('draft'), "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'notes' : [ 'draft' ], 'accommodation' : {} },
                                                                                                                                                   { '_id' : '', 'project_id' : self.projects_ids[1], "user_id" : self.employee_id, "description" : "descr1", "status" : 1, "start" : "2010-10-08", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'notes' : [ 'approved' ], 'accommodation' : {} }     
 
                                                                                                                                                   
@@ -164,7 +165,7 @@ class TripAPIAsEmployee(TestCaseAsEmployee, ModuleData):
         self._assert_req('/data/push_trips', [ 
                                  { '_id' : self.projects_ids[1], 
                                   "trips" : [ 
-                                                  { "user_id" : self.users_ids[1], "description" : "descr2", "status" : 1000, "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'notes' : [ 'too expensive' ], 'accommodation' : {} }     
+                                                  { "user_id" : self.users_ids[1], "description" : "descr2", "status" : conf_approval_flow.index('draft'), "start" : "2009-10-08", "end" : "2009-10-10", "country" : "USA", 'city' : "Austin", 'notes' : [ 'too expensive' ], 'accommodation' : {} }     
                                  ] } ], 
                                  {u'error': u"ValidationError: u'%s' does not match '^%s$'" % (self.users_ids[1], self.employee_id)}
                                  )

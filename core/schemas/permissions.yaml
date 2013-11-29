@@ -242,8 +242,8 @@ push_trips:
                   pattern: '%%_id%%'
                 status:
                   type: integer
-                  minimum: 1000
-                  maximum: 1000
+                  minimum: '%%draft_flow%%'
+                  maximum: '%%draft_flow%%'
               
   project manager:
       type: object
@@ -270,8 +270,8 @@ push_expences:
                   pattern: '%%_id%%'
                 status:
                   type: integer
-                  minimum: 1000
-                  maximum: 1000
+                  minimum: '%%draft_flow%%'
+                  maximum: '%%draft_flow%%'
               
   project manager:
       type: object

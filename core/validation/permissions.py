@@ -30,6 +30,7 @@ def get_user_restrictions():
                     '%%projects%%' : _unique_keeping_order(cherrypy.session['_ts_user']['employed_projects'] + 
                                           cherrypy.session['_ts_user']['managed_projects']),
                     '%%approval_flow%%' : approval_flow(cherrypy.session['_ts_user']['group']),
+                    '%%draft_flow%%' : conf_approval_flow.index('draft'),
                     }
 
     def _replace_function_permissions_schema(container):
