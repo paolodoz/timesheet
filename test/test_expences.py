@@ -118,12 +118,12 @@ class ExpencesAPIAsEmployee(TestCaseAsEmployee, ModuleData):
         self._assert_req('/data/push_expences', [ 
                                 { '_id' : self.projects_ids[1], 
                                  "expences" : [ 
-                                                 { "user_id" : self.employee_id, "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                                 { "user_id" : self.employee_id, "trip_id" : '2'*24, 'status': 1000, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
                                 ] } ], 
                { 'error' : None, 'ids' : [ '' ] }
        )
 
-        self._assert_req('/data/search_expences', { "user_id" : self.employee_id,  "employee_id" : self.employee_id }, {u'error': None, 'records' : [{ '_id' : '', "user_id" : self.employee_id, 'project_id' : self.projects_ids[1], "trip_id" : '2'*24, 'status' : 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] }]})
+        self._assert_req('/data/search_expences', { "user_id" : self.employee_id,  "employee_id" : self.employee_id }, {u'error': None, 'records' : [{ '_id' : '', "user_id" : self.employee_id, 'project_id' : self.projects_ids[1], "trip_id" : '2'*24, 'status' : 1000, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] }]})
         
         
     def test_expences_ko(self):
@@ -151,7 +151,7 @@ class ExpencesAPIAsEmployee(TestCaseAsEmployee, ModuleData):
         self._assert_req('/data/push_expences', [ 
                                  { '_id' : self.projects_ids[1], 
                                   "expences" : [ 
-                                                 { "user_id" : self.users_ids[1], "trip_id" : '2'*24, 'status': 0, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                                 { "user_id" : self.users_ids[1], "trip_id" : '2'*24, 'status': 1000, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
                                  ] } ], 
                 {u'error': u"ValidationError: u'%s' does not match '^%s$'" % (self.users_ids[1], self.employee_id)}
         )

@@ -240,6 +240,10 @@ push_trips:
                 user_id: 
                   type: string
                   pattern: '%%_id%%'
+                status:
+                  type: integer
+                  minimum: 1000
+                  maximum: 1000
               
   project manager:
       type: object
@@ -259,11 +263,15 @@ push_expences:
             type: array
             items:
               type: object
-              required: [ user_id ]
+              required: [ user_id, status ]
               properties:
                 user_id: 
                   type: string
                   pattern: '%%_id%%'
+                status:
+                  type: integer
+                  minimum: 1000
+                  maximum: 1000
               
   project manager:
       type: object
