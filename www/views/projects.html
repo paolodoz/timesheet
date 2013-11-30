@@ -80,9 +80,9 @@ function userdata(data) {
 function loadProjectsList(list) {
   var filter;
   if(me.group == "project manager")
-    filter = [{"responsible._id": me._id},{name:1},{name:1}];
+    filter = [{"responsible._id": me._id},{name:1, description:1},{name:1}];
   else
-    filter = [{},{name:1},{name:1}];
+    filter = [{},{name:1, description:1},{name:1}];
   project.load(filter, loadProjects, list);
 }
 function loadCustomersList(list) {
@@ -145,7 +145,7 @@ function loadProjects(data, container) {
   var i;
   var htmllist = "";
   for(i=0;i < data.records.length; i++) {
-    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data.records[i].name + "</li>";
+    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data.records[i].name + " -- " + data.records[i].description.substr(0,20) + "</li>";
   }
   //add line for new project
   if(me.group == "administrator")
