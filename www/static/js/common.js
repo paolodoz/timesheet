@@ -348,7 +348,7 @@ var expence = {
       data: JSON.stringify(filter),
       success: function(data) {
         if(!data.error) {
-          _trip = data.records;
+          _expence = data.records;
           callback(data.records, target, param);
         } else {
           showmessage("error", data.error);
@@ -442,11 +442,11 @@ var expence = {
       dataType: "json",
     });
   },
-  getname : function(id) {
+  getexp : function(id) {
     var i;
-    for(i = 0; i < _trip.length; i++) {
-      if(_trip[i]._id == id)
-        return _trip[i].name;
+    for(i = 0; i < _expence.length; i++) {
+      if(_expence[i]._id == id)
+        return _expence[i];
     }
     return "error";
   }
@@ -909,7 +909,7 @@ function generateExpencesList(data, container, approve) {
 }
 
 function generateExpencesDetails(id, container, edit) {
-  var row,j,html = '<table class="table table-striped table-condensed">';
+  var j,html = '<table class="table table-striped table-condensed">';
   if(edit)
     html += '<thead><tr>';
   else
@@ -917,63 +917,125 @@ function generateExpencesDetails(id, container, edit) {
   html += '<th>Date</th><th>City</th><th>Amount</th><th>Category</th><th>Description</th><th>Paid by company</th><th>Invoice</th><th>Receipt</th></thead><tbody>';
   var element = findExpence(id);
   for(j=0; j<element.objects.length; j++) {
-    row = element.objects[j];
-    if(edit)
-      html += '<tr>'
-    else
-      html += '<tr><td>Edit</td>'
+    html += '<tr>' + generateExpencesDetailsRow(element.objects[j], edit) + '</tr>';
+  }
+  html += "</tbody></table>";
+  $(container).html(html);
+  if(!edit) {
+    $(container).find("tbody tr td:eq(0)").click(function() {
+      editClick($(this));
+    });
+  }
+}
+
+function editClick(td) {
+  $(td).nextAll("td").each(function(index) {
+    var value = $(this).text();
+    switch(index) {
+      case 0:
+      case 1:
+      case 4:
+        $(this).html('<input type="text" class="form-control" value="' + value + '">');
+        break;
+      case 2:
+        $(this).html('<div class="col-lg-12 input-group"><input type="text" class="form-control" value="' + value.substr(0,value.length -1) +  '"><span class="input-group-addon">&euro;</span></div>');
+        break;
+      case 3:
+        $(this).html('<select class="form-control"></select>');
+        generateSelect($(this).find("select"));
+        $(this).find("select option:contains(" + value + ")").attr('selected',true);
+        break;
+      case 5:
+      case 6:
+        if(value == "No")
+          $(this).html('<input type="checkbox">');
+        else
+          $(this).html('<input type="checkbox" checked="checked">');
+        break;
+      default:
+        break;
+    }
+  });
+  $(td).parent().find("input[type='checkbox']").wrap('<div class="make-switch switch-small" data-on-label="YES" data-off-label="NO"  />').parent().bootstrapSwitch();
+  $(td).unbind();
+  $(td).html('<span class="glyphicon glyphicon-save"></span>  Save');
+  $(td).click(function() {
+    saveExpence($(this).closest("li").attr("id"),$(this));
+  });
+}
+
+function generateExpencesDetailsRow(row,edit) {
+  var html="";
+  if(!edit)
+      html += '<td><span class="glyphicon glyphicon-edit"></span>  Edit</td>'
     html += '<td>' + row.date +'</td><td>' + row.city + '</td><td>' + row.amount+ '&euro;</td><td>' + expcategories[row.category] + '</td><td>' + row.description +'</td><td>';
     if(row.paidby)
-      html += 'Company</td><td>';
+      html += 'Yes</td><td>';
     else
       html += 'No</td><td>';
     if(row.invoice)
       html += 'Yes</td><td>';
     else
       html += 'No</td><td>';
-//add column for file download
     if(row.file) {
       html += '<a href="/file/download/' + row.file._id + '">' + row.file.name + '</a><td>';
     } else {
       html += '</td>';
     }
-    html += '</tr>';
-  }
-  html += "</tbody></table>";
-  $(container).html(html);
-  if(!edit) {
-    $(container).find("tbody tr td:eq(0)").click(function() {
-      $(this).nextAll("td").each(function(index) {
-        var value = $(this).text();
-        switch(index) {
-        case 0:
-        case 1:
-        case 4:
-          $(this).html('<input type="text" class="form-control" value="' + value + '">');
-          break;
-        case 2:
-          $(this).html('<div class="col-lg-12 input-group"><input type="text" class="form-control" value="' + value.substr(0,value.length -1) +  '"><span class="input-group-addon">&euro;</span></div>');
-          break;
-        case 3:
-          $(this).html('<select class="form-control"></select>');
-          generateSelect($(this).find("select"));
-          $(this).find("select option:contains(" + value + ")").attr('selected',true);
-          break;
-        case 5:
-        case 6:
-          if(value == "No")
-            $(this).html('<input type="checkbox">');
-          else
-            $(this).html('<input type="checkbox" checked="checked">');
-          break;
-        default:
-          break;
-        }
-      });
-$(this).parent().find("input[type='checkbox']").wrap('<div class="make-switch switch-small" data-on-label="YES" data-off-label="NO"  />').parent().bootstrapSwitch();
-      $(this).unbind();
-    });
-  }
+    return html;
+}
+
+function saveExpence(id, td) {
+  element = expence.getexp(id);
+  var i = $("#expresults tr").index($(td).parent()) - 1;
+  $(td).nextAll("td").each(function(index) {
+    switch(index) {
+      case 0:
+        var value = $(this).find("input").val();
+        element.objects[i].date = value;
+        break;
+      case 1:
+        var value = $(this).find("input").val();
+        element.objects[i].city = value;
+        break;
+      case 2:
+        var value = $(this).find("input").val();
+        element.objects[i].amount = parseFloat(value);
+        break;
+      case 3:
+        var value = $(this).find("select").val();
+        element.objects[i].category = Number(value);
+        break;
+      case 4:
+        var value = $(this).find("input").val();
+        element.objects[i].description = value;
+        break;
+      case 5:
+        if($(this).find("input").is(":checked"))
+          element.objects[i].paidby = 1;
+        else
+          element.objects[i].paidby = 0;
+        break;
+      case 6:
+        element.objects[i].invoice = $(this).find("input").is(":checked");
+        break;
+      default:
+        break;
+      }
+  });
+  var prj_arr = [{}], url;
+  url = "/data/push_expences";
+  prj_arr[0]._id = element.project_id;
+  delete element.project_id;
+  prj_arr[0].expences = new Array();
+  prj_arr[0].expences[0] = element;
+  expence._update(url, prj_arr, nop);
+  var newrow = $(td).parent();
+  $(newrow).html(generateExpencesDetailsRow(element.objects[i],false));
+  $(newrow).find("td:eq(0)").click(function() {
+    editClick($(this));
+  });
+  element.project_id = prj_arr[0]._id;
 }
 
 function generateSelect(ref) {
