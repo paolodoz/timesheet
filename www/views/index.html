@@ -33,7 +33,7 @@ function secondstage() {
 
 function loadExpencesList(list) {
  var filter = { start:"2013-01-01", end:"2014-12-31", status:[3], responsible_id: me._id };
-  expence.load(filter, loadExpences, list);
+  expence.load(filter, generateExpencesList, list, true);
 }
 
 function loadExpences(data, container) {
@@ -68,33 +68,6 @@ function loadExpences(data, container) {
   });
 }
 
-function generateExpencesDetails(id, container) {
-  var row,j,html = '<table class="table table-striped table-condensed">';
-  html += '<thead><tr><th>Date</th><th>City</th><th>Amount</th><th>Category</th><th>Description</th><th>Paid by</th><th>Invoice</th><th>Receipt</th></thead><tbody>';
-  var element = findExpence(id);
-  for(j=0; j<element.objects.length; j++) {
-    row = element.objects[j];
-    html += '<tr><td>' + row.date +'</td><td>' + row.city + '</td><td>' + row.amount+ '&euro;</td><td>' + expcategories[row.category] + '</td><td>' + row.description +'</td><td>';
-    if(row.paidby)
-      html += 'Company</td><td>';
-    else
-      html += 'User</td><td>';
-    if(row.invoice)
-      html += 'Yes</td><td>';
-    else
-      html += 'No</td><td>';
-//add column for file download
-    if(row.file) {
-      html += '<a href="/file/download/' + row.file._id + '">' + row.file.name + '</a><td>';
-    } else {
-      html += '</td>';
-    }
-    html += '</tr>';
-  }
-  html += "</tbody></table>";
-  $(container).html(html);
-}
-
 function updateExpenceStatus(id, status, motivation) {
   var selexp = findExpence(id);
   var prj = [{}];
@@ -106,14 +79,6 @@ function updateExpenceStatus(id, status, motivation) {
   prj[0].expences[0] = {};
   prj[0].expences[0] = selexp;
   expence.updatestatus(prj, removeElement);
-}
-
-function computeExpenceTotal(array) {
-  var j,total=0;
-  for(j=0; j<array.length; j++) {
-    total += array[j].amount;
-  }
-  return total;
 }
 
 function loadTripsList(list) {
@@ -146,22 +111,6 @@ function loadTrips(data, container) {
     $('#reject .modal-title').text("Reject trip request");
     $('#reject').modal('show');
   });
-}
-
-function findExpence(id) {
-  var i;
-  for(i=0; i<cur_expences.length; i++) {
-    if(cur_expences[i]._id == id)
-      return cur_expences[i];
-  }
-}
-
-function findTrip(id) {
-  var i;
-  for(i=0; i<cur_trips.length; i++) {
-    if(cur_trips[i]._id == id)
-      return cur_trips[i];
-  }
 }
 
 function updateTripStatus(id, status, motivation) {

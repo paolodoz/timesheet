@@ -341,7 +341,7 @@ var trip = {
 
 var expence = {
   _expence: new Array(),
-  load : function (filter, callback, target) {
+  load : function (filter, callback, target, param) {
     $.ajax({
       type: "POST",
       url: "/data/search_expences",
@@ -349,24 +349,7 @@ var expence = {
       success: function(data) {
         if(!data.error) {
           _trip = data.records;
-          callback(data.records, target);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  loaddetails : function (filter, callback, target) {
-    $.ajax({
-      type: "POST",
-      url: "/get/project",
-      data: JSON.stringify(filter),
-      success: function(data) {
-        if(!data.error) {
-          _trip = data.records;
-          callback(data.records, target);
+          callback(data.records, target, param);
         } else {
           showmessage("error", data.error);
         }
@@ -887,6 +870,120 @@ function capFirstLet(string)
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function generateExpencesList(data, container, approve) {
+  var i,j;
+  var username, name, total, htmllist = "";
+  cur_expences = data;
+  for(i=0;i < data.length; i++) {
+      total = computeExpenceTotal(data[i].objects);
+      name = project.getname(data[i].project_id);
+      username = user.getname(data[i].user_id);
+      htmllist += "<li id='" + data[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-list-alt'></span> <b>Project:</b> " + name + " <button data-toggle='popover' type='button' class='btn btn-default btn-sm'><span class='glyphicon glyphicon-info-sign'></span>  Details</button>";
+      if(approve) {
+        htmllist += " <button type='button' class='btn btn-success btn-sm'><span class='glyphicon glyphicon-thumbs-up'></span>  Accept</button>  <button type='button' class='btn btn-danger btn-sm'><span class='glyphicon glyphicon-thumbs-down'></span>  Reject</button>";
+      }
+      htmllist += "<p><span class='glyphicon glyphicon-user'></span> <b>User:</b> " + username + " <span class='glyphicon glyphicon-tasks'></span> <b>Grand Total:</b> " + total + "&euro; ";
+      if(data[i].file) {
+        htmllist += "<span class='glyphicon glyphicon-file'></span> <b>Global receipt file:</b> <a href='/file/download/" + data[i].file._id + "'>" + data[i].file.name + "</a>";
+      }
+      htmllist += "</p><div class='details hidden'></div></li>";
+  }
+  $("#" + container).html(htmllist);
+  $("#" + container + " .list-group-item button.btn-default").click(function() {
+    var curid = $(this).parent().attr("id");
+    if($(this).parent().find(".details").hasClass("hidden"))
+      generateExpencesDetails(curid, $(this).parent().find(".details"),approve);
+    $(this).parent().find(".details").toggleClass("hidden");
+  });
+  if(approve) {
+    $("#" + container + " .list-group-item button.btn-success").click(function() {
+      cur_id = $(this).parent().attr("id");
+      updateExpenceStatus(cur_id, 4, "");
+    });
+    $("#" + container + " .list-group-item button.btn-danger").click(function() {
+      cur_id = $(this).parent().attr("id");
+      $('#reject .modal-title').text("Reject expence request");
+      $('#reject').modal('show');
+    });
+  }
+}
+
+function generateExpencesDetails(id, container, edit) {
+  var row,j,html = '<table class="table table-striped table-condensed">';
+  if(edit)
+    html += '<thead><tr>';
+  else
+    html += '<thead><tr><th></th>';
+  html += '<th>Date</th><th>City</th><th>Amount</th><th>Category</th><th>Description</th><th>Paid by company</th><th>Invoice</th><th>Receipt</th></thead><tbody>';
+  var element = findExpence(id);
+  for(j=0; j<element.objects.length; j++) {
+    row = element.objects[j];
+    if(edit)
+      html += '<tr>'
+    else
+      html += '<tr><td>Edit</td>'
+    html += '<td>' + row.date +'</td><td>' + row.city + '</td><td>' + row.amount+ '&euro;</td><td>' + expcategories[row.category] + '</td><td>' + row.description +'</td><td>';
+    if(row.paidby)
+      html += 'Company</td><td>';
+    else
+      html += 'No</td><td>';
+    if(row.invoice)
+      html += 'Yes</td><td>';
+    else
+      html += 'No</td><td>';
+//add column for file download
+    if(row.file) {
+      html += '<a href="/file/download/' + row.file._id + '">' + row.file.name + '</a><td>';
+    } else {
+      html += '</td>';
+    }
+    html += '</tr>';
+  }
+  html += "</tbody></table>";
+  $(container).html(html);
+  if(!edit) {
+    $(container).find("tbody tr td:eq(0)").click(function() {
+      $(this).nextAll("td").each(function(index) {
+        var value = $(this).text();
+        switch(index) {
+        case 0:
+        case 1:
+        case 4:
+          $(this).html('<input type="text" class="form-control" value="' + value + '">');
+          break;
+        case 2:
+          $(this).html('<div class="col-lg-12 input-group"><input type="text" class="form-control" value="' + value.substr(0,value.length -1) +  '"><span class="input-group-addon">&euro;</span></div>');
+          break;
+        case 3:
+          $(this).html('<select class="form-control"></select>');
+          generateSelect($(this).find("select"));
+          $(this).find("select option:contains(" + value + ")").attr('selected',true);
+          break;
+        case 5:
+        case 6:
+          if(value == "No")
+            $(this).html('<input type="checkbox">');
+          else
+            $(this).html('<input type="checkbox" checked="checked">');
+          break;
+        default:
+          break;
+        }
+      });
+$(this).parent().find("input[type='checkbox']").wrap('<div class="make-switch switch-small" data-on-label="YES" data-off-label="NO"  />').parent().bootstrapSwitch();
+      $(this).unbind();
+    });
+  }
+}
+
+function generateSelect(ref) {
+  var htmlcat = "";
+  for(i=1; i < expcategories.length; i++) {
+    htmlcat += "<option value='" + i + "'>" + expcategories[i] + "</option>";
+  }
+  $(ref).html(htmlcat);
+}
+
 $(document).ready(function() {
   $("#helplink a").click(function(e) {
     e.preventDefault();
@@ -897,5 +994,30 @@ $(document).ready(function() {
         content: $("#help").html(),
     });
 });
+
+function computeExpenceTotal(array) {
+  var j,total=0;
+  for(j=0; j<array.length; j++) {
+    total += array[j].amount;
+  }
+  return total;
+}
+
+function findExpence(id) {
+  var i;
+  for(i=0; i<cur_expences.length; i++) {
+    if(cur_expences[i]._id == id)
+      return cur_expences[i];
+  }
+}
+
+function findTrip(id) {
+  var i;
+  for(i=0; i<cur_trips.length; i++) {
+    if(cur_trips[i]._id == id)
+      return cur_trips[i];
+  }
+}
+
 
 function nop(){};
