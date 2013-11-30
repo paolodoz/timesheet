@@ -5,8 +5,6 @@ var totals = new Array();
 $(document).ready(function() {
   $(".datepicker").datepicker();
   $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
-  $("#expdatestart").val("2013-10-01");
-  $("#expdateend").val("2013-10-31");
   validator = $("#expForm").validate();
   $("input[name='expdatestart'], input[name='expdateend']").rules("add", {
     required: true,
