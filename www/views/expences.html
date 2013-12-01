@@ -143,6 +143,7 @@ function newtableline() {
       number: true
     });
     $(row).find("input[name='" + elemnum + "exp_amount']").change(function() {
+      $(this).val($(this).val().replace(",","."));
       computetotal();
     });
     $(row).find("select[name='" + elemnum + "exp_category']").change(function() {
