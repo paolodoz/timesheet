@@ -75,8 +75,9 @@ function loadCustomersList(list) {
 }
 
 function resetCustomerForm(load) {
-  if(!load)
+  if(load == true) {} else {
     loadCustomersList("custList");
+  }
   isupdate = false;
   $("#cust_id").val(0);
   $("#custForm")[0].reset();

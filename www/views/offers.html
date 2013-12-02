@@ -92,8 +92,9 @@ function createFilterForm(container) {
   return filter;
 }
 function resetOfferForm(load) {
-  if(!load)
+  if(load == true) {} else {
     loadOffersList("offersList");
+  }
   isupdate = false;
   $("#offerForm")[0].reset();
   $("#offer_id").val(0);

@@ -1,0 +1,126 @@
+<script src="/static/js/bootstrap-switch.js"></script>
+<script type="text/javascript">
+var validator, element, elemnum = 0;
+var totals = new Array();
+$(document).ready(function() {
+  $(".datepicker").datepicker();
+  $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
+  validator = $("#expForm").validate();
+  $("input[name='expdatestart'], input[name='expdateend']").rules("add", {
+    required: true,
+    dateISO: true
+  });
+  $("#expForm").submit(function(event) {
+    event.preventDefault();
+    if(!validator.form())
+      return;
+    var filter = {start: $("#expdatestart").val() , end: $("#expdateend").val(), status: [4,5], user_id:me._id, employee_id:me._id };
+    if($("#expprj").val() != "" ) {
+      filter.project_id = $("#expprj").val(); 
+    }
+    if($("#exptrip").val() != "" ) {
+      filter.trip_id = $("#exptrip").val(); 
+    }
+    expence.load(filter, generateExpencesList, "expresults" ,false);
+  });
+  user.me(userdata);
+});
+
+function userdata(data){
+  me = data;
+  loadProjectsList("expprj");
+  if(me.group != "employee") {
+    var filter;
+    if(me.group == "admin") {
+      filter = [ { }, { name: 1 }, { name: 1 } ];
+    } else {
+      filter = [ { 'responsible._id' : me._id }, { name: 1 }, { name: 1 } ];
+    }
+    project.load(filter, nop ,"");
+    filter = [ {}, {name:1, surname:1}, {surname:1}];
+    user.load(filter, nop , "");
+  }
+}
+
+function resetExpForm(data) {
+  elemnum = 0;
+  $("#exptable tbody").html("");
+  $("#expForm")[0].reset();
+  newtableline();
+}
+
+function loadProjects(data, container) {
+  var i;
+  var htmlselect = "<option value=''>All projects</option>";
+  for(i=0;i < data.records.length; i++) {
+    htmlselect += "<option value='" + data.records[i]._id + "'>" + data.records[i].name + "</option>";
+  }
+  $("#" + container).html(htmlselect);
+/*  var filter = { start:"2013-01-01", end:"2014-12-31", status: [4], user_id: me._id, employee_id:me._id, project_id: $("#" + container).val() };
+  trip.load(filter,loadTrips, "exptrip");*/
+  $("#" + container).change(function() {
+    var filter = { start:"2013-01-01", end:"2014-12-31", status: [4], user_id: me._id, employee_id:me._id, project_id: $("#" + container).val() };
+    trip.load(filter,loadTrips, "exptrip");
+  });
+}
+
+function loadProjectsList(list) {
+  var filter = [{ 'employees._id' : me._id },{name:1},{name:1}];
+  project.load(filter, loadProjects, list);
+}
+
+function loadTripsList(list) {
+  var filter = [{"trips.user_id":me._id, "trips.status":2},{trips:1},{name:1}];
+  trip.load(filter, loadTrips, list);
+}
+
+function loadTrips(data, container) {
+  var i,j;
+  var htmlselect = "<option value=''>General expences</option>";
+  for(i=0;i < data.length; i++) {
+      htmlselect += "<option value='" + data[i]._id + "'>" + data[i].city + " -- " + data[i].start + "</option>";
+  }
+  $("#" + container).html(htmlselect);
+}
+
+</script>
+<h2>Expences Archive</h2>
+  <form class="form-horizontal" role="form" method="post" action="/index/customers" id="expForm">
+<div class="row">
+  <p>Search by date range, project or trip</p>
+  <div class="col-lg-4">
+    <div class="form-group">
+      <label for="expprj" class="col-lg-6 control-label">Expences related to project</label>
+      <div class="col-lg-6">
+        <select class="form-control" id="expprj" name="expprj" ></select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="exptrip" class="col-lg-6 control-label">Expences related to the trip</label>
+      <div class="col-lg-6">
+        <select class="form-control" id="exptrip" name="exptrip" ><option value=''>General expences</option></select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="expdatestart" class="col-lg-6 control-label">Date Start</label>
+      <div class="col-lg-6">
+        <input type="text" class="form-control datepicker" id="expdatestart" name="expdatestart" placeholder="2013-01-01">
+      </div>
+    </div>
+    <div class="form-group">
+      <label for="expdateend" class="col-lg-6 control-label">Date End</label>
+      <div class="col-lg-6">
+        <input type="text" class="form-control datepicker" id="expdateend" name="expdateend" placeholder="2013-01-31">
+      </div>
+    </div>
+    <div class="form-group">
+      <div class="col-lg-offset-6 col-lg-6">
+<button type="submit" class="btn btn-primary" id="btnsubmit"><span class="glyphicon glyphicon-search"></span> Search</button>
+       </div>
+     </div>
+  </div>
+</div>
+<div class="row" id="results">
+  <ul id="expresults"></ul>
+</div>
+</form>
