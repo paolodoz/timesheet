@@ -22,13 +22,13 @@ class ModuleData:
                                  ]
                                    
                                    },
-                                 { 'customer' : 'CUSTOMER1', 'tags' : [ 'TYPE2' ], 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag2'}, 'employees' : [ { '_id' : self.users_ids[0], 'name' : 'Emp2'} ], 
+                                 { 'customer' : 'CUSTOMER1', 'tags' : [ 'TYPE2' ], 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag2'}, 'employees' : [ { '_id' : current_id, 'name' : 'Emp2'} ], 
                                   'expences' : [ 
                                                  { '_id' : '7'*24, "user_id" : '1'*24, "trip_id" : '2'*24, 'status' : 1, "date" : "2010-10-07", "file" : {}, 'objects' : [{ 'date' : '2003-04-10', 'amount' : 15}, { 'date' : '2005-01-05', 'amount' : 20}] },     
-                                                 { '_id' : '8'*24, "user_id" : '1'*24, "trip_id" : '2'*24, 'status' : 0, "date" : "2010-10-08", "file" : {}, 'objects' : [{ 'date' : '2009-01-04', 'amount' : 7}] }     
+                                                 { '_id' : '8'*24, "user_id" : current_id, "trip_id" : '2'*24, 'status' : 2, "date" : "2010-10-08", "file" : {}, 'objects' : [{ 'date' : '2009-01-04', 'amount' : 7}] }     
                                  ] 
                                    }, 
-                                 { 'customer' : 'CUSTOMER3', 'tags' : [ 'TYPE3' ], 'name' : 'PROJECTNAME3', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Manag3'}, 'employees' : [ { '_id' : self.users_ids[2], 'name' : 'Emp3'} ],
+                                 { 'customer' : 'CUSTOMER3', 'tags' : [ 'TYPE3' ], 'name' : 'PROJECTNAME3', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag3'}, 'employees' : [ { '_id' : current_id, 'name' : 'Emp3'} ],
                                   'trips' : [ 
                                                  { '_id' : '8'*24, "user_id" : '1'*24, "description" : "trip1", "status" : 0, "start" : "2010-10-08", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'notes' : [ 'approved' ], 'accommodation' : {} },     
                                                  { '_id' : '9'*24, "user_id" : current_id, "description" : "trip2", "status" : 1, "start" : "2010-10-08", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'notes' : [ 'approved' ], 'accommodation' : {} },    
@@ -68,7 +68,7 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
            )
   
         # Search all approvals with project_id
-        self._assert_req('/data/search_approvals',  { 'project_id' : self.projects_ids[0], 'status' : 'any' }, 
+        self._assert_req('/data/search_approvals',  { 'projects_id' : [ self.projects_ids[0] ], 'status' : 'any' }, 
                {u'error': None,
                  u'expences': [{u'_id': '',
                                 u'date': u'2010-10-08',
@@ -109,6 +109,15 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
                            'status': 1,
                            'trip_id': '222222222222222222222222',
                            'user_id': '111111111111111111111111'},
+                          { '_id' : '', 
+                           "user_id" : '1'*24, 
+                           "trip_id" : '2'*24, 
+                           'status' : 2, 
+                           "date" : "2010-10-08", 
+                           "file" : {}, 
+                           'project_id': self.projects_ids[1],
+                           'objects' : [{ 'date' : '2009-01-04', 'amount' : 7}] 
+                           },
                           {'_id': '',
                            'date': '2010-10-08',
                            'file': {},
@@ -129,7 +138,7 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
                            'status': 2,
                            'trip_id': '444444444444444444444444',
                            'user_id': '111111111111111111111111'},
-                                            ],
+                            ],
              'trips': [
                        {'_id': '',
                         'accommodation': {},
@@ -148,7 +157,7 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
   
  
         # Search the ones to approve with project_id
-        self._assert_req('/data/search_approvals',  { 'project_id' : self.projects_ids[2] }, 
+        self._assert_req('/data/search_approvals',  { 'projects_id' : [ self.projects_ids[2] ] }, 
                {'error': None,  
              'expences' : [],
              'trips': [
@@ -188,7 +197,7 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
                            'file': {},
                            'objects': [{'amount': 7, 'date': '2009-01-04'}],
                            'project_id': self.projects_ids[1],
-                           'status': 0,
+                           'status': 2,
                            'trip_id': '222222222222222222222222',
                            'user_id': '111111111111111111111111'},
                           {'_id': '',
@@ -294,7 +303,201 @@ class ApprovalAPIAsManager(TestCaseAsManager, ModuleData):
         self._add_user_data()
         ModuleData._add_module_data(self, self.manager_id)
         self._log_as_user()
+
+    def test_approve_ok(self):
+
+        # Decrement status flow of '6'*24, that was 1 (correct flow)
+        self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'asd'  }, 
+               { 'error' : None, 'status' : 0 }
+           )
+         
+        # Try to decrement again '6'*24, but is not reachable anymore
+        self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'asd2'  }, 
+               {u'error': u"TSValidationError: Can't find selected expence"}
+           )
+    
+        # Try to reject '5'*24, but is on draft
+        self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '5'*24, 'action' : 'reject', 'note' : 'asd3'  }, 
+               {u'error': u"TSValidationError: Can't find selected expence"}
+           )
   
+        # Search all approvals with project_id
+        self._assert_req('/data/search_approvals',  { 'projects_id' : [ self.projects_ids[0] ], 'status' : 'any' }, 
+               {u'error': None,
+                 u'expences': [{u'_id': '',
+                                u'date': u'2010-10-08',
+                                u'file': {},
+                                u'notes': [u'asd' ],
+                                u'objects': [{u'amount': 5, u'date': u'2005-10-04'},
+                                             {u'amount': 10, u'date': u'2000-01-05'}],
+                                u'project_id': self.projects_ids[0],
+                                u'status': 0,
+                                u'trip_id': u'333333333333333333333333',
+                                u'user_id': u'111111111111111111111111'}
+                               ],
+                 u'trips': []}
+           )
+  
+
+
+    def test_approval_search_ok(self):
+   
+        # Search all with pendance approvation
+        self._assert_req('/data/search_approvals',  {  }, 
+               {'error': None, 'expences': [
+                        {'_id': '',
+                           'date': '2010-10-07',
+                           'file': {},
+                           'objects': [{'amount': 15,
+                                        'date': '2003-04-10'},
+                                       {'amount': 20,
+                                        'date': '2005-01-05'}],
+                           'project_id': self.projects_ids[1],
+                           'status': 1,
+                           'trip_id': '222222222222222222222222',
+                           'user_id': '111111111111111111111111'},
+                          {'_id': '',
+                           'date': '2010-10-08',
+                           'file': {},
+                           'objects': [{'amount': 5, 'date': '2005-10-04'},
+                                       {'amount': 10,
+                                        'date': '2000-01-05'}],
+                           'project_id': self.projects_ids[0],
+                           'status': 1,
+                           'trip_id': '333333333333333333333333',
+                           'user_id': '111111111111111111111111'}],
+             'trips': [
+                       {'_id': '',
+                        'accommodation': {},
+                        'city': 'Rome',
+                        'country': 'Italy',
+                        'description': 'trip2',
+                        'end': '2010-10-10',
+                        'notes': ['approved'],
+                        'project_id': self.projects_ids[2],
+                        'start': '2010-10-08',
+                        'status': 1,
+                        'user_id': self.manager_id},]}
+           )
+   
+
+        # Search the ones to approve with project_id
+        self._assert_req('/data/search_approvals',  { 'projects_id' : [ self.projects_ids[2] ] }, 
+               {'error': None,  
+             'expences' : [],
+             'trips': [
+                       {'_id': '',
+                        'accommodation': {},
+                        'city': 'Rome',
+                        'country': 'Italy',
+                        'description': 'trip2',
+                        'end': '2010-10-10',
+                        'notes': ['approved'],
+                        'project_id': self.projects_ids[2],
+                        'start': '2010-10-08',
+                        'status': 1,
+                        'user_id': self.manager_id}
+                       ]}
+           )
+    
+        # Search any expences
+        self._assert_req('/data/search_approvals',  { 'type' : 'expences', 'status' : 'any' }, 
+               {'error': None, 'expences': [
+                        {'_id': '',
+                           'date': '2010-10-07',
+                           'file': {},
+                           'objects': [{'amount': 15,
+                                        'date': '2003-04-10'},
+                                       {'amount': 20,
+                                        'date': '2005-01-05'}],
+                           'project_id': self.projects_ids[1],
+                           'status': 1,
+                           'trip_id': '222222222222222222222222',
+                           'user_id': '111111111111111111111111'},
+                          {'_id': '',
+                           'date': '2010-10-08',
+                           'file': {},
+                           'objects': [{'amount': 5, 'date': '2005-10-04'},
+                                       {'amount': 10,
+                                        'date': '2000-01-05'}],
+                           'project_id': self.projects_ids[0],
+                           'status': 1,
+                           'trip_id': '333333333333333333333333',
+                           'user_id': '111111111111111111111111'},
+                                            ], 'trips' : []
+                },
+           )
+     
+        # Search both trips approved and rejected 
+        self._assert_req('/data/search_approvals',  {  'type' : 'trips', 'status' : 'any' }, 
+               {'error': None,  
+             'expences' : [],
+             'trips': [
+                       {'_id': '',
+                        'accommodation': {},
+                        'city': 'Rome',
+                        'country': 'Italy',
+                        'description': 'trip2',
+                        'end': '2010-10-10',
+                        'notes': ['approved'],
+                        'project_id': self.projects_ids[2],
+                        'start': '2010-10-08',
+                        'status': 1,
+                        'user_id': self.manager_id},
+                       {'_id': '',
+                        'accommodation': {},
+                        'city': 'Rome',
+                        'country': 'Italy',
+                        'description': 'trip1',
+                        'end': '2010-10-10',
+                        'notes': ['approved'],
+                        'project_id': self.projects_ids[2],
+                        'start': '2010-10-08',
+                        'status': 0,
+                        'user_id': '111111111111111111111111'},
+                        { '_id' : '', 
+                         "user_id" : self.manager_id, 
+                         "description" : "trip3", 
+                         "status" : -1, 
+                         "start" : "2010-10-10", 
+                         "end" : "2010-10-10", 
+                         "country" : "Italy", 
+                         'city' : "Rome", 
+                         'notes' : [ 'approved' ], 
+                         'accommodation' : {},
+                         'project_id': self.projects_ids[2] }     
+   
+                       ]}
+           ) 
+
+       
+        # Search only rejected 
+        self._assert_req('/data/search_approvals',  {  'status' : 'rejected' }, 
+               {'error': None,  
+             'expences' : [],
+             'trips': [
+                        { '_id' : '', 
+                         "user_id" : self.manager_id, 
+                         "description" : "trip3", 
+                         "status" : -1, 
+                         "start" : "2010-10-10", 
+                         "end" : "2010-10-10", 
+                         "country" : "Italy", 
+                         'city' : "Rome", 
+                         'notes' : [ 'approved' ], 
+                         'accommodation' : {},
+                         'project_id': self.projects_ids[2] }     
+  
+                       ]}
+           )         
+        
+           
+    def test_approve_ko(self):
+            
+        # Insert one expence
+        self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'action' : 'approve', 'note' : 'asd'  }, 
+               { 'error' : "ValidationError: {u'action': u'approve', u'note': u'asd', u'project_id': u'%s'} is not valid under any of the given schemas" % self.projects_ids[0]}
+           )
  
  
 class ApprovalAPIAsUser(TestCaseAsEmployee, ModuleData):
@@ -304,3 +507,117 @@ class ApprovalAPIAsUser(TestCaseAsEmployee, ModuleData):
         self._add_user_data()
         ModuleData._add_module_data(self, self.employee_id)
         self._log_as_user()
+
+    def test_approve_ok(self):
+
+        # For the employees, user_id and project_id are required
+        self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'asd'  }, 
+               {u'error': u"ValidationError: 'user_id' is a required property"}
+           )
+
+        # Search project with no permissions
+        self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'asd'  }, 
+               {u'error': u"ValidationError: u'%s' is not one of %s" % (self.projects_ids[0], [ str(p) for p in self.projects_ids[1:] ])}
+           )
+         
+        # Decrement '8'*24
+        self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[1], 'expence_id' : '8'*24, 'action' : 'approve', 'note' : 'asd2'  }, 
+               { 'error' : None, 'status' : 1 }
+           )
+      
+        # Try to reject '8'*24, but is not = 2 anymore
+        self._assert_req('/data/approval',  {  'user_id' : self.employee_id, 'project_id' : self.projects_ids[1], 'expence_id' : '5'*24, 'action' : 'reject', 'note' : 'asd3'  }, 
+               {u'error': u"TSValidationError: Can't find selected expence"}
+           )
+ 
+    def test_reject_ok(self):
+
+        # Reject '8'*24 = 2 anymore
+        self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[1], 'expence_id' : '8'*24, 'action' : 'reject', 'note' : 'asd2'  }, 
+               { 'error' : None, 'status' : -2 }
+           )
+   
+        # Search all approvals
+        self._assert_req('/data/search_approvals',  { 'projects_id' : [ self.projects_ids[1] ],  'user_id' : self.employee_id, 'status' : 'any' }, 
+               {u'error': None,
+                 u'expences': [{
+                           '_id': '',
+                           'date': '2010-10-08',
+                           'file': {},
+                           'objects': [{'amount': 7, 'date': '2009-01-04'}],
+                           'project_id': self.projects_ids[1],
+                           'status': -2,
+                           'notes' : [ 'asd2' ],
+                           'trip_id': '222222222222222222222222',
+                           'user_id': self.employee_id},
+                               ],
+                 u'trips': []}
+           )
+  
+ 
+    def test_approval_search_ok(self):
+     
+        # Search all with pendance approvation
+        self._assert_req('/data/search_approvals',  { 'projects_id' : self.projects_ids[1:],  'user_id' : self.employee_id }, 
+               {'error': None, 
+                'expences': [
+                       { '_id' : '', 
+                        "user_id" : self.employee_id, 
+                        "trip_id" : '2'*24, 
+                        'project_id': self.projects_ids[1],
+                        'status' : 2, 
+                        "date" : "2010-10-08", 
+                        "file" : {}, 
+                        'objects' : [{ 'date' : '2009-01-04', 'amount' : 7}] }     
+                             ],
+             'trips': [ ]}
+           )
+    
+ 
+        # Search the ones to approve with project_id
+        self._assert_req('/data/search_approvals',  { 'projects_id' : [ self.projects_ids[1] ], 'user_id' : self.employee_id  }, 
+               {'error': None,  
+             'expences' : [
+                           
+                       { '_id' : '', 
+                        "user_id" : self.employee_id, 
+                        "trip_id" : '2'*24, 
+                        'project_id': self.projects_ids[1],
+                        'status' : 2, 
+                        "date" : "2010-10-08", 
+                        "file" : {}, 
+                        'objects' : [{ 'date' : '2009-01-04', 'amount' : 7}] }     
+                             
+                           ],
+             'trips': [ ]}
+           )
+     
+        # Search any expences
+        self._assert_req('/data/search_approvals',  { 'user_id' : self.employee_id, 'projects_id' : [ self.projects_ids[1], self.projects_ids[2] ], 'type' : 'expences', 'status' : 'any' }, 
+               {'error': None, 'expences': [
+                           
+                       { '_id' : '', 
+                        "user_id" : self.employee_id, 
+                        "trip_id" : '2'*24, 
+                        'project_id': self.projects_ids[1],
+                        'status' : 2, 
+                        "date" : "2010-10-08", 
+                        "file" : {}, 
+                        'objects' : [{ 'date' : '2009-01-04', 'amount' : 7}] }     
+                             
+                           ], 'trips' : []
+                },
+           )
+
+
+      
+        # search only rejected 
+        self._assert_req('/data/search_approvals',  { 'user_id' : self.employee_id, 'projects_id' : [ self.projects_ids[1], self.projects_ids[2] ], 'status' : 'rejected' }, 
+               {'error': None,  
+             'expences' : [],
+             'trips': []}
+           )         
+          
+             
+
+ 

@@ -227,14 +227,21 @@ approval:
         - reject
     note:
       type: string    
-   
+    user_id: 
+      type: string
+      pattern: '[\dabcdef]{24}'   
    
 search_approvals:
   type: object
   properties: 
-    project_id: 
+    user_id: 
       type: string
       pattern: '[\dabcdef]{24}'
+    projects_id: 
+      type: array
+      items:
+        type: string
+        pattern: '[\dabcdef]{24}'
     type:
       type: string
       enum:

@@ -1,6 +1,7 @@
 import yaml, cherrypy, types, jsonschema
 from core.validation.validation import TSValidationError, recursive_replace, ObjectId
 from core.config import restrictions_schema, conf_approval_flow
+from jsonschema.exceptions import SchemaError
 
 def _unique_keeping_order(seq):
     seen = set()
@@ -14,7 +15,7 @@ def approval_flow(group):
     elif group in conf_approval_flow:
         return conf_approval_flow.index(group)
     else:
-        return 100
+        return conf_approval_flow.index('draft')
     
 
 def get_user_restrictions():
@@ -36,7 +37,7 @@ def get_user_restrictions():
     def _replace_function_permissions_schema(container):
         if isinstance(container,basestring):
             replacement = replacements.get(container)
-            if replacement:
+            if replacement != None:
                 # Replace strings and objectid with string
                 if isinstance(replacement,(basestring, ObjectId)):
                     return str(replacement)
@@ -55,7 +56,6 @@ def get_user_restrictions():
             pass
         else:
             formatted_schemas[collection_name] = recursive_replace(group_schema, _replace_function_permissions_schema)
-    
     return formatted_schemas
 
 
@@ -72,7 +72,13 @@ def check_datamine_permissions(action, document):
     if not restrictions:
         raise TSValidationError("Access to '%s' is restricted for current user" % (action))
     elif restrictions != True:
-        jsonschema.validate(document, restrictions, format_checker=jsonschema.FormatChecker())    
+        try:
+            jsonschema.validate(document, restrictions, format_checker=jsonschema.FormatChecker())    
+        except SchemaError as e:
+            if e.instance == [] and e.message == '[] is too short':
+                raise TSValidationError('Empty list found validating current user request')
+            raise
+    
     
 def check_remove_permissions(collection, document):
     

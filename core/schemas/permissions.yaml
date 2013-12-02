@@ -293,18 +293,37 @@ approval:
         project_id:
           type: string
           enum: '%%managed_projects%%'
-
-search_approval:
-  project manager:
-      type: object
-      properties:
-        project_id:
-          type: string
-          enum: '%%projects%%'
-
   employee:
       type: object
+      required: [ project_id, user_id ]
       properties:
         project_id:
           type: string
           enum: '%%employed_projects%%'
+        user_id:
+          type: string
+          pattern: '%%_id%%'
+
+
+search_approvals:
+  project manager:
+      type: object
+      properties:
+        projects_id:
+          type: array
+          items:
+            type: string
+            enum: '%%projects%%'
+
+  employee:
+      type: object
+      required: [ projects_id, user_id ]
+      properties:
+        projects_id:
+          type: array
+          items:
+            type: string
+            enum: '%%employed_projects%%'
+        user_id:
+          type: string
+          pattern: '%%_id%%'

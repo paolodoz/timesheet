@@ -1,7 +1,7 @@
 from core.validation.validation import TSValidationError, validate_request, sanitize_objectify_json, stringify_objectid_cursor
 from core.api.crud import db
 from bson.objectid import ObjectId
-from core.validation.permissions import approval_flow
+from core.validation.permissions import approval_flow, check_datamine_permissions
 from core.config import schema 
 import cherrypy, logging
 
@@ -12,12 +12,13 @@ def approval(criteria):
     
     POST /data/approval/
     
-    Expects { 'project_id' : string, 'expence_id|trip_id' : string, 'action': approve|reject, 'note' : string  }
+    Expects { 'project_id' : string, 'user_id' : string, 'expence_id|trip_id' : string, 'action': approve|reject, 'note' : string  }
     Returns { 'error' : string, 'status' : integer }
     """
     
     validate_request('approval', criteria)
     sanified_criteria = sanitize_objectify_json(criteria)
+    check_datamine_permissions('approval', sanified_criteria)
 
     # Current user can approve only approvals with status >= conf_approval_flow.index(group)
     owner_status = approval_flow(cherrypy.session['_ts_user']['group'])
@@ -33,15 +34,22 @@ def approval(criteria):
                         '_id' : ObjectId(criteria['project_id']),
                         '%s._id' % expence_type : ObjectId(expence_id)
                         }
-    # Define a status limit only if is not adminstrator
+    
+    search_projection = { '_id' : 0 , expence_type : { '$elemMatch' : { '_id' : ObjectId(expence_id) } } }
+    
+    # Define status limits only if is not adminstrator
     if owner_status != 0:
         search_criteria['%s.status' % expence_type] = owner_status 
-    
-    search_projection = { '_id' : 0 , '%s' % expence_type : { '$elemMatch' : { '_id' : ObjectId(expence_id)  } } }
+        search_projection[expence_type]['$elemMatch']['status'] = owner_status 
+
+    # Limit for user id
+    user_id = sanified_criteria.get('user_id')
+    if user_id:
+        search_projection.update({ '%s.user_id' % expence_type : user_id })
 
     found_expence = db.project.find_one( search_criteria , search_projection)
     if not found_expence:
-        raise TSValidationError("Can't found selected expence")
+        raise TSValidationError("Can't find selected expence")
     
     original_found_expence = found_expence.copy()
     
@@ -75,12 +83,13 @@ def search_approvals(criteria):
     
     POST /data/search_approvals/
     
-    Expects { 'project_id' : string, 'type': trips|expences, 'status': toapprove|approved|rejected|any  }
+    Expects { 'projects_id' : [ ], 'user_id': string, 'type': trips|expences, 'status': toapprove|approved|rejected|any  }
     Returns { 'error' : string, 'records' : [] }
     """
     
     validate_request('search_approvals', criteria)
     sanified_criteria = sanitize_objectify_json(criteria)
+    check_datamine_permissions('search_approvals', sanified_criteria)
 
     # Get flow status number relative to current user
     owner_status = approval_flow(cherrypy.session['_ts_user']['group'])
@@ -124,9 +133,14 @@ def search_approvals(criteria):
                                                     { '%s.status' % aggregation_type : -abs(owner_status) }
                                                 ] } 
 
-        project_requested = sanified_criteria.get('project_id')
-        if project_requested:
-            match_project_status.update({ '_id' : ObjectId(project_requested) })
+        # If project_id is not set, allows only managed_projects
+        projects_requested = [ ObjectId(p) for p in sanified_criteria.get('projects_id', cherrypy.session['_ts_user']['managed_projects']) ]
+        if projects_requested:
+            match_project_status.update({ '_id' : { '$in' : projects_requested } })
+
+        user_id = sanified_criteria.get('user_id')
+        if user_id:
+            match_project_status.update({ '%s.user_id' % aggregation_type : user_id })
 
         project_rename = { '%s.project_id' % aggregation_type : '$_id' }
         for key in schema['project']['properties'][aggregation_type]['items']['properties'].keys():
