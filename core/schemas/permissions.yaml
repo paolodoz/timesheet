@@ -146,7 +146,7 @@ push_days:
                   items: 
                     properties:
                       project:
-                        enum : '%%managed_projects%%'
+                        enum : '%%projects%%'
 
 
 report_users_hours:
