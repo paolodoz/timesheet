@@ -10,10 +10,12 @@ root_folder = os.path.abspath(os.path.join(core_folder,'..'))
 www_folder = os.path.abspath(os.path.join(root_folder,'www'))
 templates_folder = os.path.abspath(os.path.join(www_folder,'templates'))
 views_folder = os.path.abspath(os.path.join(www_folder,'views'))
+mails_folder = os.path.abspath(os.path.join(core_folder,'notifications/mails'))
 
-# Set template engine
+# Set template engines
 templates = TemplateLookup(directories=[templates_folder])
 views = TemplateLookup(directories=[views_folder])
+mails = TemplateLookup(directories=[views_folder])
 
 # Load database schema validation from database.yaml
 schema_path = os.path.join(schemas_folder, 'database.yaml')
@@ -51,6 +53,7 @@ conf_mongodb = conf['mongodb']
 conf_logging = conf['logging']
 conf_uploads = conf['uploads']
 conf_reports = conf['reports']
+conf_mail = conf['mail_notifications']
 
 conf_approval_flow = conf['approval_flow']
 conf_approved = conf_approval_flow.index('approved')

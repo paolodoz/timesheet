@@ -59,3 +59,7 @@ approval_flow:
   - approved
   - project manager
   - draft
+
+mail_notifications:
+  smtp: localhost
+  address: timesheet@domain.com

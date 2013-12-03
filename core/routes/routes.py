@@ -1,9 +1,10 @@
 import cherrypy, os, traceback, logging, cgi
 from core.auth.auth import AuthController, require, is_logged
-from core.api import crud, approvals
+from core.api import crud
 from core.routes.uploads import UploadsRoutes
 from core.routes.datamine import DatamineRoutes
 from core.config import views_folder, templates, views, conf_session, views_restrictions_schema
+from core.notifications import notifications
 from glob import glob
 from jsonschema.exceptions import ValidationError
 from core.validation.validation import TSValidationError
@@ -48,7 +49,7 @@ class Routes:
                 'username' : cherrypy.session['_ts_user']['username'], 
                 '_id' : str(cherrypy.session['_ts_user']['_id']), 
                 'group' : cherrypy.session['_ts_user']['group'],
-                'notifications' : approvals.pending_notifications()
+                'notifications' : notifications.get_pending()
                 }
         
 
