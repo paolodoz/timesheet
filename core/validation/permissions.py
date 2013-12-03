@@ -3,19 +3,14 @@ from core.validation.validation import TSValidationError, recursive_replace, Obj
 from core.config import restrictions_schema, conf_approval_flow
 from jsonschema.exceptions import SchemaError
 
-def _unique_keeping_order(seq):
-    seen = set()
-    seen_add = seen.add
-    return [ x for x in seq if x not in seen and not seen_add(x)]
-
 def approval_flow(group):
 
     if group == 'administrator':
-        return 0
+        return 0, 'administrator'
     elif group in conf_approval_flow:
-        return conf_approval_flow.index(group)
+        return conf_approval_flow.index(group), group
     else:
-        return conf_approval_flow.index('draft')
+        return conf_approval_flow.index('draft'), 'draft'
     
 
 def get_user_restrictions():
@@ -28,9 +23,8 @@ def get_user_restrictions():
                     '%%_id%%' : '^%s$' % (str(cherrypy.session['_ts_user']['_id'])),
                     '%%managed_projects%%' : (cherrypy.session['_ts_user']['managed_projects']),
                     '%%employed_projects%%' : (cherrypy.session['_ts_user']['employed_projects']),
-                    '%%projects%%' : _unique_keeping_order(cherrypy.session['_ts_user']['employed_projects'] + 
-                                          cherrypy.session['_ts_user']['managed_projects']),
-                    '%%approval_flow%%' : approval_flow(cherrypy.session['_ts_user']['group']),
+                    '%%projects%%' : (cherrypy.session['_ts_user']['projects']),
+                    '%%approval_flow%%' : approval_flow(cherrypy.session['_ts_user']['group'])[0],
                     '%%draft_flow%%' : conf_approval_flow.index('draft'),
                     }
 

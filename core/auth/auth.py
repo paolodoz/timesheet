@@ -108,8 +108,13 @@ def all_of(*conditions):
     return check
 
 
-# Controller to provide login and logout actions
 
+def _unique_keeping_order(seq):
+    seen = set()
+    seen_add = seen.add
+    return [ x for x in seq if x not in seen and not seen_add(x)]
+
+# Controller to provide login and logout actions
 class AuthController(object):
     
     def reload_users_projects(self):
@@ -125,16 +130,22 @@ class AuthController(object):
         cursor = db.project.find({ 'employees._id' : cherrypy.session['_ts_user']['_id'] }, { '_id' : 1 })
         for document in cursor:
             cherrypy.session['_ts_user']['employed_projects'].append(str(document['_id']))
-        
+
+        # Uniq and ordered ids of all projects
+        cherrypy.session['_ts_user']['projects'] = _unique_keeping_order(cherrypy.session['_ts_user']['employed_projects'] +
+                                                                        cherrypy.session['_ts_user']['managed_projects'])
+
         # Save formatted permissions schemas to speedup following accesses
         cherrypy.session['_ts_user']['restrictions'] = get_user_restrictions()
+
+       
         
     def on_login(self, username):
         """Called on successful login"""
         
         # Save user data
         cherrypy.session['_ts_user'] = db.user.find_one({ 'username' : username }, { 'username' : 1, 'group' : 1 })
-
+        
         self.reload_users_projects()
 
         cherrypy.request.login = username
