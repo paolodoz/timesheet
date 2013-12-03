@@ -38,7 +38,10 @@ class TestClassBase(unittest.TestCase):
         self.group = group
     
     def _assert_logged(self, credentials):
-        self._assert_req('/me', None, { 'username' : credentials['username'], '_id' : '', 'group' : self.group })
+        
+        json_out = self._request('/me', {})
+        json_out['notifications'] = 0
+        self.assertEqual(clean_id(copy.deepcopy(json_out)), { 'username' : credentials['username'], '_id' : '', 'group' : self.group, 'notifications' : 0 })
         
     def _assert_unlogged(self):
         self.assertEqual(urllib2.urlopen(url + '/me').geturl(), url + '/auth/login')
