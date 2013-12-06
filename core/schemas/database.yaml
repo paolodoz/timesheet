@@ -60,6 +60,7 @@ user:
         - administrator
         - employee
         - project manager
+        - account
     password: 
       type: string
       minLength: 1
