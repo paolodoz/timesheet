@@ -55,10 +55,18 @@ uploads:
 reports:
   multiplier_on_extras: 1.15
   
+# Flow to get approved an expence
 approval_flow:
-  - approved
-  - project manager
-  - draft
+  # APPROVED: notify only submitting user
+  - notify: [ 'user' ]
+  # WAITING FOR ACCOUNTS: notify/waiting for one of the responsible account
+  - notify: [ 'account' ]
+    approve: 'account'
+  # WAITING FOR PM: notify/waiting for one of the responsible project manager
+  - notify: [ 'project manager' ]
+    approve: 'project manager'
+  # WAITING TO BE SUBMITTED: idle state
+  - []
 
 mail_notifications:
   smtp: localhost

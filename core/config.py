@@ -56,7 +56,7 @@ conf_reports = conf['reports']
 conf_mail = conf['mail_notifications']
 
 conf_approval_flow = conf['approval_flow']
-conf_approved = conf_approval_flow.index('approved')
+conf_approved = 0
 
 # Create configurations folders if do not exist
 paths =  [ conf_session['tools.sessions.storage_path'], conf_uploads['folder'] ]

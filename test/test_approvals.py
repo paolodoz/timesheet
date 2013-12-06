@@ -16,14 +16,14 @@ class ModuleData:
                                  { 'customer' : 'CUSTOMER', 'tags' : [ 'TYPE1' ], 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsibles' : [ { '_id' : current_id, 'name' : 'Manag1', 'role' : 'project manager'} ], 'employees' : [ { '_id' : self.users_ids[0], 'name' : 'Emp1'} ], 
                                   'expences' : [ 
                                                  { '_id' : '6'*24, "user_id" : '1'*24, "trip_id" : '3'*24, 'status' : 1, "date" : "2010-10-08", "file" : {}, 'objects' : [{ 'date' : '2005-10-04', 'amount' : 5}, { 'date' : '2000-01-05', 'amount' : 10}] },
-                                                 { '_id' : '5'*24, "user_id" : '1'*24, "trip_id" : '4'*24, 'status' : 2, "date" : "2010-10-09", "file" : {}, 'objects' : [{ 'date' : '2005-10-09', 'amount' : 5}, { 'date' : '2000-01-09', 'amount' : 10}] }     
+                                                 { '_id' : '5'*24, "user_id" : '1'*24, "trip_id" : '4'*24, 'status' : 3, "date" : "2010-10-09", "file" : {}, 'objects' : [{ 'date' : '2005-10-09', 'amount' : 5}, { 'date' : '2000-01-09', 'amount' : 10}] }     
                                  ]
                                    
                                    },
                                  { 'customer' : 'CUSTOMER1', 'tags' : [ 'TYPE2' ], 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsibles' : [ { '_id' : current_id, 'name' : 'Manag2', 'role' : 'project manager'} ], 'employees' : [ { '_id' : current_id, 'name' : 'Emp2'} ], 
                                   'expences' : [ 
                                                  { '_id' : '7'*24, "user_id" : '1'*24, "trip_id" : '2'*24, 'status' : 1, "date" : "2010-10-07", "file" : {}, 'objects' : [{ 'date' : '2003-04-10', 'amount' : 15}, { 'date' : '2005-01-05', 'amount' : 20}] },     
-                                                 { '_id' : '8'*24, "user_id" : current_id, "trip_id" : '2'*24, 'status' : 2, "date" : "2010-10-08", "file" : {}, 'objects' : [{ 'date' : '2009-01-04', 'amount' : 7}] }     
+                                                 { '_id' : '8'*24, "user_id" : current_id, "trip_id" : '2'*24, 'status' : 3, "date" : "2010-10-08", "file" : {}, 'objects' : [{ 'date' : '2009-01-04', 'amount' : 7}] }     
                                  ] 
                                    }, 
                                  { 'customer' : 'CUSTOMER3', 'tags' : [ 'TYPE3' ], 'name' : 'PROJECTNAME3', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsibles' : [ { '_id' : current_id, 'name' : 'Manag3', 'role' : 'project manager'} ], 'employees' : [ { '_id' : current_id, 'name' : 'Emp3'} ],
@@ -62,7 +62,7 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
     
         # Reject '5'*24
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '5'*24, 'action' : 'reject', 'note' : 'asd3'  }, 
-               { 'error' : None, 'status' : -2 }
+               { 'error' : None, 'status' : -3 }
            )
   
         # Search all approvals with project_id
@@ -85,7 +85,7 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
                                 u'objects': [{u'amount': 5, u'date': u'2005-10-09'},
                                              {u'amount': 10, u'date': u'2000-01-09'}],
                                 u'project_id': self.projects_ids[0],
-                                u'status': -2,
+                                u'status': -3,
                                 u'trip_id': u'444444444444444444444444',
                                 u'user_id': u'111111111111111111111111'}],
                  u'trips': []}
@@ -110,7 +110,7 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
                           { '_id' : '', 
                            "user_id" : '1'*24, 
                            "trip_id" : '2'*24, 
-                           'status' : 2, 
+                           'status' : 3, 
                            "date" : "2010-10-08", 
                            "file" : {}, 
                            'project_id': self.projects_ids[1],
@@ -133,7 +133,7 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
                                        {'amount': 10,
                                         'date': '2000-01-09'}],
                            'project_id': self.projects_ids[0],
-                           'status': 2,
+                           'status': 3,
                            'trip_id': '444444444444444444444444',
                            'user_id': '111111111111111111111111'},
                             ],
@@ -195,7 +195,7 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
                            'file': {},
                            'objects': [{'amount': 7, 'date': '2009-01-04'}],
                            'project_id': self.projects_ids[1],
-                           'status': 2,
+                           'status': 3,
                            'trip_id': '222222222222222222222222',
                            'user_id': '111111111111111111111111'},
                           {'_id': '',
@@ -215,7 +215,7 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
                                        {'amount': 10,
                                         'date': '2000-01-09'}],
                            'project_id': self.projects_ids[0],
-                           'status': 2,
+                           'status': 3,
                            'trip_id': '444444444444444444444444',
                            'user_id': '111111111111111111111111'},
                                             ], 'trips' : []
@@ -520,7 +520,7 @@ class ApprovalAPIAsUser(TestCaseAsEmployee, ModuleData):
          
         # Decrement '8'*24
         self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[1], 'expence_id' : '8'*24, 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 1 }
+               { 'error' : None, 'status' : 2 }
            )
       
         # Try to reject '8'*24, but is not = 2 anymore
@@ -530,9 +530,9 @@ class ApprovalAPIAsUser(TestCaseAsEmployee, ModuleData):
  
     def test_reject_ok(self):
 
-        # Reject '8'*24 = 2 anymore
+        # Reject '8'*24 = 3 
         self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[1], 'expence_id' : '8'*24, 'action' : 'reject', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : -2 }
+               { 'error' : None, 'status' : -3 }
            )
    
         # Search all approvals
@@ -544,7 +544,7 @@ class ApprovalAPIAsUser(TestCaseAsEmployee, ModuleData):
                            'file': {},
                            'objects': [{'amount': 7, 'date': '2009-01-04'}],
                            'project_id': self.projects_ids[1],
-                           'status': -2,
+                           'status': -3,
                            'notes' : [ 'asd2' ],
                            'trip_id': '222222222222222222222222',
                            'user_id': self.employee_id},
@@ -563,7 +563,7 @@ class ApprovalAPIAsUser(TestCaseAsEmployee, ModuleData):
                         "user_id" : self.employee_id, 
                         "trip_id" : '2'*24, 
                         'project_id': self.projects_ids[1],
-                        'status' : 2, 
+                        'status' : 3, 
                         "date" : "2010-10-08", 
                         "file" : {}, 
                         'objects' : [{ 'date' : '2009-01-04', 'amount' : 7}] }     
@@ -581,7 +581,7 @@ class ApprovalAPIAsUser(TestCaseAsEmployee, ModuleData):
                         "user_id" : self.employee_id, 
                         "trip_id" : '2'*24, 
                         'project_id': self.projects_ids[1],
-                        'status' : 2, 
+                        'status' : 3, 
                         "date" : "2010-10-08", 
                         "file" : {}, 
                         'objects' : [{ 'date' : '2009-01-04', 'amount' : 7}] }     
@@ -598,7 +598,7 @@ class ApprovalAPIAsUser(TestCaseAsEmployee, ModuleData):
                         "user_id" : self.employee_id, 
                         "trip_id" : '2'*24, 
                         'project_id': self.projects_ids[1],
-                        'status' : 2, 
+                        'status' : 3, 
                         "date" : "2010-10-08", 
                         "file" : {}, 
                         'objects' : [{ 'date' : '2009-01-04', 'amount' : 7}] }     

@@ -1,4 +1,4 @@
-from core.validation.permissions import approval_flow
+from core.validation.permissions import get_role_approval_step
 from core.api.crud import db
 from bson.objectid import ObjectId
 from core.notifications import sendmail
@@ -37,7 +37,7 @@ def get_pending():
     
     
     # Get flow status number relative to current user
-    approval_step, approval_name = approval_flow(cherrypy.session['_ts_user']['group'])
+    approval_step = get_role_approval_step(cherrypy.session['_ts_user']['group'])
     
     pending_count = 0
     
@@ -50,7 +50,7 @@ def get_pending():
             approval_filters['_id'] = { '$in' :  [ ObjectId(p) for p in cherrypy.session['_ts_user']['managed_projects'] ] } 
             
             # If user is not in the approvations chain, filter also user_id parameter
-            if approval_name == 'draft':
+            if approval_step == len(conf_approval_flow)-1:
                 approval_filters['%s.user_id' % aggregation_type] = str(cherrypy.session['_ts_user']['_id'])
 
         

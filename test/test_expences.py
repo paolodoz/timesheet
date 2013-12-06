@@ -1,5 +1,6 @@
 from testclasses import TestClassBase, TestCaseAsEmployee, TestCaseAsManager
 from core.config import conf_approval_flow
+from core.validation.permissions import get_role_approval_step
 
 class ModuleData:
 
@@ -119,12 +120,12 @@ class ExpencesAPIAsEmployee(TestCaseAsEmployee, ModuleData):
         self._assert_req('/data/push_expences', [ 
                                 { '_id' : self.projects_ids[1], 
                                  "expences" : [ 
-                                                 { "user_id" : self.employee_id, "trip_id" : '2'*24, 'status': conf_approval_flow.index('draft'), "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                                 { "user_id" : self.employee_id, "trip_id" : '2'*24, 'status': get_role_approval_step('draft'), "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
                                 ] } ], 
                { 'error' : None, 'ids' : [ '' ] }
        )
 
-        self._assert_req('/data/search_expences', { "user_id" : self.employee_id,  "employee_id" : self.employee_id }, {u'error': None, 'records' : [{ '_id' : '', "user_id" : self.employee_id, 'project_id' : self.projects_ids[1], "trip_id" : '2'*24, 'status' : conf_approval_flow.index('draft'), "date" : "2005-10-08", "file" : {}, 'objects' : [{}] }]})
+        self._assert_req('/data/search_expences', { "user_id" : self.employee_id,  "employee_id" : self.employee_id }, {u'error': None, 'records' : [{ '_id' : '', "user_id" : self.employee_id, 'project_id' : self.projects_ids[1], "trip_id" : '2'*24, 'status' : get_role_approval_step('draft'), "date" : "2005-10-08", "file" : {}, 'objects' : [{}] }]})
         
         
     def test_expences_ko(self):
@@ -152,7 +153,7 @@ class ExpencesAPIAsEmployee(TestCaseAsEmployee, ModuleData):
         self._assert_req('/data/push_expences', [ 
                                  { '_id' : self.projects_ids[1], 
                                   "expences" : [ 
-                                                 { "user_id" : self.users_ids[1], "trip_id" : '2'*24, 'status': conf_approval_flow.index('draft'), "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
+                                                 { "user_id" : self.users_ids[1], "trip_id" : '2'*24, 'status': get_role_approval_step('draft'), "date" : "2005-10-08", "file" : {}, 'objects' : [{}] },   
                                  ] } ], 
                 {u'error': u"ValidationError: u'%s' does not match '^%s$'" % (self.users_ids[1], self.employee_id)}
         )

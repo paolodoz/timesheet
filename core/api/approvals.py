@@ -1,7 +1,7 @@
 from core.validation.validation import TSValidationError, validate_request, sanitize_objectify_json, stringify_objectid_cursor
 from core.api.crud import db
 from bson.objectid import ObjectId
-from core.validation.permissions import approval_flow, check_datamine_permissions
+from core.validation.permissions import get_role_approval_step, check_datamine_permissions
 from core.notifications import notifications
 from core.config import schema 
 import cherrypy, logging
@@ -22,7 +22,7 @@ def approval(criteria):
     check_datamine_permissions('approval', sanified_criteria)
 
     # Current user can approve only approvals with status >= conf_approval_flow.index(group)
-    owner_status = approval_flow(cherrypy.session['_ts_user']['group'])[0]
+    owner_status = get_role_approval_step(cherrypy.session['_ts_user']['group'])
 
     # Is searching found_expence or trip
     exp_id = sanified_criteria.get('expence_id')
@@ -96,7 +96,7 @@ def search_approvals(criteria):
     check_datamine_permissions('search_approvals', sanified_criteria)
 
     # Get flow status number relative to current user
-    owner_status = approval_flow(cherrypy.session['_ts_user']['group'])[0]
+    owner_status = get_role_approval_step(cherrypy.session['_ts_user']['group'])
 
     # Search only expences or trips or both
     type_requested = sanified_criteria.get('type', 'any' )

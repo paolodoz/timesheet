@@ -3,14 +3,20 @@ from core.validation.validation import TSValidationError, recursive_replace, Obj
 from core.config import restrictions_schema, conf_approval_flow
 from jsonschema.exceptions import SchemaError
 
-def approval_flow(group):
+def get_role_approval_step(group):
 
+    # Approvation roles goes skips [0] == 'approved' and [-1] == 'draft'
+    approvation_roles = [ s['approve'] for s in conf_approval_flow[1:-1] ]
+
+    # Administrator can see every expence, return 0
     if group == 'administrator':
-        return 0, 'administrator'
-    elif group in conf_approval_flow:
-        return conf_approval_flow.index(group), group
+        return 0
+    # Roles that can approves can see only expences >= owned step
+    elif group in approvation_roles:
+        return approvation_roles.index(group)
+    # Else, return draft step 
     else:
-        return conf_approval_flow.index('draft'), 'draft'
+        return len(conf_approval_flow)-1
     
 
 def get_user_restrictions():
@@ -24,8 +30,8 @@ def get_user_restrictions():
                     '%%managed_projects%%' : (cherrypy.session['_ts_user']['managed_projects']),
                     '%%employed_projects%%' : (cherrypy.session['_ts_user']['employed_projects']),
                     '%%projects%%' : (cherrypy.session['_ts_user']['projects']),
-                    '%%approval_flow%%' : approval_flow(cherrypy.session['_ts_user']['group'])[0],
-                    '%%draft_flow%%' : conf_approval_flow.index('draft'),
+                    '%%approval_flow%%' : get_role_approval_step(cherrypy.session['_ts_user']['group']),
+                    '%%draft_flow%%' : get_role_approval_step('draft'),
                     }
 
     def _replace_function_permissions_schema(container):
