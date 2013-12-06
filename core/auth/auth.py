@@ -121,7 +121,7 @@ class AuthController(object):
 
         # Save ids of managed_projects
         cherrypy.session['_ts_user']['managed_projects'] = []
-        cursor = db.project.find({ 'responsible._id' : cherrypy.session['_ts_user']['_id'] }, { '_id' : 1 })
+        cursor = db.project.find({ 'responsibles._id' : cherrypy.session['_ts_user']['_id'] }, { '_id' : 1 })
         for document in cursor:
             cherrypy.session['_ts_user']['managed_projects'].append(str(document['_id']))
 

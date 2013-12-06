@@ -203,9 +203,9 @@ project:
                 type: string
                 pattern: '%%_id%%'
           - type: object
-            required: [ responsible._id ]
+            required: [ responsibles._id ]
             properties:
-              responsible._id:
+              responsibles._id:
                 type: string
                 pattern: '%%_id%%'
  

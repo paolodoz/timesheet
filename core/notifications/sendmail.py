@@ -14,8 +14,8 @@ def _sendmail(fromaddr, toaddrs, mail):
     server.quit()
 
 
-def sendmail(recipient_data, template = 'new_expence'):
+def sendmail(mail_data):
 
-    mailmessage = mails.get_template('%s.tpl' % template).render(**recipient_data)
+    mailmessage = mails.get_template('%s.tpl' % template).render(**mail_data)
     
-    _sendmail(conf_mail['address'], recipient_data['email'], mailmessage)
+    _sendmail(conf_mail['address'], mail_data['email'], mailmessage)

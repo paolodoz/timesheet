@@ -7,10 +7,10 @@ class ModuleData:
         
         # Add projects
         projects_json = self._assert_req('/add/project', [ 
-                                 { 'customer' : 'CUSTOMER', 'tags' : [ 'TYPE1' ], 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person1', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag1'}, 'employees' : [ ] },
-                                 { 'customer' : 'CUSTOMER1', 'tags' : [ 'TYPE2', 'TYPE1' ], 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person2', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : { '_id' : current_id, 'name' : 'Manag2'}, 'employees' : [ { '_id' : current_id, 'name' : 'Emp2'} ] }, 
-                                 { 'customer' : 'CUSTOMER3', 'tags' : [ 'TYPE3' ], 'name' : 'PROJECTNAME3', 'description' : 'description', 'contact_person' : 'contact_person3', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : {  }, 'employees' : [  ] },
-                                 { 'customer' : 'CUSTOMER4', 'tags' : [ 'TYPE1', 'TYPE4' ], 'name' : 'PROJECTNAME4', 'description' : 'description', 'contact_person' : 'contact_person4', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsible' : {  }, 'employees' : [  ] } 
+                                 { 'customer' : 'CUSTOMER', 'tags' : [ 'TYPE1' ], 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person1', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsibles' : [ { '_id' : current_id, 'name' : 'Manag1', 'role' : 'project manager'} ], 'employees' : [ ] },
+                                 { 'customer' : 'CUSTOMER1', 'tags' : [ 'TYPE2', 'TYPE1' ], 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person2', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsibles' : [ { '_id' : current_id, 'name' : 'Manag2', 'role' : 'project manager' } ], 'employees' : [ { '_id' : current_id, 'name' : 'Emp2'} ] }, 
+                                 { 'customer' : 'CUSTOMER3', 'tags' : [ 'TYPE3' ], 'name' : 'PROJECTNAME3', 'description' : 'description', 'contact_person' : 'contact_person3', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsibles' : [ ], 'employees' : [  ] },
+                                 { 'customer' : 'CUSTOMER4', 'tags' : [ 'TYPE1', 'TYPE4' ], 'name' : 'PROJECTNAME4', 'description' : 'description', 'contact_person' : 'contact_person4', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsibles' : [], 'employees' : [  ] } 
                                  ], 
                 { 'error' : None, 'ids' : [ '', '', '', '' ] }
                 )
@@ -34,7 +34,7 @@ class TagAPIAsAdmin(TestClassBase, ModuleData):
         
     def test_tag_ko(self):
         # Insert non unique tags
-        self._assert_req('/add/project', [ { 'customer' : 'CUSTOMER', 'tags' : [ 'TYPE1', 'TYPE1' ], 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person1', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsible' : { '_id' : '1'*24, 'name' : 'Manag1'}, 'employees' : [ ] } ], { 'error' : "ValidationError: [u'TYPE1', u'TYPE1'] has non-unique elements", 'ids' : [ ] })
+        self._assert_req('/add/project', [ { 'customer' : 'CUSTOMER', 'tags' : [ 'TYPE1', 'TYPE1' ], 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person1', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsibles' : [ { '_id' : '1'*24, 'name' : 'Manag1', 'role' : 'project manager'} ], 'employees' : [ ] } ], { 'error' : "ValidationError: [u'TYPE1', u'TYPE1'] has non-unique elements", 'ids' : [ ] })
 
         
 class TagAPIAsManager(TestCaseAsManager, ModuleData):

@@ -103,8 +103,8 @@ class ModuleData:
         # Add managed projects
         uri = '/add/project'
         json_in = [
-                    { 'name' : 'MANAGEDPROJECT1', 'customer' : 'CUSTOMER1', 'tags' : [ 'TYPE1' ], 'description' : 'description1', 'contact_person' : 'contact_person1', 'start' : '2000-01-02', 'end' : '2000-01-03', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'responsible' : { '_id' : self.manager_id, 'name' : 'The manager'}, 'employees' : [ { '_id' : '1'*24, 'name' : 'The employed administrator'} ] }, 
-                    { 'name' : 'MANAGEDPROJECT2', 'customer' : 'CUSTOMER2', 'tags' : [ 'TYPE2' ], 'description' : 'description2', 'contact_person' : 'contact_person2', 'start' : '2000-01-01', 'end' : '2000-01-05', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'responsible' : { '_id' : self.manager_id, 'name' : 'The manager'}, 'employees' : [ { '_id' : '7'*24, 'name' : 'Another employee'} ] } 
+                    { 'name' : 'MANAGEDPROJECT1', 'customer' : 'CUSTOMER1', 'tags' : [ 'TYPE1' ], 'description' : 'description1', 'contact_person' : 'contact_person1', 'start' : '2000-01-02', 'end' : '2000-01-03', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'responsibles' : [ { '_id' : self.manager_id, 'name' : 'The manager', 'role' : 'project manager' } ], 'employees' : [ { '_id' : '1'*24, 'name' : 'The employed administrator'} ] }, 
+                    { 'name' : 'MANAGEDPROJECT2', 'customer' : 'CUSTOMER2', 'tags' : [ 'TYPE2' ], 'description' : 'description2', 'contact_person' : 'contact_person2', 'start' : '2000-01-01', 'end' : '2000-01-05', 'tasks' : [ 'task1', 'task2' ], 'grand_total' : 4, 'responsibles' : [ { '_id' : self.manager_id, 'name' : 'The manager', 'role' : 'project manager' } ], 'employees' : [ { '_id' : '7'*24, 'name' : 'Another employee'} ] } 
                     ]
          
          

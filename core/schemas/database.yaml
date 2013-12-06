@@ -118,14 +118,23 @@ project:
     grand_total:
       type: number
       optional: True
-    responsible:
-      type: object
-      additionalProperties: False
-      properties:
-        _id:
-          type: string
-        name:
-          type: string
+    responsibles:
+      type: array
+      items:
+        optional: True
+        additionalProperties: False
+        properties:
+          _id:
+            type: string
+          name:
+            type: string
+          role:
+            type: string
+            enum:
+              - administrator
+              - employee
+              - project manager
+              - account
     economics:
       type: array
       items:

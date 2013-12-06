@@ -2,6 +2,7 @@ from core.validation.validation import TSValidationError, validate_request, sani
 from core.api.crud import db
 from bson.objectid import ObjectId
 from core.validation.permissions import approval_flow, check_datamine_permissions
+from core.notifications import notifications
 from core.config import schema 
 import cherrypy, logging
 
@@ -72,7 +73,10 @@ def approval(criteria):
     db.project.update({ '_id' : ObjectId(criteria['project_id'])}, { '$pull' : { expence_type : { '_id' : ObjectId(expence_id)} } } )
     # Push the modified element, with an hack to avoid to push the entire array
     db.project.update({ '_id' : ObjectId(criteria['project_id']) }, { '$push' : { expence_type : found_expence[expence_type][0] } } )
-     
+    
+    # Notify via mail 
+    notifications.notify_expence(found_expence[expence_type][0], expence_type)
+    
     return { 'status' : found_expence[expence_type][0]['status'] }
 
 

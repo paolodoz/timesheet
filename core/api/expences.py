@@ -91,7 +91,7 @@ def search_expences(criteria):
         projects_ids_matches['employees._id'] = ObjectId(employee_id)
     responsible_id = sanified_criteria.get('responsible_id')
     if responsible_id != None:
-        projects_ids_matches['responsible._id'] = ObjectId(responsible_id)
+        projects_ids_matches['responsibles._id'] = ObjectId(responsible_id)
     project_id = sanified_criteria.get('project_id')
     if project_id != None:
         projects_ids_matches['_id'] = ObjectId(project_id)
