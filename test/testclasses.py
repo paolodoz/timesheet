@@ -117,3 +117,27 @@ class TestCaseAsManager(TestClassBase):
         self._login(manager_credentials, 'project manager')
         self._assert_logged(manager_credentials)
                 
+                
+                
+class TestCaseAsAccount(TestClassBase):
+
+    def setUp(self):
+        TestClassBase.setUp(self)
+        self._add_user_data()
+        self._log_as_user()
+        
+    def _add_user_data(self):        
+        # Add manager user
+        uri = '/add/user'
+        json_in = [ { 'name' : 'ACCOUNT', 'surname' : 'ACCOUNTSURNAME', 'username' : 'ACCOUNT', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'account', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ]
+    
+        account_json = self._assert_req(uri, json_in, { 'error' : None, 'ids' : [ '' ] })
+        self.account_id = account_json['ids'][0]
+        
+        self.execOnTearDown.append(('/remove/user', [ { '_id' : self.account_id } ], { 'error' : None }))
+      
+    def _log_as_user(self):
+        
+        account_credentials = { 'username' : 'ACCOUNT', 'password' : 'mypassword' }
+        self._login(account_credentials, 'account')
+        self._assert_logged(account_credentials)
