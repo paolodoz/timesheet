@@ -293,6 +293,13 @@ approval:
         project_id:
           type: string
           enum: '%%managed_projects%%'
+  account:
+      type: object
+      required: [ project_id ]
+      properties:
+        project_id:
+          type: string
+          enum: '%%managed_projects%%'
   employee:
       type: object
       required: [ project_id, user_id ]
@@ -315,6 +322,14 @@ search_approvals:
             type: string
             enum: '%%projects%%'
 
+  account:
+      type: object
+      properties:
+        projects_id:
+          type: array
+          items:
+            type: string
+            enum: '%%projects%%'
   employee:
       type: object
       required: [ projects_id, user_id ]
