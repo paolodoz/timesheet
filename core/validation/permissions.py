@@ -5,18 +5,19 @@ from jsonschema.exceptions import SchemaError
 
 def get_role_approval_step(group):
 
-    # Approvation roles goes skips [0] == 'approved' and [-1] == 'draft'
-    approvation_roles = [ s['approve'] for s in conf_approval_flow[1:-1] ]
+    # Approvation roles 
+    approvation_roles = [ s['approve'] if 'approve' in s else '' for s in conf_approval_flow ]
+
 
     # Administrator can see every expence, return 0
     if group == 'administrator':
         return 0
-    # Roles that can approves can see only expences >= owned step
-    elif group in approvation_roles:
+    # Roles that can approves can see only expences >= owned step.
+    elif group in approvation_roles[1:-1]:
         return approvation_roles.index(group)
     # Else, return draft step 
     else:
-        return len(conf_approval_flow)-1
+        return len(approvation_roles)-1
     
 
 def get_user_restrictions():
