@@ -6,7 +6,7 @@ from jsonschema.exceptions import SchemaError
 def get_role_approval_step(group):
 
     # Approvation roles 
-    approvation_roles = [ s['approve'] if 'approve' in s else '' for s in conf_approval_flow ]
+    approvation_roles = [ s['approver'] if 'approver' in s else '' for s in conf_approval_flow ]
 
 
     # Administrator can see every expence, return 0

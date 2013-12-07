@@ -58,16 +58,24 @@ reports:
 # Flow to get approved an expence
 approval_flow:
   # APPROVED: notify only submitting user
-  - notify: [ 'user' ]
+  - notify_new: [ '%submitter%' ]
+  
   # WAITING FOR ACCOUNTS: notify/waiting for one of the responsible account
-  - notify: [ 'account' ]
-    approve: 'account'
+  - approver: 'account'
+    notify_new: [ 'account' ]
+    notify_reject: [ '%submitter%' ]
+    
   # WAITING FOR PM: notify/waiting for one of the responsible project manager
-  - notify: [ 'project manager' ]
-    approve: 'project manager'
+  - approver: 'project manager'
+    notify_new: [ 'project manager' ]
+    notify_reject: [ '%submitter%' ]
+    
   # WAITING TO BE SUBMITTED: idle state
   - []
 
-mail_notifications:
-  smtp: localhost
-  address: timesheet@domain.com
+notifications:
+  providers:
+    - smtp
+  smtp:
+    host: localhost
+    from_address: timesheet@domain.com
