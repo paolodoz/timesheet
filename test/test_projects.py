@@ -138,7 +138,7 @@ class ReportUsersHoursAPIAsManager(TestCaseAsManager, ModuleData):
                                                  # Following expence is not approved     
                                                  { '_id' : '5'*24, "user_id" : '1'*24, "trip_id" : '4'*24, 'status' : 2, "date" : "2010-10-09", "file" : {}, 'objects' : [{ 'date' : '2005-10-09', 'amount' : 5}, { 'date' : '2000-01-09', 'amount' : 10}] }     
                                  ]
-              }, {u'error': u'ValidationError: 0.0 is less than the minimum of 1'}
+              }, {u'error': u'ValidationError: 0.0 is less than the minimum of 2'}
         )
 
 class ReportUsersHoursAPIAsEmployee(TestCaseAsEmployee, ModuleData):
