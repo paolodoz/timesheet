@@ -1,5 +1,7 @@
 import smtplib
-from core.config import conf_mail, mails
+from core.config import conf_notifications, mails
+
+conf_mail = conf_notifications['smtp']
 
 def _sendmail(fromaddr, toaddrs, mail):
 
@@ -8,14 +10,14 @@ def _sendmail(fromaddr, toaddrs, mail):
     
     message = header + mail
     
-    server = smtplib.SMTP(conf_mail['smtp'])
+    server = smtplib.SMTP(conf_mail['host'])
     server.set_debuglevel(1)
     server.sendmail(fromaddr, toaddrs, message)
     server.quit()
 
 
-def sendmail(mail_data):
+def notify(recipients, notification_type):
 
-    mailmessage = mails.get_template('%s.tpl' % template).render(**mail_data)
-    
-    _sendmail(conf_mail['address'], mail_data['email'], mailmessage)
+    for user_data in recipients:
+        mailmessage = mails.get_template('%s.tpl' % notification_type).render(**user_data)
+        #_sendmail(conf_mail['from_address'], user_data['email'], mailmessage)

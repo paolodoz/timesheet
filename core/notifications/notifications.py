@@ -1,35 +1,59 @@
 from core.validation.permissions import get_role_approval_step
 from core.api.crud import db
 from bson.objectid import ObjectId
-from core.notifications import sendmail
-from core.config import conf_approval_flow
+from core.config import conf_approval_flow, conf_notifications
 import cherrypy, logging
 
-def notify_expence(expence, expence_type):
+def _get_recipients_of_expences_responsibles(expence_user_id, project_id, expence_id, expence_type, recipients_roles ):
+
+    recipients = []
+
+    for role in recipients_roles:
     
-    expence['expence_type'] = expence_type
+        # If role is submitter, send mail to the submitter user
+        if role == '%submitter%':
+            recipients += [ db.user.find_one({ '_id':  ObjectId(expence_user_id) }, { '_id' : 0, 'name' : 1, 'surname' : 1, 'email' : 1 }) ]
+        else:
+            # Find the ids of all the responsibles of the project
+            
+            aggregation_pipe = [  
+                    { '$unwind' : '$%s' % expence_type },
+                    { '$match' : { '_id':  ObjectId(project_id), 
+                                  '%s._id' % expence_type : ObjectId(expence_id), 
+                                  'responsibles.role' : role  } },
+                    { '$group' : { '_id' : '$responsibles._id' } 
+                    }
+            ]
+            
+            responsibles = db.project.aggregate(aggregation_pipe)['result']
+            recipients += list(db.user.find({ '_id':  {  '$in' : [ ObjectId(responsible['_id'][0]) for responsible in responsibles ] } }, { '_id' : 0, 'name' : 1, 'surname' : 1, 'email' : 1 }))
+
+    return recipients
+
+
+def notify_expence(expence, project_id, expence_type):
     
-    # If expence['status'] <= 0, the mail of one user is approved or rejected.
-    # Template used: expence_approved, recipient: user_id 
-    if expence['status'] <= 0:
+    
+    # If current status is >= 0, notify the new expence
+    if expence['status'] >= 0:
+        notification_type = 'notify_new'
+    else:
+        notification_type = 'notify_reject'
         
-        recipients = [ db.user.find_one({ '_id':  ObjectId(expence['user_id']) }, { '_id' : 0, 'name' : 1, 'surname' : 1, 'email' : 1 }) ]
-        expence['status_string'] = 'rejected' if expence['status'] < 0 else 'approved'
-        
-    # Else is a new notification pending for the user
-    # Template used: expence_pending, recipient: reposponible of the flow step
-    # excluding 0 and flow[-1] that is draft
-    elif expence['status'] > 0 and expence['status'] < len(conf_approval_flow)-2:
-        
-        recipients_group = conf_approval_flow[expence['status']]
-        recipients = db.user.find({ 'group':  recipients_group }, { '_id' : 0, 'name' : 1, 'surname' : 1, 'email' : 1 })
-        
-        # If the recipient in the group is unique (accounting?) send directly
-        
-        expence['status_string'] = 'pending'
-        
-        
-#    sendmail.sendmail(mail_data)
+    recipients_roles = conf_approval_flow[expence['status']].get(notification_type,[])
+    
+    recipients = _get_recipients_of_expences_responsibles(expence_user_id = expence['user_id'], 
+                                                         project_id = project_id, 
+                                                         expence_id = expence['_id'], 
+                                                         expence_type = expence_type, 
+                                                         recipients_roles = recipients_roles)
+
+    # Try to send notifications with core/notifications/send_*.py functions specified in config.yaml auth section
+    notifications_providers = conf_notifications['providers']    
+    for provider in notifications_providers:
+        notifications_module = __import__('core.notifications.notify_%s' % provider, fromlist=["*"])
+        notification_error = notifications_module.notify(recipients, notification_type)
+
     
     
 

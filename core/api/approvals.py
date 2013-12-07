@@ -76,7 +76,7 @@ def approval(criteria):
     db.project.update({ '_id' : ObjectId(criteria['project_id']) }, { '$push' : { expence_type : found_expence[expence_type][0] } } )
     
     # Notify via mail 
-    notifications.notify_expence(found_expence[expence_type][0], expence_type)
+    notifications.notify_expence(found_expence[expence_type][0], criteria['project_id'], expence_type)
     
     return { 'status' : found_expence[expence_type][0]['status'] }
 

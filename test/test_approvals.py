@@ -15,7 +15,7 @@ class ModuleData:
         
         # Add projects
         projects_json = self._assert_req('/add/project', [ 
-                                 { 'customer' : 'CUSTOMER', 'tags' : [ 'TYPE1' ], 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsibles' : [ { '_id' : current_id, 'name' : 'Manag1', 'role' : 'project manager'} ], 'employees' : [ { '_id' : self.users_ids[0], 'name' : 'Emp1'} ], 
+                                 { 'customer' : 'CUSTOMER', 'tags' : [ 'TYPE1' ], 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsibles' : [ { '_id' : current_id, 'name' : 'Manag1', 'role' : 'project manager'}, { '_id' : current_id, 'name' : 'Manag1', 'role' : 'account'} ], 'employees' : [ { '_id' : self.users_ids[0], 'name' : 'Emp1'} ], 
                                   'expences' : [ 
                                                  { '_id' : '6'*24, "user_id" : '1'*24, "trip_id" : '3'*24, 'status' : 2, "date" : "2010-10-08", "file" : {}, 'objects' : [{ 'date' : '2005-10-04', 'amount' : 5}, { 'date' : '2000-01-05', 'amount' : 10}] },
                                                  { '_id' : '5'*24, "user_id" : '1'*24, "trip_id" : '4'*24, 'status' : 3, "date" : "2010-10-09", "file" : {}, 'objects' : [{ 'date' : '2005-10-09', 'amount' : 5}, { 'date' : '2000-01-09', 'amount' : 10}] }     
