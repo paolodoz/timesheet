@@ -42,13 +42,14 @@ def approval(criteria):
     if owner_status != 0:
         search_criteria['%s.status' % expence_type] = owner_status 
         search_projection[expence_type]['$elemMatch']['status'] = owner_status 
-
+        
     # Limit for user id
     user_id = sanified_criteria.get('user_id')
     if user_id:
         search_projection.update({ '%s.user_id' % expence_type : user_id })
 
     found_expence = db.project.find_one( search_criteria , search_projection)
+    cherrypy.log('%s\n%s' % (search_criteria, search_projection), context = 'TS.APPROVALS.find_one_criteria_projection', severity = logging.INFO)
     if not found_expence:
         raise TSValidationError("Can't find selected expence")
     
