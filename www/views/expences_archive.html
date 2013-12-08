@@ -34,7 +34,7 @@ function userdata(data){
     if(me.group == "admin") {
       filter = [ { }, { name: 1 }, { name: 1 } ];
     } else {
-      filter = [ { 'responsible._id' : me._id }, { name: 1 }, { name: 1 } ];
+      filter = [ { 'responsibles._id' : me._id }, { name: 1 }, { name: 1 } ];
     }
     project.load(filter, nop ,"");
     filter = [ {}, {name:1, surname:1}, {surname:1}];

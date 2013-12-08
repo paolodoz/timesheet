@@ -80,7 +80,7 @@ function userdata(data) {
 function loadProjectsList(list) {
   var filter;
   if(me.group == "project manager")
-    filter = [{"responsible._id": me._id},{name:1, description:1},{name:1}];
+    filter = [{"responsibles._id": me._id},{name:1, description:1},{name:1}];
   else
     filter = [{},{name:1, description:1},{name:1}];
   project.load(filter, loadProjects, list);
@@ -117,8 +117,6 @@ function resetProjectsForm(load) {
   $("#projectsList li, #taglist li").removeClass("active");
   $("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
   $("#usersList li").removeClass("active");
-  $("#responsibleid").val(0);
-  $("#usersForm h4 span").text("");
 }
 function loadUsers(data, container) {
   var i;
@@ -151,7 +149,7 @@ function loadProjects(data, container) {
     var filter = createFilterForm("projectForm");
     filter[0]._id = this.id;
     if(me.group == "project manager") {
-      filter[0]["responsible._id"] = me._id;
+      filter[0]["responsibles._id"] = me._id;
     }
     project.load(filter,loadProjectDetails, container);
   });
@@ -164,7 +162,8 @@ function loadProjectDetails(data,container) {
   if(data.records[0].tags)
     setActive(data.records[0], "tags", "taglist");
   setActive(data.records[0], "employees", "");
-  setActive(data.records[0], "responsibles", "");
+  if(data.records[0].responsibles)
+    setActive(data.records[0], "responsibles", "");
   $("#projecttags").val("");
   $("#projectbkgcolor").prev("span").css("background-color",$("#projectbkgcolor").val());
   $("#projecttxtcolor").prev("span").css("background-color",$("#projecttxtcolor").val());
