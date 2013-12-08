@@ -57,6 +57,7 @@ var user = {
       url: "/me",
       data : "",
       success: function(data) {
+        $("span.badge").text(data.notifications);
 	callback(data);
       },
       dataType: "json",
