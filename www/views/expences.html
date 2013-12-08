@@ -24,14 +24,12 @@ $(document).ready(function() {
   });
   $("#btnsubmit, #btnsave").click(function(event) {
     event.preventDefault();
-    var status;
-    if(this.id == "btnsubmit")
-      status = 3;
-    else
-      status = 2;
     if(!validator.form())
       return;
-    expence.update(false, "expForm", status, resetExpForm);
+    if(this.id == "btnsubmit")
+      expence.update(false, "expForm", 3, sendapprove);
+    else
+      expence.update(false, "expForm", 3, resetExpForm);
   });
   newtableline();
   var today = new Date();
@@ -43,6 +41,10 @@ $(document).ready(function() {
   user.me(userdata);
 });
 
+function sendapprove(data) {
+  var filter = { project_id:$("#expprj").val(), user_id: me._id, expence_id:data.ids[0], action:'approve', note:''}
+  approval.set(filter, resetExpForm, "");
+}
 function userdata(data){
   me = data;
   loadProjectsList("expprj");
