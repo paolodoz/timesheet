@@ -6,7 +6,7 @@ $(document).ready(function() {
     htmlstatus += "<option value='" + i + "'>" + statuses[i] + "</option>";
   }
   $("#tripstatus").html(htmlstatus);
-  $("#tripstatus").val("2");
+  $("#tripstatus").val("3");
   $(".datepicker").datepicker();
   $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
   $('.rapidsearch').keyup(function () {
@@ -20,7 +20,7 @@ $(document).ready(function() {
   });
   $("#btnreset").click(function(event) {
     event.preventDefault();
-    resetTripForm();
+    resetTripForm(true);
   });
   $("#btnremove").click(function() {
     var filter = [{}];
@@ -31,13 +31,13 @@ $(document).ready(function() {
     loadTripsList("tripsList");
   });
   $("#btnsubmit, #btnsave").click(function(event) {
-    if(this.id == "btnsubmit")
-      $("#tripstatus").val(3);
     event.preventDefault();
     if(!validator.form())
       return;
-    trip.update(isupdate, "tripForm", resetTripForm);    
-    loadTripsList("tripsList");
+    if(this.id == "btnsubmit")
+      trip.update(isupdate, "tripForm", sendapprove);
+    else
+      trip.update(isupdate, "tripForm", resetTripForm);
   });
   validator = $("#tripForm").validate({
     rules: {
@@ -75,6 +75,11 @@ $(document).ready(function() {
   user.me(userdata);
 });
 
+function sendapprove(data) {
+  var filter = { project_id:$("#tripproject").val(), user_id: me._id, trip_id:data.ids[0], action:'approve', note:''}
+  approval.set(filter, resetTripForm, "");
+}
+
 function userdata(data){
   me = data;
   loadTripsList("tripsList");
@@ -87,7 +92,7 @@ function loadProjectsList(list) {
 }
 
 function loadTripsList(list) {
-  var filter = { start:"2013-01-01", end:"2014-12-31", status:[2], user_id: me._id, employee_id:me._id };
+  var filter = { start:"2013-01-01", end:"2014-12-31", status:[3], user_id: me._id, employee_id:me._id };
   trip.load(filter, loadTrips, list);
 }
 
@@ -103,15 +108,18 @@ function createFilterForm(form) {
   return filter;
 }
 
-function resetTripForm()
+function resetTripForm(load)
 {
+  if(load == true) {} else {
+    loadTripsList("tripsList");
+  }
   isupdate = false;
   $("#tripForm")[0].reset();
   $("#trip_id").val(0);
   $(":checkbox").parent().removeClass("active");
   $("#btnremove").addClass("hidden");
   $("#tripsList li").removeClass("active");
-  $("#tripstatus").val("2");
+  $("#tripstatus").val("3");
 }
 
 function loadProjects(data, container) {
@@ -133,27 +141,26 @@ function loadTrips(data, container) {
   htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Trip ...</li>";
   $("#" + container).html(htmllist);
   $("#" + container + " .list-group-item").click(function() {
-    resetTripForm();
+    resetTripForm(true);
     $(this).addClass("active");
     if(this.id == "")
       return;
     isupdate = true;
-    var filter = [{"trips._id": this.id, "employees._id" : me._id },{trips:1},{name:1}];
-    trip.loaddetails(filter,loadTripDetails, container);
+    loadTripDetails(trip.get(this.id), container);
   });
 }
 
 function loadTripDetails(data,container) {
-  $("#tripproject").val(data[0]._id);
-  for(var key in data[0].trips[0]) {
+  $("#tripproject").val(data.project_id);
+  for(var key in data) {
     if(key  == "accommodation")
       continue;
-    $("#trip" + key).val(data[0].trips[0][key]);
+    $("#trip" + key).val(data[key]);
   }
-  for(var key in data[0].trips[0].accommodation) {
-    if(data[0].trips[0].accommodation[key] == true )
+  for(var key in data.accommodation) {
+    if(data.accommodation[key] == true )
       $("#trip" + key).parent().addClass("active");
-    else if (data[0].trips[0].accommodation[key] == false)
+    else if (data.accommodation[key] == false)
       $("#trip" + key).parent().removeClass("active");
   }
   $(".btn-danger").removeClass("hidden");
@@ -181,7 +188,7 @@ function filterlist(list, currenttext) {
     <p></p>
     <ul class="list-group" id="tripsList"></ul>
   </div>
-  <div class="col-lg-4">
+  <div class="col-lg-5">
     <h3>Trip details</h3>
     <form class="form-horizontal" role="form" id="tripForm" method="post" action="/index/trips">
       <input type="hidden" id="trip_id" value="0">

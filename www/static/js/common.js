@@ -345,6 +345,14 @@ var trip = {
         return _trip[i].name;
     }
     return "error";
+  },
+  get : function(id) {
+    var i;
+    for(i = 0; i < _trip.length; i++) {
+      if(_trip[i]._id == id)
+        return _trip[i];
+    }
+    return "error";
   }
 }
 
@@ -881,7 +889,7 @@ function generateDropDate(from,to) {
 }
 
 var expcategories = ["", "Hotel", "Transportation", "Food", "Other"];
-var statuses = ["", "Rejected", "Draft", "Pending", "Approved by PM", "Approved by administration", "Refounded"];
+var statuses = ["", "Rejected", "Pending", "Draft", "Approved by PM", "Approved by administration", "Refounded"];
 var tasks = ["","Office","Away","Holiday","Bank Holiday","Leave","Unpaid leave"];
 function getTaskName(id) {
   return tasks[id];
