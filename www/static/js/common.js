@@ -461,6 +461,40 @@ var expence = {
   }
 }
 
+var approval = {
+  search : function (filter, callback, target) {
+    $.ajax({
+      type: "POST",
+      url: "/data/search_approvals",
+      data: JSON.stringify(filter),
+      success: function(data) {
+        if(!data.error) {
+          callback(data, target);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  },
+  set : function (filter, callback) {
+    $.ajax({
+      type: "POST",
+      url: "/data/approval",
+      data: JSON.stringify(filter),
+      success: function(data) {
+        if(!data.error) {
+          callback(data, target);
+        } else {
+          showmessage("error", data.error);
+        }
+      },
+      contentType: 'application/json; charset=utf-8',
+      dataType: "json",
+    });
+  }
+}
 
 var customer = {
   load : function (filter, callback, target) {
