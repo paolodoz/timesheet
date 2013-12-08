@@ -12,7 +12,9 @@ $(document).ready(function() {
     }
     filterlist($('#' + list + 'List li'), currenttext);
   });
-
+  $("#productionbudget, #productionextra").change(function() {
+    $(this).val($(this).val().replace(",","."));
+  });
   $("#btnreset").click(function() {
     resetProductionForm();
   });
