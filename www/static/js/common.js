@@ -141,18 +141,26 @@ var project = {
     for(i = 0; i < project.tasks.length; i++) {
       project.tasks[i] = Number(project.tasks[i]);
     }
-    project.responsible = {};
-    if($("#responsibleid").val() == "0") {
-      showmessage("error", "Select the responsible for the project");
-      return;
-    }
-    project.responsible._id = $("#responsibleid").val();
-    project.responsible.name  = $("#usersForm h4 span").text().trim();
+    project.responsibles = new Array();
     project.employees = new Array();
-    $("#usersList .active").each(function (i) {
-      project.employees[i] = {};
-      project.employees[i]._id = this.id;
-      project.employees[i].name = $(this).text().trim();
+    $("#usersList li.active").each(function() {
+      var element = {};
+      element._id = this.id;
+      element.name = $(this).find(".user").text().trim();
+      $(this).find(".active").each(function() {
+        if($(this).text() == "Employee") {
+          var copy_el = {};
+          jQuery.extend(copy_el, element);
+          project.employees.push(copy_el);
+        } else {
+          if($(this).text() == "Project Manager") {
+            element.role = "project manager";
+          } else {
+            element.role = "account";
+          }
+          project.responsibles.push(element);
+        }
+      });
     });
     $.ajax({
       type: "POST",

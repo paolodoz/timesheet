@@ -49,6 +49,16 @@ form .error {
   overflow: auto;
 }
 
+#usersList div.btn-group {
+  visibility:hidden;
+  float:right;
+}
+
+#usersList li.active div.btn-group {
+  visibility:visible;
+  float:right;
+}
+
 #offerfiles li span {
   float: right;
   cursor: pointer;

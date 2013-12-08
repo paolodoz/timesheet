@@ -102,7 +102,7 @@ function createFilterForm(container) {
       return;
     filter[1][property] = 1;
   });
-  filter[1].responsible = 1;
+  filter[1].responsibles = 1;
   filter[1].employees = 1;
   return filter;
 }
@@ -124,20 +124,11 @@ function loadUsers(data, container) {
   var i;
   var htmllist = "";
   for(i=0;i < data.records.length; i++) {
-    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-user'></span> " + data.records[i].name + " " + data.records[i].surname + "</li>";
+    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-user'></span> <span class='user'>" + data.records[i].surname + " " + data.records[i].name + "</span><div class='btn-group' data-toggle='buttons'><label class='btn btn-default btn-xs active'><input type='checkbox'>Employee</label><label class='btn btn-default btn-xs'><input type='checkbox'>Project Manager</label><label class='btn btn-default btn-xs'><input type='checkbox'>Account</label></div></li>";
   }
   $("#" + container).html(htmllist);
-  $("#" + container + " .list-group-item").click(function() {
-    var beforeusers = $("#usersList .active").length;
-    $(this).toggleClass("active");
-    var afterusers = $("#usersList .active").length;
-    if(afterusers == 1 && (beforeusers-afterusers) < 0) {
-      $("#usersForm h4 span").text($(this).text());
-      $("#responsibleid").val(this.id);
-    } else if(afterusers == 0) {
-      $("#usersForm h4 span").text("");
-      $("#responsibleid").val(0);
-    }
+  $("#" + container + " .list-group-item span.user").click(function() {
+    $(this).parent().toggleClass("active");
   });
 }
 
@@ -170,11 +161,10 @@ function loadProjectDetails(data,container) {
   for(var key in data.records[0]) {
     $("#project" + key).val(data.records[0][key]);
   }
-  $("#usersForm h4 span").text(data.records[0].responsible.name);
-  $("#responsibleid").val(data.records[0].responsible._id);
   if(data.records[0].tags)
     setActive(data.records[0], "tags", "taglist");
   setActive(data.records[0], "employees", "");
+  setActive(data.records[0], "responsibles", "");
   $("#projecttags").val("");
   $("#projectbkgcolor").prev("span").css("background-color",$("#projectbkgcolor").val());
   $("#projecttxtcolor").prev("span").css("background-color",$("#projecttxtcolor").val());
@@ -187,8 +177,20 @@ function setActive(records, field, container) {
   for (i = 0; i < records[field].length; i++) {
     if(field == "tags")
       $('#' + container + ' li:contains("' + records[field][i] + '")').addClass("active")
-    else
+    else if (field == "employees") {
       $("#" + records[field][i]._id).addClass("active");
+    } else {
+      var role = records[field][i].role;
+      if($("#" + records[field][i]._id).hasClass("active") == false) {
+        $("#" + records[field][i]._id).addClass("active");
+        $("#" + records[field][i]._id + " .btn-default").removeClass("active");
+      }
+      if(role == "account") {
+        $("#" + records[field][i]._id + " .btn-default:contains('Account')").addClass("active");
+      } else {
+        $("#" + records[field][i]._id + " .btn-default:contains('Project Manager')").addClass("active");
+      }
+    }
   }
 }
 
@@ -229,56 +231,56 @@ function filterlist(list, currenttext) {
     <p></p>
     <ul class="list-group" id="projectsList"></ul>
   </div>
-  <div class="col-lg-5">
+  <div class="col-lg-4">
     <h3>Project Details</h3>
     <form class="form-horizontal" role="form" id="projectForm" method="post" action="/index/projects">
 <input type="hidden" id="project_id" value="0">
 <div class="form-group">
     <label for="projectcustomer" class="col-lg-4 control-label">Customer</label>
-    <div class="col-lg-6">
+    <div class="col-lg-8">
       <select class="form-control" id="projectcustomer" name="projectcustomer">
       </select>
     </div>
   </div>
 <div class="form-group">
     <label for="projecttags" class="col-lg-4 control-label">Tags</label>
-    <div class="col-lg-6">
+    <div class="col-lg-8">
       <ul id="taglist"></ul>
     </div>
   </div>
 <div class="form-group">
     <label for="projectname" class="col-lg-4 control-label">Name</label>
-    <div class="col-lg-6">
+    <div class="col-lg-8">
       <input type="text" class="form-control" id="projectname" name="projectname" placeholder="Name">
     </div>
   </div>
 <div class="form-group">
     <label for="projectname" class="col-lg-4 control-label">Description</label>
-    <div class="col-lg-6">
+    <div class="col-lg-8">
       <textarea class="form-control" id="projectdescription" name="projectdescription" rows="3" placeholder="Description"></textarea>
     </div>
   </div>
 <div class="form-group">
     <label for="projectcontact_person" class="col-lg-4 control-label">Contact Person</label>
-    <div class="col-lg-6">
+    <div class="col-lg-8">
       <input type="text" class="form-control" id="projectcontact_person" name="projectcontact_person" placeholder="Contact Person">
     </div>
 </div>
 <div class="form-group">
     <label for="projectstart" class="col-lg-4 control-label">Date start</label>
-    <div class="col-lg-6">
+    <div class="col-lg-8">
       <input type="text" class="form-control datepicker" id="projectstart" name="projectstart" placeholder="2013-01-01">
     </div>
   </div>
 <div class="form-group">
     <label for="projectend" class="col-lg-4 control-label">Date end</label>
-    <div class="col-lg-6">
+    <div class="col-lg-8">
       <input type="text" class="form-control datepicker" id="projectend" name="projectend" placeholder="2020-12-31">
     </div>
   </div>
 <div class="form-group">
   <label for="projectbkgcolor" class="col-lg-4 control-label">Background Color</label>
-  <div class="col-lg-6">
+  <div class="col-lg-8">
     <div class="input-group">
       <input type="text" class="form-control color" id="projectbkgcolor" placeholder="#ffffff">
     </div>
@@ -286,7 +288,7 @@ function filterlist(list, currenttext) {
 </div>
 <div class="form-group">
   <label for="projecttxtcolor" class="col-lg-4 control-label">Text Color</label>
-  <div class="col-lg-6">
+  <div class="col-lg-8">
     <div class="input-group">
       <input type="text" class="form-control color" id="projecttxtcolor" placeholder="#ffffff">
     </div>
@@ -294,13 +296,13 @@ function filterlist(list, currenttext) {
 </div>
 <div class="form-group">
   <label for="projecttasks" class="col-lg-4 control-label">Tasks</label>
-  <div class="col-lg-6">
+  <div class="col-lg-8">
     <select multiple class="form-control" id="projecttasks" name="projecttasks">
     </select>
   </div>
 </div>
 <div class="form-group">
-    <div class="col-lg-offset-4 col-lg-7">
+    <div class="col-lg-offset-4 col-lg-8">
       <button type="submit" class="btn btn-primary" id="btnsubmit"><span class="glyphicon glyphicon-plus"></span> Add</button>
       <button type="reset" class="btn" id="btnreset"> Reset</button>
       <button type="button" class="btn btn-danger hidden" id="btnremove"><span class="glyphicon glyphicon-trash"></span> Remove</button>
@@ -308,13 +310,11 @@ function filterlist(list, currenttext) {
 </div>
     </form>
   </div>
-  <div class="col-lg-4">
+  <div class="col-lg-5">
     <h3>Team components</h3>
     <form class="form-horizontal" role="form" id="usersForm" method="post" action="/index/projects">
-    <p>Select responsible and then people involved in the project.</p>
-    <h4>Responsible: <span></span></h4>
-    <input type="hidden" id="responsibleid" value="0">
-<div class="input-group">
+    <p>Select responsibles and people involved in the project.</p>
+    <div class="input-group">
       <span class="input-group-addon glyphicon glyphicon-search"></span>
       <input type="text" class="form-control rapidsearch" placeholder="Rapid Search" id="txtusers">
     </div>
