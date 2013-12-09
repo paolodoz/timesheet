@@ -1,4 +1,14 @@
 from testclasses import TestClassBase, TestCaseAsEmployee, TestCaseAsManager, TestCaseAsAccount
+from core.config import notifications
+
+def _debug_notification(recipients, notification_type):
+    notifications_result = {}
+    
+    for recipient in recipients:
+        notifications_result[recipient['email']] = notifications.get_template('%s.tpl' % notification_type).render(**recipient)
+    
+    return [ notifications_result ]
+
 
 class ModuleData:
 
@@ -54,22 +64,22 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
  
         # Decrement status flow of '6'*24
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'ndee'  }, 
-               { 'error' : None, 'status' : 1 }
+               { 'error' : None, 'status' : 1, 'notifications' : _debug_notification(self.admin_data, 'notify_new') }
            )
           
         # Decrement again '6'*24
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'ndee2'  }, 
-               { 'error' : None, 'status' : 0 }
+               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.admin_data, 'notify_new') }
            )
 
         # Decrement again (should remain 0) '6'*24
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 0 }
+               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.admin_data, 'notify_new') }
            )
      
         # Reject '5'*24
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '5'*24, 'action' : 'reject', 'note' : 'asd3'  }, 
-               { 'error' : None, 'status' : -3 }
+               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(self.admin_data, 'notify_reject') }
            )
    
         # Search all approvals with project_id
@@ -337,7 +347,7 @@ class ApprovalAPIAsManager(TestCaseAsManager, ModuleData):
  
         # Decrement status flow of '6'*24, that was 2 (correct flow)
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'asd'  }, 
-               { 'error' : None, 'status' : 1 }
+               { 'error' : None, 'status' : 1, 'notifications' : _debug_notification(self.manager_data, 'notify_new') }
            )
           
         # Try to decrement again '6'*24, but is not reachable anymore
@@ -483,19 +493,19 @@ class ApprovalAPIAsUser(TestCaseAsEmployee, ModuleData):
           
         # Decrement '8'*24
         self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[1], 'expence_id' : '8'*24, 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 2 }
+               { 'error' : None, 'status' : 2, 'notifications' : _debug_notification(self.employee_data, 'notify_new') }
            )
        
         # Try to reject '8'*24, but is not = 2 anymore
         self._assert_req('/data/approval',  {  'user_id' : self.employee_id, 'project_id' : self.projects_ids[1], 'expence_id' : '5'*24, 'action' : 'reject', 'note' : 'asd3'  }, 
-               {u'error': u"TSValidationError: Can't find selected expence"}
+               {u'error': u"TSValidationError: Can't find selected expence" }
            )
   
     def test_reject_ok(self):
  
         # Reject '8'*24 = 3 
         self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[1], 'expence_id' : '8'*24, 'action' : 'reject', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : -3 }
+               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(self.employee_data, 'notify_reject') }
            )
     
         # Search all approvals
@@ -595,7 +605,7 @@ class ApprovalAPIAsAccount(TestCaseAsAccount, ModuleData):
   
         # Decrement status flow of '9'*24, that was 1 (correct flow)
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[2], 'trip_id' : '9'*24, 'action' : 'approve', 'note' : 'asd'  }, 
-               { 'error' : None, 'status' : 0 }
+               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.account_data, 'notify_new') }
            )
           
         # Try to decrement again '4'*24, but is not reachable anymore

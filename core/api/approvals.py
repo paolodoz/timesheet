@@ -75,10 +75,17 @@ def approval(criteria):
     # Push the modified element, with an hack to avoid to push the entire array
     db.project.update({ '_id' : ObjectId(criteria['project_id']) }, { '$push' : { expence_type : found_expence[expence_type][0] } } )
     
-    # Notify via mail 
-    notifications.notify_expence(found_expence[expence_type][0], criteria['project_id'], expence_type)
+    approval_result = {}
     
-    return { 'status' : found_expence[expence_type][0]['status'] }
+    # Status
+    approval_result['status'] = found_expence[expence_type][0]['status']
+    
+    # Notifications
+    notifications_result = notifications.notify_expence(found_expence[expence_type][0], criteria['project_id'], expence_type)
+    if notifications_result:
+        approval_result['notifications'] = notifications_result
+    
+    return approval_result
 
 
 def search_approvals(criteria):

@@ -4,6 +4,17 @@ from core.validation.validation import recursive_replace
 import unittest, copy
 
 admin_credentials = { 'username' : 'usr', 'password' : 'pwd' }
+admin_data = [ { 'password' : admin_credentials['password'], 
+              'name' : admin_credentials['username'], 
+              'surname' : 'Default', 
+              'username':  admin_credentials['username'], 
+              'email' : 'admin@localhost', 
+              'phone' : '', 
+              'mobile' : '', 
+              'city' : '', 
+              'group' : 'administrator', 
+              'salary' : []  } ]
+
 url = "https://localhost:9090"
 
 def _function_clean_id(container):
@@ -30,6 +41,7 @@ class TestClassBase(unittest.TestCase):
         self._assert_unlogged()
         self._login(admin_credentials, 'administrator')
         self._assert_logged(admin_credentials)
+        self.admin_data = admin_data
     
     def _login(self, credentials, group):
         self.cookies.clear()
@@ -83,9 +95,9 @@ class TestCaseAsEmployee(TestClassBase):
     def _add_user_data(self):
                 
         uri = '/add/user'
-        json_in = [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'EMPNAME', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ]
+        self.employee_data = [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'EMPNAME', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ]
         
-        employee_json = self._assert_req(uri, json_in, { 'error' : None, 'ids' : [ '' ] })
+        employee_json = self._assert_req(uri, self.employee_data, { 'error' : None, 'ids' : [ '' ] })
         self.employee_id = employee_json['ids'][0]
         self.execOnTearDown.append(('/remove/user', [ { '_id' : self.employee_id } ], { 'error' : None }))
         
@@ -104,9 +116,9 @@ class TestCaseAsManager(TestClassBase):
     def _add_user_data(self):        
         # Add manager user
         uri = '/add/user'
-        json_in = [ { 'name' : 'MANAGER', 'surname' : 'MANAGERSURNAME', 'username' : 'MANAGER', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'project manager', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ]
+        self.manager_data = [ { 'name' : 'MANAGER', 'surname' : 'MANAGERSURNAME', 'username' : 'MANAGER', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'project manager', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ]
     
-        manager_json = self._assert_req(uri, json_in, { 'error' : None, 'ids' : [ '' ] })
+        manager_json = self._assert_req(uri, self.manager_data, { 'error' : None, 'ids' : [ '' ] })
         self.manager_id = manager_json['ids'][0]
         
         self.execOnTearDown.append(('/remove/user', [ { '_id' : self.manager_id } ], { 'error' : None }))
@@ -129,9 +141,9 @@ class TestCaseAsAccount(TestClassBase):
     def _add_user_data(self):        
         # Add manager user
         uri = '/add/user'
-        json_in = [ { 'name' : 'ACCOUNT', 'surname' : 'ACCOUNTSURNAME', 'username' : 'ACCOUNT', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'account', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ]
+        self.account_data = [ { 'name' : 'ACCOUNT', 'surname' : 'ACCOUNTSURNAME', 'username' : 'ACCOUNT', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'account', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ]
     
-        account_json = self._assert_req(uri, json_in, { 'error' : None, 'ids' : [ '' ] })
+        account_json = self._assert_req(uri, self.account_data, { 'error' : None, 'ids' : [ '' ] })
         self.account_id = account_json['ids'][0]
         
         self.execOnTearDown.append(('/remove/user', [ { '_id' : self.account_id } ], { 'error' : None }))

@@ -50,11 +50,16 @@ def notify_expence(expence, project_id, expence_type):
 
     # Try to send notifications with core/notifications/send_*.py functions specified in config.yaml auth section
     notifications_providers = conf_notifications['providers']    
+    notifications_results = []
     for provider in notifications_providers:
+        
         notifications_module = __import__('core.notifications.notify_%s' % provider, fromlist=["*"])
         notification_error = notifications_module.notify(recipients, notification_type)
+        
+        if notification_error:
+            notifications_results.append(notification_error)
 
-    
+    return notifications_results
     
 
 def get_pending():

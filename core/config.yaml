@@ -75,7 +75,9 @@ approval_flow:
 
 notifications:
   providers:
-    - smtp
+    - debug
   smtp:
     host: localhost
     from_address: timesheet@domain.com
+    
+     
