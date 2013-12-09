@@ -26,7 +26,7 @@ function userdata(data){
 }
 
 function secondstage() {
-  var filter = { projects_id:[], user_id: me._id, status: 'toapprove' };
+  var filter = { status: 'toapprove' };
   approval.search(filter, loadapprovals);
   $("#pm").removeClass("hidden");
 }
