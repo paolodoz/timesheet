@@ -177,6 +177,8 @@ function setActive(records, field, container) {
     if(field == "tags")
       $('#' + container + ' li:contains("' + records[field][i] + '")').addClass("active")
     else if (field == "employees") {
+      $("#" + records[field][i]._id + " .btn-default").removeClass("active");
+      $("#" + records[field][i]._id + " .btn-default:contains('Employee')").addClass("active");
       $("#" + records[field][i]._id).addClass("active");
     } else {
       var role = records[field][i].role;
