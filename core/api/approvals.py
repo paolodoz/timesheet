@@ -136,7 +136,7 @@ def search_approvals(criteria):
             if status_requested == 'toapprove':
                 match_project_status = { '%s.status' % aggregation_type : owner_status }
             elif status_requested == 'approved':
-                match_project_status = { '%s.status' % aggregation_type : owner_status - 1 }
+                match_project_status = { '%s.status' % aggregation_type : 0 }
             elif status_requested == 'rejected':
                 match_project_status = { '%s.status' % aggregation_type : -abs(owner_status) }
             else:
