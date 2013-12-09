@@ -5,7 +5,9 @@ customer:
   project manager:
     get:
       True
-
+  account:
+    get:
+      True
 
 user:
   employee:
@@ -44,7 +46,20 @@ user:
             pattern: '%%_id%%'
         required: 
           - _id      
-    
+  account:
+    get:
+      projections:
+        - salt
+        - password
+        - salary       
+    update:
+        type: object
+        properties:
+          _id:
+            type: string
+            pattern: '%%_id%%'
+        required: 
+          - _id        
     
 search_trips:
   employee:
@@ -69,6 +84,19 @@ search_trips:
           employee_id:
             type: string
             pattern: '%%_id%%' 
+  account:
+    oneOf:
+      - required: [ responsible_id ]
+        properties:
+          responsible_id:
+            type: string
+            pattern: '%%_id%%'          
+      - required: [ employee_id ]
+        properties:
+          employee_id:
+            type: string
+            pattern: '%%_id%%' 
+
     
 search_expences:
   employee:
@@ -94,6 +122,19 @@ search_expences:
             type: string
             pattern: '%%_id%%' 
 
+  account:
+    oneOf:
+      - required: [ responsible_id ]
+        properties:
+          responsible_id:
+            type: string
+            pattern: '%%_id%%'          
+      - required: [ employee_id ]
+        properties:
+          employee_id:
+            type: string
+            pattern: '%%_id%%' 
+
     
 search_days:
     employee:
@@ -106,6 +147,15 @@ search_days:
           - users.user_id
                    
     project manager:
+        type: object
+        properties:
+          users.user_id: 
+            type: string
+            pattern: '%%_id%%'
+        required: 
+          - users.user_id   
+
+    account:
         type: object
         properties:
           users.user_id: 
@@ -148,6 +198,26 @@ push_days:
                       project:
                         enum : '%%projects%%'
 
+    account:
+        type: object
+        properties:
+          date:
+            type: string
+          users:
+            optional: True
+            type: array
+            items:
+              properties:
+                user_id:
+                  type: string
+                  pattern: '%%_id%%'
+                hours:
+                  optional: True
+                  type: array
+                  items: 
+                    properties:
+                      project:
+                        enum : '%%projects%%'
 
 report_users_hours:
     project manager:
@@ -163,10 +233,34 @@ report_users_hours:
         required: 
           - users.hours.project
 
-      
+    account:
+        type: object
+        properties:
+          users.hours.project:
+            type: object
+            properties: 
+              '$in':
+                type: array
+                items:
+                  enum: '%%managed_projects%%'
+        required: 
+          - users.hours.project      
   
 report_projects:
     project manager:
+        type: object
+        required : [ 'users.hours.project' ]
+        properties:
+          users.hours.project:
+            type: object
+            required: [ '$in' ]
+            properties: 
+              '$in':
+                type: array
+                items:
+                  enum: '%%managed_projects%%'
+
+    account:
         type: object
         required : [ 'users.hours.project' ]
         properties:
@@ -225,6 +319,39 @@ project:
                 type: integer
                 minimum: '%%approval_flow%%'
 
+  account:
+    get:
+      criteria:
+        oneOf:
+          - type: object
+            required: [ employees._id ]
+            properties:
+              employees._id:
+                type: string
+                pattern: '%%_id%%'
+          - type: object
+            required: [ responsibles._id ]
+            properties:
+              responsibles._id:
+                type: string
+                pattern: '%%_id%%'
+ 
+    update:
+      type: object
+      required: [ _id ]
+      properties:
+        _id:
+          type: string
+          enum: '%%managed_projects%%'
+        expences:
+          type: array
+          items:
+            required: [ status ]
+            properties:
+              status:
+                type: integer
+                minimum: '%%approval_flow%%'
+
 push_trips:
   # employees._id is validated manually
   employee:
@@ -251,7 +378,13 @@ push_trips:
         _id:
           type: string
           enum: '%%projects%%'
-          
+
+  account:
+      type: object
+      properties:
+        _id:
+          type: string
+          enum: '%%projects%%'          
           
 push_expences:
   # employees._id is validated manually
@@ -279,10 +412,18 @@ push_expences:
         _id:
           type: string
           enum: '%%projects%%'
-          
+
+  account:
+      type: object
+      properties:
+        _id:
+          type: string
+          enum: '%%projects%%'          
           
 search_tags:
   project manager:
+      True
+  account:
       True
 
 approval:
