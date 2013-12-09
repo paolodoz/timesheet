@@ -56,10 +56,8 @@ function loadProjects(data, container) {
     htmlselect += "<option value='" + data.records[i]._id + "'>" + data.records[i].name + "</option>";
   }
   $("#" + container).html(htmlselect);
-/*  var filter = { start:"2013-01-01", end:"2014-12-31", status: [4], user_id: me._id, employee_id:me._id, project_id: $("#" + container).val() };
-  trip.load(filter,loadTrips, "exptrip");*/
   $("#" + container).change(function() {
-    var filter = { start:"2013-01-01", end:"2014-12-31", status: [4], user_id: me._id, employee_id:me._id, project_id: $("#" + container).val() };
+    var filter = { start:"2013-01-01", end:"2014-12-31", status: [0], user_id: me._id, employee_id:me._id, project_id: $("#" + container).val() };
     trip.load(filter,loadTrips, "exptrip");
   });
 }
@@ -67,11 +65,6 @@ function loadProjects(data, container) {
 function loadProjectsList(list) {
   var filter = [{ 'employees._id' : me._id },{name:1},{name:1}];
   project.load(filter, loadProjects, list);
-}
-
-function loadTripsList(list) {
-  var filter = [{"trips.user_id":me._id, "trips.status":2},{trips:1},{name:1}];
-  trip.load(filter, loadTrips, list);
 }
 
 function loadTrips(data, container) {
