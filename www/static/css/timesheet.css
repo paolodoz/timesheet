@@ -12,7 +12,7 @@
    background-image: url("../images/car.png");
    background-position: center center;
    display: inline-block;
-   height: 22px;
+   height: 26px;
    width: 26px;
 }
 
@@ -20,7 +20,7 @@
    background-image: url("../images/airplane.png");
    background-position: center center;
    display: inline-block;
-   height: 22px;
+   height: 26px;
    width: 26px;
 }
 
@@ -28,7 +28,7 @@
    background-image: url("../images/hotel.png");
    background-position: center center;
    display: inline-block;
-   height: 22px;
+   height: 26px;
    width: 26px;
 }
 
