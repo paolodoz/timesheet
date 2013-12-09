@@ -493,7 +493,7 @@ var approval = {
       data: JSON.stringify(filter),
       success: function(data) {
         if(!data.error) {
-          callback(data, target);
+          callback(data);
         } else {
           showmessage("error", data.error);
         }
