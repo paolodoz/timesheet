@@ -18,6 +18,7 @@ def _get_recipients_of_expences_responsibles(expence_user_id, project_id, expenc
             
             aggregation_pipe = [  
                     { '$unwind' : '$%s' % expence_type },
+                    { '$unwind' : '$responsibles' },
                     { '$match' : { '_id':  ObjectId(project_id), 
                                   '%s._id' % expence_type : ObjectId(expence_id), 
                                   'responsibles.role' : role  } },
@@ -25,8 +26,11 @@ def _get_recipients_of_expences_responsibles(expence_user_id, project_id, expenc
                     }
             ]
             
+            cherrypy.log('%s' % (aggregation_pipe), context = 'TS.NOTIFY_EXPENCE.aggregation_pipe', severity = logging.INFO)
+            
             responsibles = db.project.aggregate(aggregation_pipe)['result']
-            recipients += list(db.user.find({ '_id':  {  '$in' : [ ObjectId(responsible['_id'][0]) for responsible in responsibles ] } }, { '_id' : 0, 'name' : 1, 'surname' : 1, 'email' : 1 }))
+            
+            recipients += list(db.user.find({ '_id':  {  '$in' : [ ObjectId(responsible['_id']) for responsible in responsibles ] } }, { '_id' : 0, 'name' : 1, 'surname' : 1, 'email' : 1 }))
 
     return recipients
 
@@ -41,7 +45,7 @@ def notify_expence(expence, project_id, expence_type):
         notification_type = 'notify_reject'
         
     recipients_roles = conf_approval_flow[expence['status']].get(notification_type,[])
-    
+
     recipients = _get_recipients_of_expences_responsibles(expence_user_id = expence['user_id'], 
                                                          project_id = project_id, 
                                                          expence_id = expence['_id'], 
