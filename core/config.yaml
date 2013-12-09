@@ -60,17 +60,17 @@ approval_flow:
   # APPROVED: notify only submitting user
   - notify_new: [ '%submitter%' ]
   
-  # WAITING FOR ACCOUNTS: notify/waiting for one of the responsible account
+  # WAITING FOR ACCOUNTS: notify/waiting for the responsible accounts approvation
   - approver: 'account'
     notify_new: [ 'account' ]
     notify_reject: [ '%submitter%' ]
     
-  # WAITING FOR PM: notify/waiting for one of the responsible project manager
+  # WAITING FOR PM: notify/waiting for the responsible project managers approvation
   - approver: 'project manager'
     notify_new: [ 'project manager' ]
     notify_reject: [ '%submitter%' ]
     
-  # WAITING TO BE SUBMITTED: idle state
+  # WAITING TO BE SUBMITTED: draft
   - []
 
 notifications:
