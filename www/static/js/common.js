@@ -921,6 +921,19 @@ function capFirstLet(string)
     return string.charAt(0).toUpperCase() + string.slice(1);
 }
 
+function updateStatus(type, id, status, motivation) {
+  var selelem, filter;
+  if(type == "expence") {
+    selelem = findExpence(id);
+    filter = { project_id:selelem.project_id, expence_id: id, action:status, note:motivation};
+  }
+  else if(type == "trip") {
+    selelem = findTrip(id);
+    filter = { project_id:selelem.project_id, trip_id: id, action:status, note:motivation};
+  }
+  approval.set(filter, removeElement, "");
+}
+
 function generateExpencesList(data, container, approve) {
   var i,j;
   var username, name, total, htmllist = "";
@@ -949,7 +962,7 @@ function generateExpencesList(data, container, approve) {
   if(approve) {
     $("#" + container + " .list-group-item button.btn-success").click(function() {
       cur_id = $(this).parent().attr("id");
-      updateExpenceStatus(cur_id, 4, "");
+      updateStatus("expence", cur_id, "approve", "");
     });
     $("#" + container + " .list-group-item button.btn-danger").click(function() {
       cur_id = $(this).parent().attr("id");

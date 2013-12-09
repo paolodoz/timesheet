@@ -6,9 +6,9 @@ $(document).ready(function() {
   $("#btnreject").click(function() {
     motivation = $("#note").val();
     if($('#reject .modal-title:contains("trip")').length == 1) {
-      updateTripStatus(cur_id, 1, motivation);
+      updateStatus("trip", cur_id, "reject", motivation);
     } else {
-      updateExpenceStatus(cur_id, 1, motivation);
+      updateStatus("expence", cur_id, "reject", motivation);
     }
     $("#note").val("");
     $('#reject').modal('hide');
@@ -36,51 +36,6 @@ function loadapprovals(data) {
   loadTrips(data.trips, "tripreq");
 }
 
-function loadExpences(data, container) {
-  var i,j;
-  var username, name, total, htmllist = "";
-  cur_expences = data;
-  for(i=0;i < data.length; i++) {
-      total = computeExpenceTotal(data[i].objects);
-      name = project.getname(data[i].project_id);
-      username = user.getname(data[i].user_id);
-      htmllist += "<li id='" + data[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-list-alt'></span> <b>Project:</b> " + name + " <button data-toggle='popover' type='button' class='btn btn-default btn-sm'><span class='glyphicon glyphicon-info-sign'></span>  Details</button> <button type='button' class='btn btn-success btn-sm'><span class='glyphicon glyphicon-thumbs-up'></span>  Accept</button>  <button type='button' class='btn btn-danger btn-sm'><span class='glyphicon glyphicon-thumbs-down'></span>  Reject</button><p><span class='glyphicon glyphicon-user'></span> <b>User:</b> " + username + "<br/><span class='glyphicon glyphicon-tasks'></span> <b>Grand Total:</b> " + total + "&euro;<br/>";
-      if(data[i].file) {
-        htmllist += "<span class='glyphicon glyphicon-file'></span> <b>Global receipt file:</b> <a href='/file/download/" + data[i].file._id + "'>" + data[i].file.name + "</a>";
-      }
-      htmllist += "</p><div class='details hidden'></div></li>";
-  }
-  $("#" + container).html(htmllist);
-  $("#" + container + " .list-group-item button.btn-default").click(function() {
-    var curid = $(this).parent().attr("id");
-    if($(this).parent().find(".details").hasClass("hidden"))
-      generateExpencesDetails(curid, $(this).parent().find(".details"));
-    $(this).parent().find(".details").toggleClass("hidden");
-  });
-  $("#" + container + " .list-group-item button.btn-success").click(function() {
-    cur_id = $(this).parent().attr("id");
-    updateExpenceStatus(cur_id, 4, "");
-  });
-  $("#" + container + " .list-group-item button.btn-danger").click(function() {
-    cur_id = $(this).parent().attr("id");
-    $('#reject .modal-title').text("Reject expence request");
-    $('#reject').modal('show');
-  });
-}
-
-function updateExpenceStatus(id, status, motivation) {
-  var selexp = findExpence(id);
-  var prj = [{}];
-  prj[0]._id = selexp.project_id;
-  selexp.status = status;
-  selexp.note = motivation;
-  delete selexp.project_id;
-  prj[0].expences = new Array();
-  prj[0].expences[0] = {};
-  prj[0].expences[0] = selexp;
-  expence.updatestatus(prj, removeElement);
-}
-
 function loadTrips(data, container) {
   var i,j;
   var htmllist = "";
@@ -99,26 +54,13 @@ function loadTrips(data, container) {
   });
   $("#" + container + " .list-group-item button.btn-success").click(function() {
     cur_id = $(this).parent().attr("id");
-    updateTripStatus(cur_id, 4, "");
+    updateStatus("trip", cur_id, "approve", "");
   });
   $("#" + container + " .list-group-item button.btn-danger").click(function() {
     cur_id = $(this).parent().attr("id");
     $('#reject .modal-title').text("Reject trip request");
     $('#reject').modal('show');
   });
-}
-
-function updateTripStatus(id, status, motivation) {
-  var seltrip = findTrip(id);
-  var prj = [{}];
-  prj[0]._id = seltrip.project_id;
-  seltrip.status = status;
-  seltrip.note = motivation;
-  delete seltrip.project_id;
-  prj[0].trips = new Array();
-  prj[0].trips[0] = {};
-  prj[0].trips[0] = seltrip;
-  trip.updatestatus(prj, removeElement);
 }
 
 function removeElement() {

@@ -76,8 +76,8 @@ $(document).ready(function() {
 });
 
 function sendapprove(data) {
-  var filter = { project_id:$("#tripproject").val(), user_id: me._id, trip_id:data.ids[0], action:'approve', note:''}
-  approval.set(filter, resetTripForm, "");
+  var filter = { project_id:$("#tripproject").val(), user_id: me._id, trip_id:data.ids[0], action:'approve', note:''};
+  approval.set(filter, resetTripForm);
 }
 
 function userdata(data){
