@@ -26,7 +26,12 @@ function userdata(data){
 }
 
 function secondstage() {
-  var filter = { status: 'toapprove' };
+  var filter = {};
+  filter.projects_id = new Array();
+  for (var i = 0; i < project.prj.length; i++) {
+    filter.projects_id.push(project.prj[i]._id);
+  }
+  filter.status = 'toapprove';
   approval.search(filter, loadapprovals);
   $("#pm").removeClass("hidden");
 }
