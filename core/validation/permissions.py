@@ -76,7 +76,7 @@ def check_datamine_permissions(action, document):
         try:
             jsonschema.validate(document, restrictions, format_checker=jsonschema.FormatChecker())    
         except SchemaError as e:
-            if e.instance == [] and e.message == '[] is too short':
+            if e.instance == [] or e.instance.get('enum') == []:
                 raise TSValidationError('Empty list found validating current user request')
             raise
     
