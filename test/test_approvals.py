@@ -372,7 +372,7 @@ class ApprovalAPIAsManager(TestCaseAsManager, ModuleData):
     def test_approval_search_ok(self):
     
         # Search all with pendance approvation
-        self._assert_req('/data/search_approvals',  {  }, 
+        self._assert_req('/data/search_approvals',  { 'projects_id' : self.projects_ids }, 
                {'error': None, 'expences': [
                           {'_id': '',
                            'date': '2010-10-08',
@@ -419,7 +419,8 @@ class ApprovalAPIAsManager(TestCaseAsManager, ModuleData):
            )
      
         # Search any expences
-        self._assert_req('/data/search_approvals',  { 'type' : 'expences', 'status' : 'any' }, 
+        self._assert_req('/data/search_approvals',  { 'projects_id' : self.projects_ids, 
+                                                     'type' : 'expences', 'status' : 'any' }, 
                {'error': None, 'expences': [
                         {'_id': '',
                            'date': '2010-10-08',
@@ -436,7 +437,7 @@ class ApprovalAPIAsManager(TestCaseAsManager, ModuleData):
            )
       
         # Search all trips
-        self._assert_req('/data/search_approvals',  {  'type' : 'trips', 'status' : 'any' }, 
+        self._assert_req('/data/search_approvals',  {  'type' : 'trips', 'status' : 'any', 'projects_id' : self.projects_ids }, 
                {'error': None,  
              'expences' : [],
              'trips': [
@@ -450,16 +451,41 @@ class ApprovalAPIAsManager(TestCaseAsManager, ModuleData):
                          "country" : "Italy", 
                          'city' : "Rome", 
                          'notes' : [ 'approved' ], 
-                         'accommodation' : {} }
+                         'accommodation' : {} },
+                       
+                       { '_id' : '', 
+                         "user_id" : self.manager_id, 
+                         "description" : "trip3", 
+                         "status" : -1, 
+                         "start" : "2010-10-10", 
+                         "end" : "2010-10-10", 
+                         "country" : "Italy", 
+                         'city' : "Rome", 
+                         'notes' : [ 'approved' ], 
+                         'accommodation' : {},
+                         'project_id': self.projects_ids[2] }     
+                       
                        ]}
            ) 
  
         
         # Search only rejected 
-        self._assert_req('/data/search_approvals',  {  'status' : 'rejected' }, 
+        self._assert_req('/data/search_approvals',  {  'status' : 'rejected', 'projects_id' : self.projects_ids }, 
                {'error': None,  
              'expences' : [],
-             'trips': []}
+             'trips': [
+                        { '_id' : '', 
+                         "user_id" : self.manager_id, 
+                         "description" : "trip3", 
+                         "status" : -1, 
+                         "start" : "2010-10-10", 
+                         "end" : "2010-10-10", 
+                         "country" : "Italy", 
+                         'city' : "Rome", 
+                         'notes' : [ 'approved' ], 
+                         'accommodation' : {},
+                         'project_id': self.projects_ids[2] }     
+                       ]}
            )         
          
             
@@ -586,7 +612,19 @@ class ApprovalAPIAsUser(TestCaseAsEmployee, ModuleData):
         self._assert_req('/data/search_approvals',  { 'user_id' : self.employee_id, 'projects_id' : [ self.projects_ids[1], self.projects_ids[2] ], 'status' : 'rejected' }, 
                {'error': None,  
              'expences' : [],
-             'trips': []}
+             'trips': [
+                    { '_id' : '', 
+                     "user_id" : self.employee_id, 
+                     'project_id' : self.projects_ids[2],
+                     "description" : "trip3", 
+                     "status" : -1, 
+                     "start" : "2010-10-10", 
+                     "end" : "2010-10-10", 
+                     "country" : "Italy", 
+                     'city' : "Rome", 
+                     'notes' : [ 'approved' ], 
+                     'accommodation' : {} }     
+                    ]}
            )         
            
               
@@ -634,7 +672,7 @@ class ApprovalAPIAsAccount(TestCaseAsAccount, ModuleData):
     def test_approval_search_ok(self):
     
         # Search all with pendance approvation
-        self._assert_req('/data/search_approvals',  {  }, 
+        self._assert_req('/data/search_approvals',  { 'projects_id' : self.projects_ids }, 
                {'error': None, 'expences': [
                         {'_id': '',
                            'date': '2010-10-07',
@@ -663,7 +701,7 @@ class ApprovalAPIAsAccount(TestCaseAsAccount, ModuleData):
            )
      
         # Search any expences
-        self._assert_req('/data/search_approvals',  { 'type' : 'expences', 'status' : 'any' }, 
+        self._assert_req('/data/search_approvals',  { 'type' : 'expences', 'status' : 'any', 'projects_id' : self.projects_ids }, 
                {'error': None, 'expences': [
                         {'_id': '',
                            'date': '2010-10-07',
@@ -681,7 +719,7 @@ class ApprovalAPIAsAccount(TestCaseAsAccount, ModuleData):
            )
       
         # Search all trips
-        self._assert_req('/data/search_approvals',  {  'type' : 'trips', 'status' : 'any' }, 
+        self._assert_req('/data/search_approvals',  {  'type' : 'trips', 'status' : 'any', 'projects_id' : self.projects_ids }, 
                {'error': None,  
              'expences' : [],
              'trips': [
@@ -713,7 +751,7 @@ class ApprovalAPIAsAccount(TestCaseAsAccount, ModuleData):
  
         
         # Search only rejected 
-        self._assert_req('/data/search_approvals',  {  'status' : 'rejected' }, 
+        self._assert_req('/data/search_approvals',  {  'status' : 'rejected', 'projects_id' : self.projects_ids }, 
                {'error': None,  
              'expences' : [],
              'trips': [

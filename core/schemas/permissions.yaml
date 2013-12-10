@@ -455,22 +455,49 @@ approval:
 
 search_approvals:
   project manager:
-      type: object
-      properties:
-        projects_id:
-          type: array
-          items:
+    oneOf:
+      - type: object
+        required: [ projects_id, user_id ]
+        properties:
+          projects_id:
+            type: array
+            items:
+              type: string
+              enum: '%%employed_projects%%'
+          user_id:
             type: string
-            enum: '%%projects%%'
+            pattern: '%%_id%%'
+      - type: object
+        required: [ projects_id ]
+        properties:
+          projects_id:
+            type: array
+            items:
+              type: string
+              enum: '%%managed_projects%%'
 
   account:
-      type: object
-      properties:
-        projects_id:
-          type: array
-          items:
+    oneOf:
+      - type: object
+        required: [ projects_id, user_id ]
+        properties:
+          projects_id:
+            type: array
+            items:
+              type: string
+              enum: '%%employed_projects%%'
+          user_id:
             type: string
-            enum: '%%projects%%'
+            pattern: '%%_id%%'
+      - type: object
+        required: [ projects_id ]
+        properties:
+          projects_id:
+            type: array
+            items:
+              type: string
+              enum: '%%managed_projects%%'
+            
   employee:
       type: object
       required: [ projects_id, user_id ]
