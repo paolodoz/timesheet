@@ -153,3 +153,47 @@ class TestCaseAsAccount(TestClassBase):
         account_credentials = { 'username' : 'ACCOUNT', 'password' : 'mypassword' }
         self._login(account_credentials, 'account')
         self._assert_logged(account_credentials)
+        
+        
+class TestCaseMultipleUsers(TestClassBase):
+    def setUp(self):
+        TestClassBase.setUp(self)
+        self._add_multi_user_data()    
+
+    def _add_multi_user_data(self):        
+        uri = '/add/user'
+        
+        self.account_data = [ { 'name' : 'ACCOUNT', 'surname' : 'ACCOUNTSURNAME', 'username' : 'ACCOUNT', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'account', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ]
+        account_json = self._assert_req(uri, self.account_data, { 'error' : None, 'ids' : [ '' ] })
+        self.account_id = account_json['ids'][0]
+        
+        self.employee_data = [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'EMPNAME', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ]
+        employee_json = self._assert_req(uri, self.employee_data, { 'error' : None, 'ids' : [ '' ] })
+        self.employee_id = employee_json['ids'][0]
+        
+        self.manager_data = [ { 'name' : 'MANAGER', 'surname' : 'MANAGERSURNAME', 'username' : 'MANAGER', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'project manager', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ]
+        manager_json = self._assert_req(uri, self.manager_data, { 'error' : None, 'ids' : [ '' ] })
+        self.manager_id = manager_json['ids'][0]
+        
+        self.execOnTearDown.append(('/remove/user', [ { '_id' : self.account_id }, { '_id' : self.manager_id }, { '_id' : self.employee_id } ], { 'error' : None }))        
+
+    def _log_as_account(self):
+        
+        account_credentials = { 'username' : 'ACCOUNT', 'password' : 'mypassword' }
+        self._login(account_credentials, 'account')
+        self._assert_logged(account_credentials)  
+
+    def _log_as_manager(self):
+        manager_credentials = { 'username' : 'MANAGER', 'password' : 'mypassword' }
+        self._login(manager_credentials, 'project manager')
+        self._assert_logged(manager_credentials)
+        
+    def _log_as_employee(self):
+        employee_credentials = { 'username' : 'EMPNAME', 'password' : 'mypassword' }
+        self._login(employee_credentials, 'employee')
+        self._assert_logged(employee_credentials)       
+        
+    def _log_as_admin(self):     
+        self._login(admin_credentials, 'administrator')
+        self._assert_logged(admin_credentials)
+        
