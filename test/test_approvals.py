@@ -1,4 +1,4 @@
-from testclasses import TestClassBase, TestCaseAsEmployee, TestCaseAsManager, TestCaseAsAccount
+from testclasses import TestClassBase, TestCaseAsEmployee, TestCaseAsManager, TestCaseAsAccount, admin_data
 from core.config import notifications
 
 def _debug_notification(recipients, notification_type):
@@ -14,12 +14,14 @@ class ModuleData:
 
     def _add_module_data(self, current_id):
         
+        self.users_data = [ 
+                        { 'name' : 'USERTEST1', 'surname' : 'SURNAME', 'username' : 'USERNAME1' , 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [ { 'cost' : 5, 'from': '2004-01-02', 'to' : '2006-01-02' }]  }, 
+                        { 'name' : 'MANAGERTEST1', 'surname' : 'SURNAME', 'username' : 'MANAGERNAME1' , 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'project manager', 'password' : 'mypassword', 'salt' : '', 'salary' : [ ]  }, 
+                        { 'name' : 'ACCOUNTEST1', 'surname' : 'SURNAME', 'username' : 'ACCOUNTNAME1' , 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'account', 'password' : 'mypassword', 'salt' : '', 'salary' : [  ]  }, 
+                        ]
+        
         # Add an element for every step
-        users_json = self._assert_req('/add/user', [ 
-                                                    { 'name' : 'USERTEST1', 'surname' : 'SURNAME', 'username' : 'USERNAME1' , 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [ { 'cost' : 5, 'from': '2004-01-02', 'to' : '2006-01-02' }]  }, 
-                                                    { 'name' : 'MANAGERTEST1', 'surname' : 'SURNAME', 'username' : 'MANAGERNAME1' , 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'project manager', 'password' : 'mypassword', 'salt' : '', 'salary' : [ ]  }, 
-                                                    { 'name' : 'ACCOUNTEST1', 'surname' : 'SURNAME', 'username' : 'ACCOUNTNAME1' , 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'account', 'password' : 'mypassword', 'salt' : '', 'salary' : [  ]  }, 
-                                                    ], { 'error' : None, 'ids' : [ '', '', '' ] })
+        users_json = self._assert_req('/add/user', self.users_data, { 'error' : None, 'ids' : [ '', '', '' ] })
         self.users_ids = users_json['ids'] 
         self.execOnTearDown.append(('/remove/user', [ { '_id' : self.users_ids[0]  }, { '_id' : self.users_ids[1]  }, { '_id' : self.users_ids[2]  }], { 'error' : None }))
         
@@ -355,15 +357,24 @@ class ApprovalAPIAsManager(TestCaseAsManager, ModuleData):
                {u'error': u"TSValidationError: Can't find selected expence"}
            )
      
-        # Try to reject '5'*24, but is on draft
+        # Try to reject '5'*24, is rejectable although on draft
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '5'*24, 'action' : 'reject', 'note' : 'asd3'  }, 
-               {u'error': u"TSValidationError: Can't find selected expence"}
+               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(admin_data, 'notify_reject') }
            )
-   
-        # Search all approvals with project_id, but there are not reachable expences
+ 
+        # Search all approvals with project_id
         self._assert_req('/data/search_approvals',  { 'projects_id' : [ self.projects_ids[0] ], 'status' : 'any' }, 
                {u'error': None,
-                 u'expences': [],
+                 u'expences': [{u'_id': '',
+                 u'date': u'2010-10-09',
+                 u'file': {},
+                 u'notes': [u'asd3'],
+                 u'objects': [{u'amount': 5, u'date': u'2005-10-09'},
+                              {u'amount': 10, u'date': u'2000-01-09'}],
+                 u'project_id': self.projects_ids[0],
+                 u'status': -3,
+                 u'trip_id': u'444444444444444444444444',
+                 u'user_id': u'111111111111111111111111'}],
                  u'trips': []}
            )
    
@@ -651,9 +662,9 @@ class ApprovalAPIAsAccount(TestCaseAsAccount, ModuleData):
                {u'error': u"TSValidationError: Can't find selected expence"}
            )
      
-        # Try to reject '5'*24, but is on draft
+        # Try to reject '5'*24, is rejectable although on draft
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '5'*24, 'action' : 'reject', 'note' : 'asd3'  }, 
-               {u'error': u"TSValidationError: Can't find selected expence"}
+               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(admin_data, 'notify_reject') }
            )
    
         # Search all approvals with project_id
