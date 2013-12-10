@@ -101,7 +101,7 @@ def search_approvals(criteria):
     
     POST /data/search_approvals/
     
-    Expects { 'projects_id' : [ ], 'user_id': string, 'type': trips|expences, 'status': toapprove|approved|rejected|any  }
+    Expects { 'projects_id' : [ ], 'user_id': string, 'type': trips|expences|any, 'status': toapprove|approved|rejected|any  }
     Returns { 'error' : string, 'records' : [] }
     """
     
