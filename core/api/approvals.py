@@ -23,6 +23,7 @@ def approval(criteria):
 
     # Current user can approve only approvals with status >= conf_approval_flow.index(group)
     owner_status = get_role_approval_step(cherrypy.session['_ts_user']['group'])
+    draft_status = get_role_approval_step('draft')
 
     # Is searching found_expence or trip
     exp_id = sanified_criteria.get('expence_id')
@@ -38,10 +39,15 @@ def approval(criteria):
     
     search_projection = { '_id' : 0 , expence_type : { '$elemMatch' : { '_id' : ObjectId(expence_id) } } }
     
-    # Define status limits only if is not adminstrator
+    # Define status limits only if is not adminstrator. Status should be owner_one or draft.
     if owner_status != 0:
-        search_criteria['%s.status' % expence_type] = owner_status 
-        search_projection[expence_type]['$elemMatch']['status'] = owner_status 
+        search_criteria['$or'] = [ { '%s.status' % expence_type : owner_status}, 
+                                  { '%s.status' % expence_type : draft_status} ]
+        
+        search_projection[expence_type]['$elemMatch']['$or'] = [ 
+                                                                { 'status' : owner_status}, 
+                                                                { 'status' : draft_status} 
+                                                                ]
         
     # Limit for user id
     user_id = sanified_criteria.get('user_id')
