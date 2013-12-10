@@ -138,11 +138,11 @@ def search_approvals(criteria):
             elif status_requested == 'approved':
                 match_project_status = { '%s.status' % aggregation_type : 0 }
             elif status_requested == 'rejected':
-                match_project_status = { '%s.status' % aggregation_type : -abs(owner_status) }
+                match_project_status = { '%s.status' % aggregation_type : { '$lt' : 0 } }
             else:
                 match_project_status = { '$or' : [  { '%s.status' % aggregation_type : owner_status }, 
                                                     { '%s.status' % aggregation_type : 0 },
-                                                    { '%s.status' % aggregation_type : -abs(owner_status) }
+                                                    { '%s.status' % aggregation_type : { '$lt' : 0 } }
                                                 ] } 
 
         # If project_id is not set, allows only managed_projects
