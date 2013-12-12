@@ -68,7 +68,6 @@ def notify_expence(expence, project_id, expence_type):
 
 def get_pending():
     
-    
     # Get flow status number relative to current user
     approval_step = get_role_approval_step(cherrypy.session['_ts_user']['group'])
     
@@ -83,10 +82,9 @@ def get_pending():
             approval_filters['_id'] = { '$in' :  [ ObjectId(p) for p in cherrypy.session['_ts_user']['managed_projects'] ] } 
             
             # If user is not in the approvations chain, filter also user_id parameter
-            if approval_step == len(conf_approval_flow)-1:
+            if cherrypy.session['_ts_user']['group'] == 'employee':
                 approval_filters['%s.user_id' % aggregation_type] = str(cherrypy.session['_ts_user']['_id'])
 
-        
             approval_filters['%s.status' % aggregation_type] = approval_step
 
             cherrypy.log('%s' % ([ { '$unwind' : '$%s' % aggregation_type }, { '$match' : approval_filters }]), 
