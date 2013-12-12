@@ -72,7 +72,7 @@ class FlowAPI(TestCaseMultipleUsers):
                     }],
                     'trips': []
               })
-        
+ 
     def test_standard_reject(self):
          
         # Add project
@@ -208,6 +208,11 @@ class FlowAPI(TestCaseMultipleUsers):
         )
         
         ### PROJECT MANAGER
+        # Check notifications
+        self._assert_req('/me',  None, 
+           { 'username' : self.manager_data[0]['username'], '_id' : '', 'group' : self.manager_data[0]['group'], 'notifications' : 1 }
+       )
+        
         # Submit to account
         self._assert_req('/data/approval',  { 'user_id' : self.manager_id, 'project_id' : self.projects_ids[0], 'expence_id' : expence_ids[0], 'action' : 'approve', 'note' : 'asd2'  }, 
                { 'error' : None, 'status' : 1, 'notifications' : _debug_notification(self.account_data, 'notify_new') }
@@ -219,4 +224,3 @@ class FlowAPI(TestCaseMultipleUsers):
         self._assert_req('/data/approval',  { 'user_id' : self.manager_id, 'project_id' : self.projects_ids[0], 'expence_id' : expence_ids[0], 'action' : 'approve', 'note' : 'asd2'  }, 
                { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.manager_data, 'notify_new') }
         )  
-
