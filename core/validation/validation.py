@@ -1,5 +1,6 @@
 import cgi, yaml, random, string, hashlib, types, jsonschema
 from core.config import schema, core_folder, requests_schema
+from core.validation.jsonschemafix import validator
 from bson.objectid import ObjectId
 
 class TSValidationError(Exception):
@@ -111,11 +112,10 @@ def validate_json_list(collection, list_in):
     
     for json_in in list_in:    
         # Validate json schema
-        jsonschema.validate(json_in, schema[collection], format_checker=jsonschema.FormatChecker())
+        validator(schema[collection], format_checker=jsonschema.FormatChecker()).validate(json_in)
    
 def validate_request(collection, json_in):
-    jsonschema.validate(json_in, requests_schema[collection], format_checker=jsonschema.FormatChecker())
-   
+    validator(requests_schema[collection], format_checker=jsonschema.FormatChecker()).validate(json_in)
    
 def update_password_salt_user_list(collection, list_in):
     

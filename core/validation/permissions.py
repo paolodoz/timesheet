@@ -1,13 +1,13 @@
-import yaml, cherrypy, types, jsonschema
+import yaml, cherrypy, types, jsonschema, logging
 from core.validation.validation import TSValidationError, recursive_replace, ObjectId
 from core.config import restrictions_schema, conf_approval_flow
 from jsonschema.exceptions import SchemaError
+from core.validation.jsonschemafix import validator
 
 def get_role_approval_step(group):
 
     # Approvation roles 
     approvation_roles = [ s['approver'] if 'approver' in s else '' for s in conf_approval_flow ]
-
 
     # Administrator can see every expence, return 0
     if group == 'administrator':
@@ -73,12 +73,8 @@ def check_datamine_permissions(action, document):
     if not restrictions:
         raise TSValidationError("Access to '%s' is restricted for current user" % (action))
     elif restrictions != True:
-        try:
-            jsonschema.validate(document, restrictions, format_checker=jsonschema.FormatChecker())    
-        except SchemaError as e:
-            if e.instance == [] or e.instance.get('enum') == []:
-                raise TSValidationError('Empty list found validating current user request')
-            raise
+        validator(restrictions, format_checker=jsonschema.FormatChecker()).validate(document)
+
     
     
 def check_remove_permissions(collection, document):
@@ -94,7 +90,7 @@ def check_remove_permissions(collection, document):
     if not restrictions:
         raise TSValidationError("Access to 'remove.%s' is restricted for current user" % (collection))
     elif restrictions != True:       
-        jsonschema.validate(document, restrictions, format_checker=jsonschema.FormatChecker())
+        validator(restrictions, format_checker=jsonschema.FormatChecker()).validate(document)
     
 def check_upsert_permissions(action, collection, document):
     
@@ -109,7 +105,7 @@ def check_upsert_permissions(action, collection, document):
     if not restrictions:
         raise TSValidationError("Access to '%s.%s' is restricted for current user" % (action, collection))
     elif restrictions != True:       
-        jsonschema.validate(document, restrictions, format_checker=jsonschema.FormatChecker())
+        validator(restrictions, format_checker=jsonschema.FormatChecker()).validate(document)
 
 def check_get_permissions(collection, criteria, projection, sort):
 
@@ -155,6 +151,6 @@ def check_get_permissions(collection, criteria, projection, sort):
     
     # Validate criteria
     if criteria_restrictions:
-        jsonschema.validate(criteria, criteria_restrictions, format_checker=jsonschema.FormatChecker())
+        validator(criteria_restrictions, format_checker=jsonschema.FormatChecker()).validate(criteria)
         
     
