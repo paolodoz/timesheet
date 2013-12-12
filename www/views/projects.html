@@ -79,7 +79,7 @@ function userdata(data) {
 
 function loadProjectsList(list) {
   var filter;
-  if(me.group == "project manager")
+  if(me.group == "project manager" || me.group == "account")
     filter = [{"responsibles._id": me._id},{name:1, description:1},{name:1}];
   else
     filter = [{},{name:1, description:1},{name:1}];
