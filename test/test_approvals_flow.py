@@ -72,7 +72,7 @@ class FlowAPI(TestCaseMultipleUsers):
                     }],
                     'trips': []
               })
- 
+        
     def test_standard_reject(self):
          
         # Add project
@@ -155,12 +155,12 @@ class FlowAPI(TestCaseMultipleUsers):
         ### PROJECT MANAGER
         self._log_as_manager()
         # Search but is unreachable
-        self._assert_req('/data/search_approvals', { 'projects_id' : self.projects_ids, 'status' : 'any' }, {u'error': u'TSValidationError: Empty list found validating current user request'})    
+        self._assert_req('/data/search_approvals', { 'projects_id' : self.projects_ids, 'status' : 'any' }, {u'error': None, u'expences': [], u'trips': []})    
  
         ### ACCOUNT
         self._log_as_account()
         # Search but is unreachable
-        self._assert_req('/data/search_approvals', { 'projects_id' : self.projects_ids, 'status' : 'any' }, {u'error': u'TSValidationError: Empty list found validating current user request'})    
+        self._assert_req('/data/search_approvals', { 'projects_id' : self.projects_ids, 'status' : 'any' }, {u'error': None, u'expences': [], u'trips': []})    
  
         ### EMPLOYEE
         self._log_as_employee()
