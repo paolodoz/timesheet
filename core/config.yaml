@@ -5,6 +5,8 @@ server:
   server.ssl_certificate: core/ts.pem
   server.ssl_module: pyopenssl
   server.ssl_private_key: core/ts.pem
+  log.access_file: ts_access.log
+  log.error_file: ts_error.log
   
 static:
   /static:
