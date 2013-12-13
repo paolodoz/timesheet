@@ -57,7 +57,11 @@ $(document).ready(function() {
 });
 
 function loadProjectsList(list) {
-  var filter = [{},{name:1},{name:1}];
+  var filter;
+  if(me.group == "project manager" || me.group == "account")
+    filter = [{"responsibles._id": me._id},{name:1, description:1},{name:1}];
+  else
+    filter = [{},{name:1},{name:1}];
   project.load(filter, loadProjects, list);
 }
 
