@@ -1,3 +1,4 @@
+<script src="/static/js/bootstrap-switch.js"></script>
 <script type="text/javascript">
 var validator;
 $(document).ready(function() {
@@ -151,12 +152,19 @@ function filterlist(list, currenttext) {
     </div>
   </div>
 <div class="form-group">
+    <label for="reportmode" class="col-lg-4 control-label">Aggregate results</label>
+    <div class="col-lg-6">
+        <div class="make-switch switch-small" data-on-label="YES" data-off-label="NO">
+          <input type="checkbox" name="reportmode" id="reportmode">
+        </div>
+    </div>
+  </div>
+<div class="form-group">
     <label for="reporttags" class="col-lg-4 control-label">Tags</label>
     <div class="col-lg-6">
       <ul id="taglist"></ul>
     </div>
   </div>
-
 <div class="form-group">
     <div class="col-lg-offset-4 col-lg-7">
       <button type="submit" class="btn btn-primary" id="btnsubmit"><span class="glyphicon glyphicon-search"></span> Generate</button>

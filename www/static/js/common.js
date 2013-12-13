@@ -752,6 +752,10 @@ var report = {
     url = "/data/report_projects";
     report.start = $("#reportstart").val();
     report.end = $("#reportend").val();
+    if($("#reportmode").is(":checked"))
+      report.mode = 'total';
+    else
+      report.mode = 'project';
     report.projects =  new Array();
     i = 0;
     $("#projectsList li.active").each(function() {
