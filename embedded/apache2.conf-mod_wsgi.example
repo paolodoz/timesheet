@@ -1,0 +1,14 @@
+<VirtualHost *:443>
+        ServerName timesheet.domain.com
+        RewriteEngine On
+        SSLCertificateFile /etc/apache2/certs/domain.crt
+        SSLCertificateKeyFile /etc/apache2/certs/domain.key
+        SSLEngine On
+        SetEnvIf User-Agent ".*MSIE.*" nokeepalive ssl-unclean-shutdown
+        WSGIScriptAlias / /home/timesheet/embedded/modwsgi.py
+        DocumentRoot /home/timesheet/embedded/
+        <Directory />
+              WSGIApplicationGroup %{GLOBAL}
+        </Directory>
+</VirtualHost>
+
