@@ -19,10 +19,13 @@ function userdata(data){
   me = data;
   if(me.group != "employee") {
     var filter = [ { 'responsibles._id' : me._id }, { name: 1 }, { name: 1 } ];
-    project.load(filter, nop ,"");
-    filter = [ {}, {name:1, surname:1}, {surname:1}];
-    user.load(filter, secondstage , "");
+    project.load(filter, firststage ,"");
   }
+}
+
+function firststage() {
+  var filter = [ {}, {name:1, surname:1}, {surname:1}];
+  user.load(filter, secondstage , "");
 }
 
 function secondstage() {
