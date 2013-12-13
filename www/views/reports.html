@@ -1,8 +1,7 @@
 <script type="text/javascript">
 var validator,htmltasks;
 $(document).ready(function() {
-  loadProjectsList("reportproject");
-  loadUsersList("usersList");
+  user.me(userdata);
   htmltasks = "";
   for(i=1; i < tasks.length; i++) {
     htmltasks += "<option value='" + i + "'>" + tasks[i] + "</option>";
@@ -26,7 +25,7 @@ $(document).ready(function() {
     $("#reportend").val(simpleDate(lastday));
   });
   $("#btnreset").click(function() {
-    resetReportsForm();
+    resetReportsForm(true);
   });
   $("#reportForm").submit(function(event) {
     event.preventDefault();
@@ -56,6 +55,12 @@ $(document).ready(function() {
   });
 });
 
+function userdata(data) {
+  me = data;
+  resetReportsForm();
+  loadUsersList("usersList");
+}
+
 function loadProjectsList(list) {
   var filter;
   if(me.group == "project manager" || me.group == "account")
@@ -70,8 +75,10 @@ function loadUsersList(list) {
   user.load(filter, loadUsers, list);
 }
 
-function resetReportsForm()
-{
+function resetReportsForm(load) {
+  if(load == true) {} else {
+    loadProjectsList("reportproject");
+  }
   $("#usersList li").removeClass("active");
   $("div.results").hide();
   $("#real").html("");

@@ -2,8 +2,7 @@
 <script type="text/javascript">
 var validator;
 $(document).ready(function() {
-  loadProjectsList("projectsList");
-  loadCustomersList("reportcustomer");
+  user.me(userdata);
   $("div.results").hide();
   $(".datepicker").datepicker();
   $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
@@ -22,7 +21,7 @@ $(document).ready(function() {
     $("#reportend").val(simpleDate(lastday));
   });
   $("#btnreset").click(function() {
-    resetReportsForm();
+    resetReportsForm(true);
   });
   tag.load("taglist", 30, false);
   $("#reportForm").submit(function(event) {
@@ -53,6 +52,12 @@ $(document).ready(function() {
   });
 });
 
+function userdata(data) {
+  me = data;
+  resetReportsForm();
+  loadCustomersList("reportcustomer");
+}
+
 function loadProjectsList(list) {
   var filter;
   if(me.group == "project manager" || me.group == "account")
@@ -67,8 +72,10 @@ function loadCustomersList(list) {
   customer.load(filter, loadCustomers, list);
 }
 
-function resetReportsForm()
-{
+function resetReportsForm(load) {
+  if(load == true) {} else {
+    loadProjectsList("projectsList");
+  }
   $("#projectsList li").removeClass("active");
   $("div.results").hide();
   $("#real").html("");
