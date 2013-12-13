@@ -29,7 +29,7 @@ class TagAPIAsAdmin(TestClassBase, ModuleData):
         self._assert_req('/data/search_tags', { 'count' : 2  }, {u'error': None, u'records': [u'TYPE1', u'TYPE4' ]})
         
         # Get first 100 tags
-        self._assert_req('/data/search_tags', { 'count' : 100  }, {u'error': None, u'records': [u'TYPE1', u'TYPE4', u'TYPE3', u'TYPE2']})
+        self._assert_req('/data/search_tags', { 'count' : 100  }, {u'error': None, u'records': [u'TYPE1', u'TYPE3', u'TYPE4', u'TYPE2']})
         
         
     def test_tag_ko(self):

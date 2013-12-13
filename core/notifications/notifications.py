@@ -69,35 +69,38 @@ def notify_expence(expence, project_id, expence_type):
 def get_pending():
     
     # Get flow status number relative to current user
-    approval_step = get_role_approval_step(cherrypy.session['_ts_user']['group'])
+    owner_status = get_role_approval_step(cherrypy.session['_ts_user']['group'])
+
+    aggregations_types = [ 'trips', 'expences']
+    
+    records = { 'trips' : [], 'expences' : [] }
     
     pending_count = 0
     
-    # If approval_step != 0 (admin) count how many pendent notifications
-    if approval_step != 0:
+    for aggregation_type in aggregations_types:
 
-        for aggregation_type in [ 'trips', 'expences' ]:
+        # If is administrator, can see whole ranges
+        if owner_status == 0:
+            match_project_status = { '%s.status' % aggregation_type : { '$gt' : 0 } }
+        # If it is a permitted user, can see only specific status
+        else:
+            match_project_status = { '%s.status' % aggregation_type : owner_status }
 
-            approval_filters = {}
-            approval_filters['_id'] = { '$in' :  [ ObjectId(p) for p in cherrypy.session['_ts_user']['managed_projects'] ] } 
-            
             # If user is not in the approvations chain, filter also user_id parameter
-            if cherrypy.session['_ts_user']['group'] == 'employee':
-                approval_filters['%s.user_id' % aggregation_type] = str(cherrypy.session['_ts_user']['_id'])
+        if cherrypy.session['_ts_user']['group'] == 'employee':
+            match_project_status.update({ '%s.user_id' % aggregation_type : str(cherrypy.session['_ts_user']['_id']) })
 
-            approval_filters['%s.status' % aggregation_type] = approval_step
+        aggregation_pipe = [  
+                            { '$unwind' : '$%s' % aggregation_type },
+                            { '$match' : match_project_status },
+                            { '$group' : { '_id' : None, 'count' : { '$sum' : 1 } } }
+        ]
 
-            cherrypy.log('%s' % ([ { '$unwind' : '$%s' % aggregation_type }, { '$match' : approval_filters }]), 
-                         context = 'TS.PENDING_NOTIFICATIONS.aggregation_pipe', severity = logging.INFO)
+        cherrypy.log('%s' % (aggregation_pipe), context = 'TS.PENDING_NOTIFICATIONS.aggregation_pipe', severity = logging.INFO)
 
-            result = db.project.aggregate([  
-                                { '$unwind' : '$%s' % aggregation_type },
-                                { '$match' : approval_filters },
-                                { '$group' : { '_id' : None, 'count' : { '$sum' : 1 } } }
-            ])['result']
+        result = db.project.aggregate(aggregation_pipe)['result']
             
-            if result:
-                pending_count += result[0]['count']
-
-    return pending_count
+        if result:
+            pending_count += result[0]['count']       
         
+    return pending_count

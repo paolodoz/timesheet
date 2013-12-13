@@ -53,7 +53,7 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
         # Administrator should return always 0
         
         self._assert_req('/me',  None, 
-               { 'username' : admin_credentials['username'], '_id' : '', 'group' : self.group, 'notifications' : 0 }
+               { 'username' : admin_credentials['username'], '_id' : '', 'group' : self.group, 'notifications' : 5 }
            )
 
 
