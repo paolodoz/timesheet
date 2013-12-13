@@ -90,6 +90,11 @@ def get_pending():
         if cherrypy.session['_ts_user']['group'] == 'employee':
             match_project_status.update({ '%s.user_id' % aggregation_type : str(cherrypy.session['_ts_user']['_id']) })
 
+
+        projects_requested = [ ObjectId(p) for p in cherrypy.session['_ts_user']['managed_projects'] ]
+        if projects_requested:
+            match_project_status.update({ '_id' : { '$in' : projects_requested } })
+
         aggregation_pipe = [  
                             { '$unwind' : '$%s' % aggregation_type },
                             { '$match' : match_project_status },
