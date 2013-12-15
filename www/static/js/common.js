@@ -159,7 +159,9 @@ var project = {
           } else {
             element.role = "account";
           }
-          project.responsibles.push(element);
+          var copy_resp = {};
+          jQuery.extend(copy_resp, element);
+          project.responsibles.push(copy_resp);
         }
       });
     });
