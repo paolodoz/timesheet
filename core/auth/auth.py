@@ -4,7 +4,7 @@
 # Session tool to be loaded.
 #
 
-import cherrypy
+import cherrypy, logging, pprint
 from core.config import conf_auth, conf_auth_db, conf_auth_ldap, templates
 from core.validation.permissions import get_user_restrictions
 from core.api.crud import db
@@ -137,6 +137,8 @@ class AuthController(object):
 
         # Save formatted permissions schemas to speedup following accesses
         cherrypy.session['_ts_user']['restrictions'] = get_user_restrictions()
+
+        cherrypy.log('%s' % (pprint.pformat(cherrypy.session['_ts_user'])), context = 'TS.AUTH.session_permission', severity = logging.INFO)
 
        
         
