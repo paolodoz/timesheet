@@ -126,3 +126,9 @@ form .error {
 #helplink div.popover dl {
   width:700px;
 }
+.singlechart {
+  max-width:60%;
+}
+.totalchart {
+  max-width:30%;
+}

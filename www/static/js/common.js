@@ -1152,10 +1152,25 @@ function findTrip(id) {
 function nop(){};
 
 /* graph values */
-var g_backgroundColor: '#fff';
-var g_gridLineColor: '#ccc';
-var g_borderColor: '#999';
-var g_colorsalary: '#ff0000';
-var g_colorcosts: '#7f0000';
-var g_colorbugdet: '#0bff00';
-var g_colorextra: '#067f00';
+var g_background = '#fff';
+var g_gridLineColor = '#ccc';
+var g_borderColor = '#999';
+var g_colorsalary = '#ff0000';
+var g_colorcosts = '#7f0000';
+var g_colorbugdet = '#067f00';
+var g_colorextra = '#0bff00';
+
+function getColorForPercentage (pct) {
+  if(pct<=0)
+    return "#ff1500";
+  if(pct<10)
+    return "#e8750c";
+  if(pct<20)
+    return "#ffcc13";
+  if(pct<30)
+    return "#f2ff14";
+  if(pct<50)
+    return "#5fff1b";
+  else
+    return "#13ff1e";
+}
