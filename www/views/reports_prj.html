@@ -21,9 +21,11 @@ $(document).ready(function() {
     filterlist($('#' + list + 'List li'), currenttext);
   });
   $("#reportstart").change(function() {
-    var firstday = new Date($(this).val());
-    var lastday = new Date(firstday.getFullYear(), firstday.getMonth() + 1,0);
-    $("#reportend").val(simpleDate(lastday));
+    if($("#reportend").val() == "") {
+      var firstday = new Date($(this).val());
+      var lastday = new Date(firstday.getFullYear(), firstday.getMonth() + 1,0);
+      $("#reportend").val(simpleDate(lastday));
+    }
   });
   $("#btnreset").click(function() {
     resetReportsForm(true);
