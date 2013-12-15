@@ -1149,5 +1149,13 @@ function findTrip(id) {
   }
 }
 
-
 function nop(){};
+
+/* graph values */
+var g_backgroundColor: '#fff';
+var g_gridLineColor: '#ccc';
+var g_borderColor: '#999';
+var g_colorsalary: '#ff0000';
+var g_colorcosts: '#7f0000';
+var g_colorbugdet: '#0bff00';
+var g_colorextra: '#067f00';

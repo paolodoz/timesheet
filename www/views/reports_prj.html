@@ -1,9 +1,12 @@
+<!--[if lt IE 9]><script language="javascript" type="text/javascript" src="/static/js/excanvas.js"></script><![endif]-->
+<script language="javascript" type="text/javascript" src="/static/js/jquery.jqplot.min.js"></script>
+<script type="text/javascript" src="/static/js/plugins/jqplot.dateAxisRenderer.min.js"></script>
+<link rel="stylesheet" type="text/css" href="/static/css/jquery.jqplot.min.css" />
 <script src="/static/js/bootstrap-switch.js"></script>
 <script type="text/javascript">
 var validator;
 $(document).ready(function() {
   user.me(userdata);
-  $("div.results").hide();
   $(".datepicker").datepicker();
   $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
   $('.rapidsearch').keyup(function () {
@@ -104,14 +107,98 @@ function loadCustomers(data, container) {
 
 
 function loadReportResults(data) {
-  if(data.length == 0) {
+/*  if(data.length == 0) {
     showmessage("error", "No project satisfy your search");
   } else {
     $("#real").html("mese: " + data[0][0] + " euro: " + data[0][1]);
   }
+*/
+  $("#real").html("");
+  if($("#reportmode").is(":checked")) {
+    //
+  } else {
+    //for each project
+    var i=0,html;
+    for(var value in data) {
+    //create html container
+      $("#real").append('<div id="chartdiv' + i + '" class="singlechart"></div>');
+    //create graph
+      $("#real").append(createSingleGraph(i, data[value], value));
+    //create table
+      $("#real").append(createGraphDataTable(i, data[value]));
+    //create cleardiv
+      $("#real").append('<div class="clearfix"></div>');
+      i++;
+    }
+  }
+//  $("#real").html("<div id='chartdiv' style='height:400px;width:300px; '></div>");
+//  $.jqplot('chartdiv',  [[[1, 2],[3,5.12],[5,13.1],[7,33.6],[9,85.9],[11,219.9]]]);
   $('#reportwait').modal('hide');
 }
 
+function createSingleGraph(index, data, prj_id) {
+  var i,salary = [], costs = [], budget = [], extra = [];
+  for(i=0; i < data.length; i++) {
+    salary.push([data[i][0], -data[i][1].salary]);
+  }
+  for(i=0; i < data.length; i++) {
+    costs.push([data[i][0], -data[i][1].costs]);
+  }
+  for(i=0; i < data.length; i++) {
+    budget.push([data[i][0], data[i][1].budget]);
+  }
+  for(i=0; i < data.length; i++) {
+    extra.push([data[i][0], data[i][1].extra]);
+  }
+  $.jqplot('chartdiv' + index, [salary, costs, budget, extra],
+    {
+      title:'Data for ' + project.getname(prj_id),
+      // Series options are specified as an array of objects, one object
+      // for each series.
+      seriesColors: [ g_colorsalary, g_colorcosts, g_colorbugdet, g_colorextra],
+      grid:{
+        gridLineColor: g_gridLineColor,
+        background: g_background,
+        borderColor: g_borderColor,
+      },
+      axes:{
+        xaxis:{
+          renderer:$.jqplot.DateAxisRenderer,
+          tickOptions:{formatString:'%b, %Y'},
+          min:$("#reportstart").val(),
+          tickInterval:'1 month'
+        }
+      },
+      series:[
+          {
+            // Change our line width and use a diamond shaped marker.
+            lineWidth:2,
+            markerOptions: { style:'diamond' }
+          },
+          {
+            // Don't show a line, just show markers.
+            // Make the markers 7 pixels with an 'x' style
+            showLine:false,
+            markerOptions: { size: 7, style:"x" }
+          },
+          {
+            // Use (open) circlular markers.
+            markerOptions: { style:"circle" }
+          },
+          {
+            // Use a thicker, 5 pixel line and 10 pixel
+            // filled square markers.
+            lineWidth:5,
+            markerOptions: { style:"filledSquare", size:10 }
+          }
+      ]
+    }
+  );
+  return "";
+}
+function createGraphDataTable(index, data) {
+  return "";
+}
 //restore visibility for each element in list
 function resetvisibility(elem) {
   $(elem).each(function () {
