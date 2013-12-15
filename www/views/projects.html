@@ -126,6 +126,8 @@ function loadUsers(data, container) {
   }
   $("#" + container).html(htmllist);
   $("#" + container + " .list-group-item span.user").click(function() {
+    $(this).parent().find(".btn-default").removeClass("active");
+    $(this).parent().find(".btn-default:contains('Employee')").addClass("active");
     $(this).parent().toggleClass("active");
   });
 }
