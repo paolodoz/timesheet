@@ -132,3 +132,9 @@ form .error {
 .totalchart {
   max-width:30%;
 }
+.graphtable {
+  margin-top:20px;
+  margin-right:20px;
+  float:right;
+  max-width:35%;
+}

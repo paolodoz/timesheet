@@ -123,12 +123,14 @@ function loadReportResults(data) {
     var i=0,html;
     for(var value in data) {
     //create html container
+      $("#real").append('<table class="table table-bordered table-condensed graphtable" id="detailtable' + i + '"></table>');
       $("#real").append('<div class="cont"><div id="singlechart' + i + '" class="singlechart"></div></div>');
+      $("#real").append('<table class="table table-bordered table-condensed graphtable" id="summarytable' + i + '"></table>');
       $("#real").append('<div class="cont"><div id="globalchart' + i + '" class="totalchart"></div></div>');
     //create graph
       $("#real").append(createSingleGraph(i, data[value], value));
     //create table
-      $("#real").append(createGraphDataTable(i, data[value]));
+      $("#real").append(createGraphDataTable(i, data[value], value));
     //create cleardiv
       $("#real").append('<div class="clearfix"></div>');
       i++;
@@ -141,22 +143,16 @@ function createSingleGraph(index, data, prj_id) {
   var i,salary = [], costs = [], budget = [], extra = [];
   var tsalary, tcosts, tbudget, textra;
   tsalary = 0;
+  tcosts = 0;
+  tbudget = 0;
+  textra = 0;
   for(i=0; i < data.length; i++) {
     salary.push([data[i][0], -data[i][1].salary]);
     tsalary += -data[i][1].salary;
-  }
-  tcosts = 0;
-  for(i=0; i < data.length; i++) {
     costs.push([data[i][0], -data[i][1].costs]);
     tcosts += -data[i][1].costs;
-  }
-  tbudget = 0;
-  for(i=0; i < data.length; i++) {
     budget.push([data[i][0], data[i][1].budget]);
     tbudget += data[i][1].budget;
-  }
-  textra = 0;
-  for(i=0; i < data.length; i++) {
     extra.push([data[i][0], data[i][1].extra_budget]);
     textra += data[i][1].extra_budget;
   }
@@ -206,9 +202,11 @@ function createSingleGraph(index, data, prj_id) {
       title:'Data for ' + project.getname(prj_id),
       stackSeries: true,
       seriesColors: [ g_colorsalary, g_colorcosts, g_colorbugdet, g_colorextra, g_totalcolor],
+      negativeSeriesColors: [ g_colorsalary, g_colorcosts, g_colorbugdet, g_colorextra, g_totalcolor],
       seriesDefaults:{
         renderer:$.jqplot.BarRenderer,
         rendererOptions: {
+          fillToZero: true,
           varyBarColor: true
         }
       },
@@ -234,7 +232,35 @@ function createSingleGraph(index, data, prj_id) {
   );
   return "";
 }
-function createGraphDataTable(index, data) {
+function createGraphDataTable(index, data, value) {
+  var i, total, html, head = "<thead><tr><th>Period</th><th>Budget</th><th>Extra budget</th><th>Salary</th><th>Costs</th><th>Total</th>Total</tr></thead><tbody>";
+  html = head;
+  for(i=0; i < data.length; i++) {
+    total = data[i][1].budget + data[i][1].extra_budget - data[i][1].salary - data[i][1].costs;
+    if(total < 0)
+      html += "<tr class='danger'>";
+    else
+      html += "<tr>";
+    html += "<td>" + data[i][0] + "</td><td>" + data[i][1].budget + " &euro;</td><td>" + data[i][1].extra_budget + " &euro;</td><td>" + data[i][1].salary + " &euro;</td><td>" + data[i][1].costs + " &euro;</td><td>" + total + " &euro;</td></tr>";
+  }
+  html += "</tbody>";
+  $("#detailtable" + index).html(html);
+
+  html = head;
+  var tsalary, tcosts, tbudget, textra;
+  tsalary = 0;
+  tcosts = 0;
+  tbudget = 0;
+  textra = 0;
+  for(i=0; i < data.length; i++) {
+    tsalary += data[i][1].salary;
+    tcosts += data[i][1].costs;
+    tbudget += data[i][1].budget;
+    textra += data[i][1].extra_budget;
+  }
+  total = tbudget + textra - tsalary - tcosts;
+  html += "<tr><td>Total</td><td>" + tbudget + " &euro;</td><td>" + textra + " &euro;</td><td>" + tsalary + " &euro;</td><td>" + tcosts+ " &euro;</td><td>" + total + " &euro;</td></tr></tbody>";
+  $("#summarytable" + index).html(html);
   return "";
 }
 //restore visibility for each element in list
