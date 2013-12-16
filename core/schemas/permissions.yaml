@@ -433,21 +433,21 @@ approval:
       properties:
         project_id:
           type: string
-          enum: '%%managed_projects%%'
+          enum: '%%projects%%'
   account:
       type: object
       required: [ project_id ]
       properties:
         project_id:
           type: string
-          enum: '%%managed_projects%%'
+          enum: '%%projects%%'
   employee:
       type: object
       required: [ project_id, user_id ]
       properties:
         project_id:
           type: string
-          enum: '%%employed_projects%%'
+          enum: '%%projects%%'
         user_id:
           type: string
           pattern: '%%_id%%'

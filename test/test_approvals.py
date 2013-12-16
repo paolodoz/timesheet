@@ -525,7 +525,7 @@ class ApprovalAPIAsUser(TestCaseAsEmployee, ModuleData):
  
         # Search project with no permissions
         self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'asd'  }, 
-               {u'error': u"ValidationError: u'%s' is not one of %s" % (self.projects_ids[0], [ str(p) for p in self.projects_ids[1:] ])}
+               {u'error': u"TSValidationError: Can't find selected expence"}
            )
           
         # Decrement '8'*24
