@@ -243,7 +243,7 @@ function createGraphDataTable(index, data, value) {
       html += "<tr class='danger'>";
     else
       html += "<tr>";
-    html += "<td>" + data[i][0] + "</td><td>" + data[i][1].budget + " &euro;</td><td>" + data[i][1].extra_budget + " &euro;</td><td>" + data[i][1].salary + " &euro;</td><td>" + data[i][1].costs + " &euro;</td><td>" + total + " &euro;</td></tr>";
+    html += "<td>" + data[i][0] + "</td><td>" + data[i][1].budget.toFixed(2) + " &euro;</td><td>" + data[i][1].extra_budget.toFixed(2) + " &euro;</td><td>" + data[i][1].salary.toFixed(2) + " &euro;</td><td>" + data[i][1].costs.toFixed(2) + " &euro;</td><td>" + total.toFixed(2) + " &euro;</td></tr>";
   }
   html += "</tbody>";
   $("#detailtable" + index).html(html);
@@ -261,7 +261,7 @@ function createGraphDataTable(index, data, value) {
     textra += data[i][1].extra_budget;
   }
   total = tbudget + textra - tsalary - tcosts;
-  html += "<tr><td>Total</td><td>" + tbudget + " &euro;</td><td>" + textra + " &euro;</td><td>" + tsalary + " &euro;</td><td>" + tcosts+ " &euro;</td><td>" + total + " &euro;</td></tr></tbody>";
+  html += "<tr><td>Total</td><td>" + tbudget.toFixed(2) + " &euro;</td><td>" + textra.toFixed(2) + " &euro;</td><td>" + tsalary.toFixed(2) + " &euro;</td><td>" + tcosts.toFixed(2) + " &euro;</td><td>" + total.toFixed(2) + " &euro;</td></tr></tbody>";
   $("#summarytable" + index).html(html);
   return "";
 }
