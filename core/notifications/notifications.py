@@ -56,7 +56,7 @@ def notify_expence(expence, project_id, expence_type):
                                  { '_id' : 0, 'name' : 1, 'surname' : 1, 'email' : 1 })
 
     notification_data = {
-                         'expence_notes': expence['notes'],
+                         'expence_notes': expence.get('notes',[]), # Could be omitted
                          'expence_objects' : expence.get('objects', {}), # Could miss in trips
                          'expence_type' : expence_type,
                          'submitter_name' : submitter['name'],
