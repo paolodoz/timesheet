@@ -1,6 +1,12 @@
 Dear ${recipient_name} ${recipient_surname},
 
+% if notification_type == 'notify_new':
 You have a new expence notification waiting for approval.
+% elif notification_type == 'notify_reject':
+Your expence request has been rejected.
+% elif notification_type == 'notify_approve':
+Your expence request has been approved!
+% endif
 
 Expence data:
 

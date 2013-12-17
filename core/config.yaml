@@ -60,7 +60,7 @@ reports:
 # Flow to get approved an expence
 approval_flow:
   # APPROVED: notify only submitting user
-  - notify_new: [ '%submitter%' ]
+  - notify_approve: [ '%submitter%' ]
   
   # WAITING FOR ACCOUNTS: notify/waiting for the responsible accounts approvation
   - approver: 'account'
@@ -79,7 +79,10 @@ notifications:
   providers:
     - debug
   smtp:
+    template: plaintext
     host: localhost
     from_address: timesheet@domain.com
+  debug:
+    template: plaintext
     
      

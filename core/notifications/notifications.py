@@ -37,9 +37,9 @@ def _get_recipients_of_expences_responsibles(expence_user_id, project_id, expenc
 
 def notify_expence(expence, project_id, expence_type):
     
-    
-    # If current status is >= 0, notify the new expence
-    if expence['status'] >= 0:
+    if expence['status'] == 0:
+        notification_type = 'notify_approve'
+    elif expence['status'] > 0:
         notification_type = 'notify_new'
     else:
         notification_type = 'notify_reject'

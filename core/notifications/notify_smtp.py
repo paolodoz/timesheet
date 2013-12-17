@@ -24,5 +24,5 @@ def notify(recipients, notification_data):
         notification_data['recipient_surname'] = recipient_data['surname']
         notification_data['recipient_email'] = recipient_data['email']
         
-        mailmessage = notifications.get_template('%s.tpl' % notification_data['notification_type']).render(**notification_data)
+        mailmessage = notifications.get_template('%s.tpl' % conf_mail['template']).render(**notification_data)
         _sendmail(conf_mail['from_address'], [ notification_data['recipient_email'] ], mailmessage)

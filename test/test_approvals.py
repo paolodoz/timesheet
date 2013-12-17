@@ -1,5 +1,6 @@
 from testclasses import TestClassBase, TestCaseAsEmployee, TestCaseAsManager, TestCaseAsAccount, admin_data
-from core.config import notifications
+from core.config import notifications, conf_notifications
+conf_debug = conf_notifications['debug']
 
 def _debug_notification(recipients, expence, submitter, expence_type, notification_type, additional_notes = []):
 
@@ -26,7 +27,7 @@ def _debug_notification(recipients, expence, submitter, expence_type, notificati
         notification_data['recipient_surname'] = recipient_data['surname']
         notification_data['recipient_email'] = recipient_data['email']
         
-        notifications_result[notification_data['recipient_email']] = notifications.get_template('%s.tpl' % notification_type).render(**notification_data)
+        notifications_result[notification_data['recipient_email']] = notifications.get_template('%s.tpl' % conf_debug['template']).render(**notification_data)
     
     return [ notifications_result ]
 
@@ -98,13 +99,13 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
           
         # Decrement again '6'*24
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'ndee2'  }, 
-               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.admin_data, self.expence_data_6, self.admin_data[0], 'expences', 'notify_new', additional_notes = [ 'ndee', 'ndee2' ]) }
+               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.admin_data, self.expence_data_6, self.admin_data[0], 'expences', 'notify_approve', additional_notes = [ 'ndee', 'ndee2' ]) }
 
            )
 
         # Decrement again (should remain 0) '6'*24 - SHOULD NOT SEND NOTIFICATIONS, TODO: FIX
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.admin_data, self.expence_data_6, self.admin_data[0], 'expences', 'notify_new', additional_notes = [ 'ndee', 'ndee2', 'asd2' ]) }
+               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.admin_data, self.expence_data_6, self.admin_data[0], 'expences', 'notify_approve', additional_notes = [ 'ndee', 'ndee2', 'asd2' ]) }
            )
      
         # Reject '5'*24
@@ -686,7 +687,7 @@ class ApprovalAPIAsAccount(TestCaseAsAccount, ModuleData):
   
         # Decrement status flow of '9'*24, that was 1 (correct flow)
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[2], 'trip_id' : '9'*24, 'action' : 'approve', 'note' : 'asd'  }, 
-               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.account_data, self.expence_data_9, self.account_data[0], 'trips', 'notify_new', additional_notes = [ 'asd' ]) }
+               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.account_data, self.expence_data_9, self.account_data[0], 'trips', 'notify_approve', additional_notes = [ 'asd' ]) }
            )
           
         # Try to decrement again '4'*24, but is not reachable anymore
