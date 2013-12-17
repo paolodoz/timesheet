@@ -31,63 +31,65 @@ def approval(criteria):
     expence_type = 'expences' if exp_id else 'trips'
     expence_id = exp_id if exp_id else trp_id
     
-    # Define search criteria
-    search_criteria = { 
+    # Define match 
+    match_expence = { 
                         '_id' : ObjectId(criteria['project_id']),
-                        '%s._id' % expence_type : ObjectId(expence_id)
+                        '%s._id' % expence_type : ObjectId(expence_id),
+                        
                         }
-    
-    search_projection = { '_id' : 0 , expence_type : { '$elemMatch' : { '_id' : ObjectId(expence_id) } } }
     
     # Define status limits only if is not adminstrator. Status should be owner_one or draft.
     if owner_status != 0:
-        search_criteria['$or'] = [ { '%s.status' % expence_type : owner_status}, 
+        match_expence['$or'] = [ { '%s.status' % expence_type : owner_status}, 
                                   { '%s.status' % expence_type : draft_status} ]
-        
-        search_projection[expence_type]['$elemMatch']['$or'] = [ 
-                                                                { 'status' : owner_status}, 
-                                                                { 'status' : draft_status} 
-                                                                ]
         
     # Limit for user id
     user_id = sanified_criteria.get('user_id')
     if user_id:
-        search_projection.update({ '%s.user_id' % expence_type : user_id })
+        match_expence['%s.user_id' % expence_type] = user_id
 
-    found_expence = db.project.find_one( search_criteria , search_projection)
-    cherrypy.log('%s\n%s' % (search_criteria, search_projection), context = 'TS.APPROVALS.find_one_criteria_projection', severity = logging.INFO)
-    if not found_expence:
+    aggregation_pipe = [  
+                        { '$unwind' : '$%s' % expence_type },
+                        { '$match' : match_expence }
+    ]
+
+    cherrypy.log('%s' % (aggregation_pipe), context = 'TS.APPROVAL.aggregation_pipe', severity = logging.INFO)
+    result = db.project.aggregate(aggregation_pipe)['result']
+            
+    if not result:
         raise TSValidationError("Can't find selected expence")
+    
+    found_expence = result[0]
     
     original_found_expence = found_expence.copy()
     
     # Approved
     if sanified_criteria['action'] == 'approve':
-        if found_expence[expence_type][0]['status'] > 0:
-            found_expence[expence_type][0]['status'] = found_expence[expence_type][0]['status'] - 1
+        if found_expence[expence_type]['status'] > 0:
+            found_expence[expence_type]['status'] = found_expence[expence_type]['status'] - 1
     # Rejected
     else:
-        found_expence[expence_type][0]['status'] = -abs(found_expence[expence_type][0]['status'])
+        found_expence[expence_type]['status'] = -abs(found_expence[expence_type]['status'])
 
     if 'note' in sanified_criteria and sanified_criteria['note']:
-        if not 'notes' in found_expence[expence_type][0]:
-            found_expence[expence_type][0]['notes'] = []
-        found_expence[expence_type][0]['notes'].append(sanified_criteria['note'])
+        if not 'notes' in found_expence[expence_type]:
+            found_expence[expence_type]['notes'] = []
+        found_expence[expence_type]['notes'].append(sanified_criteria['note'])
 
-    cherrypy.log('%s\n%s' % (search_criteria, found_expence), context = 'TS.APPROVALS.criteria_projection', severity = logging.INFO)
+    cherrypy.log('%s' % (found_expence), context = 'TS.APPROVALS.found_expence', severity = logging.INFO)
     
     # Pull the original element
     db.project.update({ '_id' : ObjectId(criteria['project_id'])}, { '$pull' : { expence_type : { '_id' : ObjectId(expence_id)} } } )
     # Push the modified element, with an hack to avoid to push the entire array
-    db.project.update({ '_id' : ObjectId(criteria['project_id']) }, { '$push' : { expence_type : found_expence[expence_type][0] } } )
+    db.project.update({ '_id' : ObjectId(criteria['project_id']) }, { '$push' : { expence_type : found_expence[expence_type] } } )
     
     approval_result = {}
     
     # Status
-    approval_result['status'] = found_expence[expence_type][0]['status']
+    approval_result['status'] = found_expence[expence_type]['status']
     
     # Notifications
-    notifications_result = notifications.notify_expence(found_expence[expence_type][0], criteria['project_id'], expence_type)
+    notifications_result = notifications.notify_expence(found_expence, expence_type)
     if notifications_result:
         approval_result['notifications'] = notifications_result
     

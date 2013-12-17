@@ -35,7 +35,9 @@ def _get_recipients_of_expences_responsibles(expence_user_id, project_id, expenc
     return recipients
 
 
-def notify_expence(expence, project_id, expence_type):
+def notify_expence(project_expence, expence_type):
+    
+    expence = project_expence[expence_type]
     
     if expence['status'] == 0:
         notification_type = 'notify_approve'
@@ -47,7 +49,7 @@ def notify_expence(expence, project_id, expence_type):
     recipients_roles = conf_approval_flow[expence['status']].get(notification_type,[])
 
     recipients = _get_recipients_of_expences_responsibles(expence_user_id = expence['user_id'], 
-                                                         project_id = project_id, 
+                                                         project_id = project_expence['_id'], 
                                                          expence_id = expence['_id'], 
                                                          expence_type = expence_type, 
                                                          recipients_roles = recipients_roles)

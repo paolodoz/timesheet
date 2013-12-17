@@ -73,7 +73,7 @@ approval_flow:
     notify_reject: [ '%submitter%' ]
     
   # WAITING TO BE SUBMITTED: draft
-  - []
+  - { }
 
 notifications:
   providers:
