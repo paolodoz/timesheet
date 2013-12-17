@@ -1,11 +1,32 @@
 from testclasses import TestClassBase, TestCaseAsEmployee, TestCaseAsManager, TestCaseAsAccount, admin_data
 from core.config import notifications
 
-def _debug_notification(recipients, notification_type):
+def _debug_notification(recipients, expence, submitter, expence_type, notification_type, additional_notes = []):
+
+    notification_data = {
+                     'expence_notes': expence.get('notes', []) + additional_notes,
+                     'expence_objects' : expence.get('objects', {}), # Could miss in trips
+                     'expence_type' : expence_type,
+                     'submitter_name' : submitter['name'],
+                     'submitter_surname' : submitter['surname'],
+                     'submitter_email' : submitter['email'],
+                     'notification_type': notification_type
+                     }
+    
+    if expence_type == 'expences':
+        notification_data['expence_date'] = expence['date']
+    else:
+        notification_data['expence_date'] = '%s-%s' % (expence['start'], expence['end'])
+    
     notifications_result = {}
     
-    for recipient in recipients:
-        notifications_result[recipient['email']] = notifications.get_template('%s.tpl' % notification_type).render(**recipient)
+    for recipient_data in recipients:
+        
+        notification_data['recipient_name'] = recipient_data['name']
+        notification_data['recipient_surname'] = recipient_data['surname']
+        notification_data['recipient_email'] = recipient_data['email']
+        
+        notifications_result[notification_data['recipient_email']] = notifications.get_template('%s.tpl' % notification_type).render(**notification_data)
     
     return [ notifications_result ]
 
@@ -25,25 +46,31 @@ class ModuleData:
         self.users_ids = users_json['ids'] 
         self.execOnTearDown.append(('/remove/user', [ { '_id' : self.users_ids[0]  }, { '_id' : self.users_ids[1]  }, { '_id' : self.users_ids[2]  }], { 'error' : None }))
         
+        self.expence_data_6 = { '_id' : '6'*24, "user_id" : '1'*24, "trip_id" : '3'*24, 'status' : 2, "date" : "2010-10-08", "file" : {}, 'objects' : [{ 'date' : '2005-10-04', 'amount' : 5}, { 'date' : '2000-01-05', 'amount' : 10}] }
+        self.expence_data_5 = { '_id' : '5'*24, "user_id" : '1'*24, "trip_id" : '4'*24, 'status' : 3, "date" : "2010-10-09", "file" : {}, 'objects' : [{ 'date' : '2005-10-09', 'amount' : 5}, { 'date' : '2000-01-09', 'amount' : 10}] }     
+        self.expence_data_8 = { '_id' : '8'*24, "user_id" : current_id, "trip_id" : '2'*24, 'status' : 3, "date" : "2010-10-08", "file" : {}, 'objects' : [{ 'date' : '2009-01-04', 'amount' : 7}] }     
+        self.expence_data_9 = { '_id' : '9'*24, "user_id" : current_id, "description" : "trip2", "status" : 1, "start" : "2010-10-08", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'notes' : [ 'approved' ], 'accommodation' : {} }  
+
+        
         # Add projects
         projects_json = self._assert_req('/add/project', [ 
                                  { 'customer' : 'CUSTOMER', 'tags' : [ 'TYPE1' ], 'name' : 'PROJECTNAME1', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2000-01-02', 'end' : '2006-02-03', 'tasks' : [ 1, 2 ], 'grand_total' : 4, 'responsibles' : [ { '_id' : current_id, 'name' : 'Manag1', 'role' : 'project manager'}, { '_id' : current_id, 'name' : 'Manag1', 'role' : 'account'} ], 'employees' : [ { '_id' : self.users_ids[0], 'name' : 'Emp1'} ], 
                                   'expences' : [ 
-                                                 { '_id' : '6'*24, "user_id" : '1'*24, "trip_id" : '3'*24, 'status' : 2, "date" : "2010-10-08", "file" : {}, 'objects' : [{ 'date' : '2005-10-04', 'amount' : 5}, { 'date' : '2000-01-05', 'amount' : 10}] },
-                                                 { '_id' : '5'*24, "user_id" : '1'*24, "trip_id" : '4'*24, 'status' : 3, "date" : "2010-10-09", "file" : {}, 'objects' : [{ 'date' : '2005-10-09', 'amount' : 5}, { 'date' : '2000-01-09', 'amount' : 10}] }     
+                                                self.expence_data_6,
+                                                self.expence_data_5
                                  ]
                                    
                                    },
                                  { 'customer' : 'CUSTOMER1', 'tags' : [ 'TYPE2' ], 'name' : 'PROJECTNAME2', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsibles' : [ { '_id' : current_id, 'name' : 'Manag2', 'role' : 'project manager'} ], 'employees' : [ { '_id' : current_id, 'name' : 'Emp2'} ], 
                                   'expences' : [ 
-                                                 { '_id' : '7'*24, "user_id" : '1'*24, "trip_id" : '2'*24, 'status' : 1, "date" : "2010-10-07", "file" : {}, 'objects' : [{ 'date' : '2003-04-10', 'amount' : 15}, { 'date' : '2005-01-05', 'amount' : 20}] },     
-                                                 { '_id' : '8'*24, "user_id" : current_id, "trip_id" : '2'*24, 'status' : 3, "date" : "2010-10-08", "file" : {}, 'objects' : [{ 'date' : '2009-01-04', 'amount' : 7}] }     
-                                 ] 
+                                                 { '_id' : '7'*24, "user_id" : '1'*24, "trip_id" : '2'*24, 'status' : 1, "date" : "2010-10-07", "file" : {}, 'objects' : [{ 'date' : '2003-04-10', 'amount' : 15}, { 'date' : '2005-01-05', 'amount' : 20}] },    
+                                                 self.expence_data_8 
+                                 ]               
                                    }, 
                                  { 'customer' : 'CUSTOMER3', 'tags' : [ 'TYPE3' ], 'name' : 'PROJECTNAME3', 'description' : 'description', 'contact_person' : 'contact_person', 'start' : '2003-04-05', 'end' : '2010-05-06', 'tasks' : [ 2, 3 ], 'grand_total' : 4, 'responsibles' : [ { '_id' : current_id, 'name' : 'Manag3', 'role' : 'project manager'} ], 'employees' : [ { '_id' : current_id, 'name' : 'Emp3'} ],
                                   'trips' : [ 
                                                  { '_id' : '4'*24, "user_id" : '1'*24, "description" : "trip1", "status" : 2, "start" : "2010-10-08", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'notes' : [ 'approved' ], 'accommodation' : {} },     
-                                                 { '_id' : '9'*24, "user_id" : current_id, "description" : "trip2", "status" : 1, "start" : "2010-10-08", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'notes' : [ 'approved' ], 'accommodation' : {} },    
+                                                 self.expence_data_9,
                                                  { '_id' : '3'*24, "user_id" : current_id, "description" : "trip3", "status" : -1, "start" : "2010-10-10", "end" : "2010-10-10", "country" : "Italy", 'city' : "Rome", 'notes' : [ 'approved' ], 'accommodation' : {} }     
                                  ] } 
                                  ], 
@@ -66,23 +93,24 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
  
         # Decrement status flow of '6'*24
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'ndee'  }, 
-               { 'error' : None, 'status' : 1, 'notifications' : _debug_notification(self.admin_data, 'notify_new') }
+               { 'error' : None, 'status' : 1, 'notifications' : _debug_notification(self.admin_data, self.expence_data_6, self.admin_data[0], 'expences', 'notify_new', additional_notes = [ 'ndee' ]) }
            )
           
         # Decrement again '6'*24
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'ndee2'  }, 
-               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.admin_data, 'notify_new') }
+               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.admin_data, self.expence_data_6, self.admin_data[0], 'expences', 'notify_new', additional_notes = [ 'ndee', 'ndee2' ]) }
+
            )
 
-        # Decrement again (should remain 0) '6'*24
+        # Decrement again (should remain 0) '6'*24 - SHOULD NOT SEND NOTIFICATIONS, TODO: FIX
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.admin_data, 'notify_new') }
+               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.admin_data, self.expence_data_6, self.admin_data[0], 'expences', 'notify_new', additional_notes = [ 'ndee', 'ndee2', 'asd2' ]) }
            )
      
         # Reject '5'*24
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '5'*24, 'action' : 'reject', 'note' : 'asd3'  }, 
-               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(self.admin_data, 'notify_reject') }
-           )
+               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(self.admin_data, self.expence_data_5, self.admin_data[0], 'expences', 'notify_reject', additional_notes = [ 'asd3' ]) }
+         )
    
         # Search all approvals with project_id
         self._assert_req('/data/search_approvals',  { 'projects_id' : [ self.projects_ids[0] ], 'status' : 'any' }, 
@@ -349,7 +377,8 @@ class ApprovalAPIAsManager(TestCaseAsManager, ModuleData):
  
         # Decrement status flow of '6'*24, that was 2 (correct flow)
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'asd'  }, 
-               { 'error' : None, 'status' : 1, 'notifications' : _debug_notification(self.manager_data, 'notify_new') }
+               { 'error' : None, 'status' : 1, 'notifications' : _debug_notification(self.manager_data, self.expence_data_6, self.admin_data[0], 'expences', 'notify_new', additional_notes = [ 'asd' ]) }
+               
            )
           
         # Try to decrement again '6'*24, but is not reachable anymore
@@ -359,7 +388,8 @@ class ApprovalAPIAsManager(TestCaseAsManager, ModuleData):
      
         # Try to reject '5'*24, is rejectable although on draft
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '5'*24, 'action' : 'reject', 'note' : 'asd3'  }, 
-               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(admin_data, 'notify_reject') }
+               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(self.admin_data, self.expence_data_5, self.admin_data[0], 'expences', 'notify_reject', additional_notes = [ 'asd3' ]) }
+
            )
  
         # Search all approvals with project_id
@@ -530,7 +560,8 @@ class ApprovalAPIAsUser(TestCaseAsEmployee, ModuleData):
           
         # Decrement '8'*24
         self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[1], 'expence_id' : '8'*24, 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 2, 'notifications' : _debug_notification(self.employee_data, 'notify_new') }
+               { 'error' : None, 'status' : 2, 'notifications' : _debug_notification(self.employee_data, self.expence_data_8, self.employee_data[0], 'expences', 'notify_new', additional_notes = [ 'asd2' ]) }
+
            )
        
         # Try to reject '8'*24, but is not = 2 anymore
@@ -542,7 +573,8 @@ class ApprovalAPIAsUser(TestCaseAsEmployee, ModuleData):
  
         # Reject '8'*24 = 3 
         self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[1], 'expence_id' : '8'*24, 'action' : 'reject', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(self.employee_data, 'notify_reject') }
+               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(self.employee_data, self.expence_data_8, self.employee_data[0], 'expences', 'notify_reject', additional_notes = [ 'asd2' ]) }
+
            )
     
         # Search all approvals
@@ -654,7 +686,7 @@ class ApprovalAPIAsAccount(TestCaseAsAccount, ModuleData):
   
         # Decrement status flow of '9'*24, that was 1 (correct flow)
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[2], 'trip_id' : '9'*24, 'action' : 'approve', 'note' : 'asd'  }, 
-               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.account_data, 'notify_new') }
+               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.account_data, self.expence_data_9, self.account_data[0], 'trips', 'notify_new', additional_notes = [ 'asd' ]) }
            )
           
         # Try to decrement again '4'*24, but is not reachable anymore
@@ -664,7 +696,7 @@ class ApprovalAPIAsAccount(TestCaseAsAccount, ModuleData):
      
         # Try to reject '5'*24, is rejectable although on draft
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '5'*24, 'action' : 'reject', 'note' : 'asd3'  }, 
-               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(admin_data, 'notify_reject') }
+               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(self.admin_data, self.expence_data_5, self.admin_data[0], 'expences', 'notify_reject', additional_notes = [ 'asd3' ]) }
            )
    
         # Search all approvals with project_id

@@ -52,13 +52,31 @@ def notify_expence(expence, project_id, expence_type):
                                                          expence_type = expence_type, 
                                                          recipients_roles = recipients_roles)
 
+    submitter = db.user.find_one({ '_id':  ObjectId(expence['user_id']) }, 
+                                 { '_id' : 0, 'name' : 1, 'surname' : 1, 'email' : 1 })
+
+    notification_data = {
+                         'expence_notes': expence['notes'],
+                         'expence_objects' : expence.get('objects', {}), # Could miss in trips
+                         'expence_type' : expence_type,
+                         'submitter_name' : submitter['name'],
+                         'submitter_surname' : submitter['surname'],
+                         'submitter_email' : submitter['email'],
+                         'notification_type': notification_type
+                         }
+
+    if expence_type == 'expences':
+        notification_data['expence_date'] = expence['date']
+    else:
+        notification_data['expence_date'] = '%s-%s' % (expence['start'], expence['end'])
+
     # Try to send notifications with core/notifications/send_*.py functions specified in config.yaml auth section
     notifications_providers = conf_notifications['providers']    
     notifications_results = []
     for provider in notifications_providers:
         
         notifications_module = __import__('core.notifications.notify_%s' % provider, fromlist=["*"])
-        notification_error = notifications_module.notify(recipients, notification_type)
+        notification_error = notifications_module.notify(recipients, notification_data)
         
         if notification_error:
             notifications_results.append(notification_error)

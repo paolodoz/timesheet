@@ -1,14 +1,6 @@
 from testclasses import TestCaseMultipleUsers
 from core.config import notifications
-
-def _debug_notification(recipients, notification_type):
-    notifications_result = {}
-    
-    for recipient in recipients:
-        notifications_result[recipient['email']] = notifications.get_template('%s.tpl' % notification_type).render(**recipient)
-    
-    return [ notifications_result ]
-
+from test_approvals import _debug_notification
 
    
 class FlowAPI(TestCaseMultipleUsers):
@@ -31,30 +23,29 @@ class FlowAPI(TestCaseMultipleUsers):
         ### EMPLOYEE
         self._log_as_employee()
         # Push new expence
+        expence_data = { "user_id" : self.employee_id, "trip_id" : '2'*24, 'status': 3, "date" : "2005-10-08", "file" : {}, 'objects' : [{}], 'notes': [] }
         expence_json = self._assert_req('/data/push_expences', [ 
                          { '_id' : self.projects_ids[0], 
-                          "expences" : [ 
-                                         { "user_id" : self.employee_id, "trip_id" : '2'*24, 'status': 3, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] }     
-                         ] } ], { 'error' : None, 'ids' : [ '' ] } )
+                          "expences" : [ expence_data ] } ], { 'error' : None, 'ids' : [ '' ] } )
         expence_ids = expence_json['ids']
          
         # Submit to approval flow (pm)
         self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[0], 'expence_id' : expence_ids[0], 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 2, 'notifications' : _debug_notification(self.manager_data, 'notify_new') }
+               { 'error' : None, 'status' : 2, 'notifications' : _debug_notification(self.manager_data, expence_data, self.employee_data[0], 'expences', 'notify_new', additional_notes = [ 'asd2' ]) }
         )
          
         ### PROJECT MANAGER
         self._log_as_manager()
         # Submit to account
         self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[0], 'expence_id' : expence_ids[0], 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 1, 'notifications' : _debug_notification(self.account_data, 'notify_new') }
+               { 'error' : None, 'status' : 1, 'notifications' : _debug_notification(self.account_data, expence_data, self.employee_data[0], 'expences', 'notify_new', additional_notes = [ 'asd2', 'asd2' ]) }
         )      
  
         ### ACCOUNT
         self._log_as_account()
         # Submit to account
         self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[0], 'expence_id' : expence_ids[0], 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.employee_data, 'notify_new') }
+               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.employee_data, expence_data, self.employee_data[0], 'expences', 'notify_new', additional_notes = [ 'asd2', 'asd2', 'asd2' ]) }
         )  
          
         ### EMPLOYEE
@@ -90,24 +81,24 @@ class FlowAPI(TestCaseMultipleUsers):
          
         ### EMPLOYEE
         self._log_as_employee()
+        expence_data = { "user_id" : self.employee_id, "trip_id" : '2'*24, 'status': 3, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] }     
         # Push new expence
         expence_json = self._assert_req('/data/push_expences', [ 
                          { '_id' : self.projects_ids[0], 
-                          "expences" : [ 
-                                         { "user_id" : self.employee_id, "trip_id" : '2'*24, 'status': 3, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] }     
-                         ] } ], { 'error' : None, 'ids' : [ '' ] } )
+                          "expences" : [ expence_data ] } ], { 'error' : None, 'ids' : [ '' ] } )
         expence_ids = expence_json['ids']
          
         # Submit to approval flow (pm)
         self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[0], 'expence_id' : expence_ids[0], 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 2, 'notifications' : _debug_notification(self.manager_data, 'notify_new') }
+               { 'error' : None, 'status' : 2, 'notifications' : _debug_notification(self.manager_data, expence_data, self.employee_data[0], 'expences', 'notify_new', additional_notes = [ 'asd2' ]) }
         )
          
         ### PROJECT MANAGER
         self._log_as_manager()
         # Submit to account
         self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[0], 'expence_id' : expence_ids[0], 'action' : 'reject', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : -2, 'notifications' : _debug_notification(self.employee_data, 'notify_reject') }
+               { 'error' : None, 'status' : -2, 'notifications' : _debug_notification(self.employee_data, expence_data, self.employee_data[0], 'expences', 'notify_reject', additional_notes = [ 'asd2', 'asd2' ]) }
+
         )      
  
         ### EMPLOYEE
@@ -195,16 +186,15 @@ class FlowAPI(TestCaseMultipleUsers):
         ### PROJECT MANAGER AS EMPLOYEE
         self._log_as_manager()
         # Push new expence
+        expence_data =  { "user_id" : self.manager_id, "trip_id" : '2'*24, 'status': 3, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] }     
         expence_json = self._assert_req('/data/push_expences', [ 
                          { '_id' : self.projects_ids[0], 
-                          "expences" : [ 
-                                         { "user_id" : self.manager_id, "trip_id" : '2'*24, 'status': 3, "date" : "2005-10-08", "file" : {}, 'objects' : [{}] }     
-                         ] } ], { 'error' : None, 'ids' : [ '' ] } )
+                          "expences" : [ expence_data ] } ], { 'error' : None, 'ids' : [ '' ] } )
         expence_ids = expence_json['ids']
 
         # Submit to approval flow (pm)
         self._assert_req('/data/approval',  { 'user_id' : self.manager_id, 'project_id' : self.projects_ids[0], 'expence_id' : expence_ids[0], 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 2, 'notifications' : _debug_notification(self.manager_data, 'notify_new') }
+               { 'error' : None, 'status' : 2, 'notifications' : _debug_notification(self.manager_data, expence_data, self.manager_data[0], 'expences', 'notify_new', additional_notes = [ 'asd2' ]) }
         )
         
         ### PROJECT MANAGER
@@ -215,12 +205,12 @@ class FlowAPI(TestCaseMultipleUsers):
         
         # Submit to account
         self._assert_req('/data/approval',  { 'user_id' : self.manager_id, 'project_id' : self.projects_ids[0], 'expence_id' : expence_ids[0], 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 1, 'notifications' : _debug_notification(self.account_data, 'notify_new') }
+               { 'error' : None, 'status' : 1, 'notifications' : _debug_notification(self.account_data, expence_data, self.manager_data[0], 'expences', 'notify_new', additional_notes = [ 'asd2', 'asd2' ]) }
         )      
 
         ### ACCOUNT
         self._log_as_account()
         # Submit to account
         self._assert_req('/data/approval',  { 'user_id' : self.manager_id, 'project_id' : self.projects_ids[0], 'expence_id' : expence_ids[0], 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.manager_data, 'notify_new') }
+               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.manager_data, expence_data, self.manager_data[0], 'expences', 'notify_new', additional_notes = [ 'asd2', 'asd2', 'asd2' ]) }
         )  
