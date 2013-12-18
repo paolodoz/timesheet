@@ -12,7 +12,7 @@ def _sendmail(fromaddr, toaddrs, text, html, subject):
     msg = MIMEMultipart('alternative')
     msg['Subject'] = subject
     msg['From'] = fromaddr
-    msg['To'] = toaddrs
+    msg['To'] = ', '.join(toaddrs)
 
     part1 = MIMEText(text, 'plain')
     part2 = MIMEText(html, 'html')
