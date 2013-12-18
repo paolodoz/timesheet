@@ -84,6 +84,6 @@ notifications:
     host: localhost
     from_address: timesheet@domain.com
   debug:
-    template: plaintext
+    template: text
     
      
