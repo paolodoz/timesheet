@@ -12,12 +12,12 @@ Expence data:
 
 Project: ${project_name}
 Expence type: ${expence_type}
-Approver user: ${approver_name} ${approver_surname} (${approver_email})
-Requesting user: ${submitter_name} ${submitter_surname} (${submitter_email})
-Date: ${expence_date}
 % if expence_objects:
 Amount: ${ sum(o.get('amount',0) for o in expence_objects) }
 % endif
+Approver user: ${approver_name} ${approver_surname} (${approver_email})
+Requesting user: ${submitter_name} ${submitter_surname} (${submitter_email})
+Date: ${expence_date}
 % if expence_notes:
 Notes: 
 	% for note in expence_notes:
