@@ -1,17 +1,18 @@
-Dear ${recipient_name} ${recipient_surname},
+Hi ${recipient_name},
 
 % if notification_type == 'notify_new':
-You have a new expence notification waiting for approval.
+User ${submitter_name} ${submitter_surname} (${submitter_email}) has sent you an expence request for project ${project_name}.
 % elif notification_type == 'notify_reject':
-Your expence request has been rejected.
+Your expence request for project ${project_name} has been rejected by ${approver_name} ${approver_surname} (${approver_email}).
 % elif notification_type == 'notify_approve':
-Your expence request has been approved!
+Your expence request for project ${project_name} has been approved by ${approver_name} ${approver_surname} (${approver_email})!
 % endif
 
 Expence data:
 
 Project: ${project_name}
-Type: ${expence_type}
+Expence type: ${expence_type}
+Approver user: ${approver_name} ${approver_surname} (${approver_email})
 Requesting user: ${submitter_name} ${submitter_surname} (${submitter_email})
 Date: ${expence_date}
 % if expence_objects:
@@ -20,7 +21,7 @@ Amount: ${ sum(o.get('amount',0) for o in expence_objects) }
 % if expence_notes:
 Notes: 
 	% for note in expence_notes:
-- ${note}
+  - ${note}
 	% endfor
 % endif
 

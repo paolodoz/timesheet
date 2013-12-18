@@ -88,8 +88,11 @@ def approval(criteria):
     # Status
     approval_result['status'] = found_expence[expence_type]['status']
     
+    # Approver data
+    approver_data = dict((key,value) for key, value in cherrypy.session['_ts_user'].iteritems() if key in ('username', 'name', 'surname', 'email'))
+    
     # Notifications
-    notifications_result = notifications.notify_expence(found_expence, expence_type, cherrypy.session['_ts_user']['group'])
+    notifications_result = notifications.notify_expence(found_expence, expence_type, approver_data)
     if notifications_result:
         approval_result['notifications'] = notifications_result
     

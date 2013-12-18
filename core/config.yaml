@@ -79,7 +79,8 @@ notifications:
   providers:
     - debug
   smtp:
-    template: plaintext
+    template_plaintext: plaintext
+    template_html: html
     host: localhost
     from_address: timesheet@domain.com
   debug:

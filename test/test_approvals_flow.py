@@ -31,21 +31,21 @@ class FlowAPI(TestCaseMultipleUsers):
          
         # Submit to approval flow (pm)
         self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[0], 'expence_id' : expence_ids[0], 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 2, 'notifications' : _debug_notification(self.manager_data, expence_data, self.employee_data[0], 'expences', 'notify_new', 'PROJECTNAME1', additional_notes = [ 'asd2' ]) }
+               { 'error' : None, 'status' : 2, 'notifications' : _debug_notification(self.manager_data, expence_data, self.employee_data[0], 'expences', 'notify_new', 'PROJECTNAME1', self.employee_data[0], additional_notes = [ 'asd2' ]) }
         )
          
         ### PROJECT MANAGER
         self._log_as_manager()
         # Submit to account
         self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[0], 'expence_id' : expence_ids[0], 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 1, 'notifications' : _debug_notification(self.account_data, expence_data, self.employee_data[0], 'expences', 'notify_new', 'PROJECTNAME1', additional_notes = [ 'asd2', 'asd2' ]) }
+               { 'error' : None, 'status' : 1, 'notifications' : _debug_notification(self.account_data, expence_data, self.employee_data[0], 'expences', 'notify_new', 'PROJECTNAME1', self.manager_data[0], additional_notes = [ 'asd2', 'asd2' ]) }
         )      
  
         ### ACCOUNT
         self._log_as_account()
         # Submit to account
         self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[0], 'expence_id' : expence_ids[0], 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.employee_data, expence_data, self.employee_data[0], 'expences', 'notify_approve', 'PROJECTNAME1', additional_notes = [ 'asd2', 'asd2', 'asd2' ]) }
+               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.employee_data, expence_data, self.employee_data[0], 'expences', 'notify_approve', 'PROJECTNAME1', self.account_data[0], additional_notes = [ 'asd2', 'asd2', 'asd2' ]) }
         )  
          
         ### EMPLOYEE
@@ -90,14 +90,14 @@ class FlowAPI(TestCaseMultipleUsers):
          
         # Submit to approval flow (pm)
         self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[0], 'expence_id' : expence_ids[0], 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 2, 'notifications' : _debug_notification(self.manager_data, expence_data, self.employee_data[0], 'expences', 'notify_new', 'PROJECTNAME1', additional_notes = [ 'asd2' ]) }
+               { 'error' : None, 'status' : 2, 'notifications' : _debug_notification(self.manager_data, expence_data, self.employee_data[0], 'expences', 'notify_new', 'PROJECTNAME1', self.employee_data[0], additional_notes = [ 'asd2' ]) }
         )
          
         ### PROJECT MANAGER
         self._log_as_manager()
         # Submit to account
         self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[0], 'expence_id' : expence_ids[0], 'action' : 'reject', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : -2, 'notifications' : _debug_notification(self.employee_data, expence_data, self.employee_data[0], 'expences', 'notify_reject', 'PROJECTNAME1', additional_notes = [ 'asd2', 'asd2' ]) }
+               { 'error' : None, 'status' : -2, 'notifications' : _debug_notification(self.employee_data, expence_data, self.employee_data[0], 'expences', 'notify_reject', 'PROJECTNAME1', self.manager_data[0], additional_notes = [ 'asd2', 'asd2' ]) }
 
         )      
  
@@ -194,7 +194,7 @@ class FlowAPI(TestCaseMultipleUsers):
 
         # Submit to approval flow (pm)
         self._assert_req('/data/approval',  { 'user_id' : self.manager_id, 'project_id' : self.projects_ids[0], 'expence_id' : expence_ids[0], 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 2, 'notifications' : _debug_notification(self.manager_data, expence_data, self.manager_data[0], 'expences', 'notify_new', 'PROJECTNAME1', additional_notes = [ 'asd2' ]) }
+               { 'error' : None, 'status' : 2, 'notifications' : _debug_notification(self.manager_data, expence_data, self.manager_data[0], 'expences', 'notify_new', 'PROJECTNAME1', self.manager_data[0], additional_notes = [ 'asd2' ]) }
         )
         
         ### PROJECT MANAGER
@@ -203,12 +203,12 @@ class FlowAPI(TestCaseMultipleUsers):
         
         # Submit to account
         self._assert_req('/data/approval',  { 'user_id' : self.manager_id, 'project_id' : self.projects_ids[0], 'expence_id' : expence_ids[0], 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 1, 'notifications' : _debug_notification(self.account_data, expence_data, self.manager_data[0], 'expences', 'notify_new', 'PROJECTNAME1', additional_notes = [ 'asd2', 'asd2' ]) }
+               { 'error' : None, 'status' : 1, 'notifications' : _debug_notification(self.account_data, expence_data, self.manager_data[0], 'expences', 'notify_new', 'PROJECTNAME1', self.manager_data[0], additional_notes = [ 'asd2', 'asd2' ]) }
         )      
 
         ### ACCOUNT
         self._log_as_account()
         # Submit to account
         self._assert_req('/data/approval',  { 'user_id' : self.manager_id, 'project_id' : self.projects_ids[0], 'expence_id' : expence_ids[0], 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.manager_data, expence_data, self.manager_data[0], 'expences', 'notify_approve', 'PROJECTNAME1', additional_notes = [ 'asd2', 'asd2', 'asd2' ]) }
+               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.manager_data, expence_data, self.manager_data[0], 'expences', 'notify_approve', 'PROJECTNAME1', self.account_data[0], additional_notes = [ 'asd2', 'asd2', 'asd2' ]) }
         )  

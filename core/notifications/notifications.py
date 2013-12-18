@@ -35,7 +35,7 @@ def _get_recipients_of_expences_responsibles(expence_user_id, project_id, expenc
     return recipients
 
 
-def notify_expence(project_expence, expence_type, approver_name):
+def notify_expence(project_expence, expence_type, approver):
     
     expence = project_expence[expence_type]
     
@@ -65,6 +65,9 @@ def notify_expence(project_expence, expence_type, approver_name):
                          'submitter_name' : submitter['name'],
                          'submitter_surname' : submitter['surname'],
                          'submitter_email' : submitter['email'],
+                         'approver_name' : approver['name'],
+                         'approver_surname' : approver['surname'],
+                         'approver_email' : approver['email'],
                          'notification_type': notification_type
                          }
 
