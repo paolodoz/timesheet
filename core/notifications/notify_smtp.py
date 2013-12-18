@@ -29,11 +29,11 @@ def _compose_mail(notification_data):
     text = notifications.get_template('%s.tpl' % conf_mail['template_text']).render(**notification_data)
     html = notifications.get_template('%s.tpl' % conf_mail['template_html']).render(**notification_data)
 
-    if notification_type == 'notify_new':
+    if notification_data['notification_type'] == 'notify_new':
         subject = 'Timesheet: new expence request for %s from %s' % (project_name, submitter_email)
-    elif notification_type == 'notify_reject':
+    elif notification_data['notification_type'] == 'notify_reject':
         subject = 'Timesheet: expence for %s rejected by %s' % (project_name, approver_email)
-    elif notification_type == 'notify_approve':
+    elif notification_data['notification_type'] == 'notify_approve':
         subject = 'Timesheet: expence for %s approved by %s' % (project_name, approver_email)
 
     return text, html, subject
