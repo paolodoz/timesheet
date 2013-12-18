@@ -35,7 +35,7 @@ def _get_recipients_of_expences_responsibles(expence_user_id, project_id, expenc
     return recipients
 
 
-def notify_expence(project_expence, expence_type):
+def notify_expence(project_expence, expence_type, approver_name):
     
     expence = project_expence[expence_type]
     
@@ -61,6 +61,7 @@ def notify_expence(project_expence, expence_type):
                          'expence_notes': expence.get('notes',[]), # Could be omitted
                          'expence_objects' : expence.get('objects', {}), # Could miss in trips
                          'expence_type' : expence_type,
+                         'project_name' : project_expence['name'],
                          'submitter_name' : submitter['name'],
                          'submitter_surname' : submitter['surname'],
                          'submitter_email' : submitter['email'],

@@ -50,11 +50,7 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
 
     def test_notifications_ok(self):
         
-        # Administrator should return always 0
-        
-        self._assert_req('/me',  None, 
-               { 'username' : admin_credentials['username'], '_id' : '', 'group' : self.group, 'notifications' : 5 }
-           )
+        self._assert_logged(self.admin_data[0],  5)
 
 
 class ApprovalAPIAsManager(TestCaseAsManager, ModuleData):
@@ -68,10 +64,7 @@ class ApprovalAPIAsManager(TestCaseAsManager, ModuleData):
     def test_notifications_ok(self):
  
         # Manager has 3 pending notifications 
-        self._assert_req('/me',  None, 
-               { 'username' : 'MANAGER', '_id' : '', 'group' : self.group, 'notifications' : 3 }
-           )
- 
+        self._assert_logged(self.manager_data[0],  3)
  
 
 class ApprovalAPIAsUser(TestCaseAsEmployee, ModuleData):
@@ -85,7 +78,5 @@ class ApprovalAPIAsUser(TestCaseAsEmployee, ModuleData):
     def test_notifications_ok(self):
  
         # Employee has 2 pending notifications 
-        self._assert_req('/me',  None, 
-               { 'username' : 'EMPNAME', '_id' : '', 'group' : self.group, 'notifications' : 2 }
-           ) 
+        self._assert_logged(self.employee_data[0],  2)
  

@@ -45,12 +45,13 @@ class Routes:
         GET /me
         """
         
-        return { 
-                'username' : cherrypy.session['_ts_user']['username'], 
-                '_id' : str(cherrypy.session['_ts_user']['_id']), 
-                'group' : cherrypy.session['_ts_user']['group'],
-                'notifications' : notifications.get_pending()
-                }
+        key_list = [ 'username', 'name', 'surname', 'email', 'group']
+        
+        json_out = dict((key,value) for key, value in cherrypy.session['_ts_user'].iteritems() if key in key_list)
+        json_out['notifications'] = notifications.get_pending()
+        json_out['_id'] = str(cherrypy.session['_ts_user']['_id'])
+        
+        return json_out
         
 
     @cherrypy.expose

@@ -140,13 +140,11 @@ class AuthController(object):
 
         cherrypy.log('%s' % (pprint.pformat(cherrypy.session['_ts_user'])), context = 'TS.AUTH.session_permission', severity = logging.INFO)
 
-       
-        
     def on_login(self, username):
         """Called on successful login"""
         
         # Save user data
-        cherrypy.session['_ts_user'] = db.user.find_one({ 'username' : username }, { 'username' : 1, 'group' : 1 })
+        cherrypy.session['_ts_user'] = db.user.find_one({ 'username' : username }, { 'username' : 1, 'group' : 1, 'name' : 1, 'surname' : 1, 'email' : 1 })
         
         self.reload_users_projects()
 

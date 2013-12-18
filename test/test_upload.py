@@ -1,4 +1,4 @@
-from testclasses import TestClassBase, CookieJar, admin_credentials
+from testclasses import TestClassBase, CookieJar, admin_data
 import itertools
 import mimetools
 import mimetypes
@@ -80,8 +80,9 @@ class Upload(TestClassBase):
         self.cookies = CookieJar()
         self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cookies), MultipartPostHandler())
         self._assert_unlogged()
-        self._login(admin_credentials, 'administrator')
-        self._assert_logged(admin_credentials)
+        self.admin_data = admin_data
+        self._login(admin_data[0], 'administrator')
+        self._assert_logged(admin_data[0])
         
     
     def _assert_upload(self, filepath):

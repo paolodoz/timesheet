@@ -10,6 +10,7 @@ Your expence request has been approved!
 
 Expence data:
 
+Project: ${project_name}
 Type: ${expence_type}
 Requesting user: ${submitter_name} ${submitter_surname} (${submitter_email})
 Date: ${expence_date}

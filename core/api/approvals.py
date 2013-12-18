@@ -89,7 +89,7 @@ def approval(criteria):
     approval_result['status'] = found_expence[expence_type]['status']
     
     # Notifications
-    notifications_result = notifications.notify_expence(found_expence, expence_type)
+    notifications_result = notifications.notify_expence(found_expence, expence_type, cherrypy.session['_ts_user']['group'])
     if notifications_result:
         approval_result['notifications'] = notifications_result
     

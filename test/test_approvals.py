@@ -2,13 +2,14 @@ from testclasses import TestClassBase, TestCaseAsEmployee, TestCaseAsManager, Te
 from core.config import notifications, conf_notifications
 conf_debug = conf_notifications['debug']
 
-def _debug_notification(recipients, expence, submitter, expence_type, notification_type, additional_notes = []):
+def _debug_notification(recipients, expence, submitter, expence_type, notification_type, project_name, additional_notes = []):
 
     notification_data = {
                      'expence_notes': expence.get('notes', []) + additional_notes,
                      'expence_objects' : expence.get('objects', {}), # Could miss in trips
                      'expence_type' : expence_type,
                      'submitter_name' : submitter['name'],
+                     'project_name' : project_name,
                      'submitter_surname' : submitter['surname'],
                      'submitter_email' : submitter['email'],
                      'notification_type': notification_type
@@ -94,23 +95,23 @@ class ApprovalAPIAsAdmin(TestClassBase, ModuleData):
  
         # Decrement status flow of '6'*24
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'ndee'  }, 
-               { 'error' : None, 'status' : 1, 'notifications' : _debug_notification(self.admin_data, self.expence_data_6, self.admin_data[0], 'expences', 'notify_new', additional_notes = [ 'ndee' ]) }
+               { 'error' : None, 'status' : 1, 'notifications' : _debug_notification(self.admin_data, self.expence_data_6, self.admin_data[0], 'expences', 'notify_new', 'PROJECTNAME1', additional_notes = [ 'ndee' ]) }
            )
           
         # Decrement again '6'*24
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'ndee2'  }, 
-               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.admin_data, self.expence_data_6, self.admin_data[0], 'expences', 'notify_approve', additional_notes = [ 'ndee', 'ndee2' ]) }
+               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.admin_data, self.expence_data_6, self.admin_data[0], 'expences', 'notify_approve', 'PROJECTNAME1', additional_notes = [ 'ndee', 'ndee2' ]) }
 
            )
 
         # Decrement again (should remain 0) '6'*24 - SHOULD NOT SEND NOTIFICATIONS, TODO: FIX
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.admin_data, self.expence_data_6, self.admin_data[0], 'expences', 'notify_approve', additional_notes = [ 'ndee', 'ndee2', 'asd2' ]) }
+               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.admin_data, self.expence_data_6, self.admin_data[0], 'expences', 'notify_approve', 'PROJECTNAME1', additional_notes = [ 'ndee', 'ndee2', 'asd2' ]) }
            )
      
         # Reject '5'*24
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '5'*24, 'action' : 'reject', 'note' : 'asd3'  }, 
-               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(self.admin_data, self.expence_data_5, self.admin_data[0], 'expences', 'notify_reject', additional_notes = [ 'asd3' ]) }
+               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(self.admin_data, self.expence_data_5, self.admin_data[0], 'expences', 'notify_reject', 'PROJECTNAME1', additional_notes = [ 'asd3' ]) }
          )
    
         # Search all approvals with project_id
@@ -378,7 +379,7 @@ class ApprovalAPIAsManager(TestCaseAsManager, ModuleData):
  
         # Decrement status flow of '6'*24, that was 2 (correct flow)
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '6'*24, 'action' : 'approve', 'note' : 'asd'  }, 
-               { 'error' : None, 'status' : 1, 'notifications' : _debug_notification(self.manager_data, self.expence_data_6, self.admin_data[0], 'expences', 'notify_new', additional_notes = [ 'asd' ]) }
+               { 'error' : None, 'status' : 1, 'notifications' : _debug_notification(self.manager_data, self.expence_data_6, self.admin_data[0], 'expences', 'notify_new', 'PROJECTNAME1', additional_notes = [ 'asd' ]) }
                
            )
           
@@ -389,7 +390,7 @@ class ApprovalAPIAsManager(TestCaseAsManager, ModuleData):
      
         # Try to reject '5'*24, is rejectable although on draft
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '5'*24, 'action' : 'reject', 'note' : 'asd3'  }, 
-               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(self.admin_data, self.expence_data_5, self.admin_data[0], 'expences', 'notify_reject', additional_notes = [ 'asd3' ]) }
+               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(self.admin_data, self.expence_data_5, self.admin_data[0], 'expences', 'notify_reject', 'PROJECTNAME1', additional_notes = [ 'asd3' ]) }
 
            )
  
@@ -561,7 +562,7 @@ class ApprovalAPIAsUser(TestCaseAsEmployee, ModuleData):
           
         # Decrement '8'*24
         self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[1], 'expence_id' : '8'*24, 'action' : 'approve', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : 2, 'notifications' : _debug_notification(self.employee_data, self.expence_data_8, self.employee_data[0], 'expences', 'notify_new', additional_notes = [ 'asd2' ]) }
+               { 'error' : None, 'status' : 2, 'notifications' : _debug_notification(self.employee_data, self.expence_data_8, self.employee_data[0], 'expences', 'notify_new', 'PROJECTNAME2', additional_notes = [ 'asd2' ]) }
 
            )
        
@@ -574,7 +575,7 @@ class ApprovalAPIAsUser(TestCaseAsEmployee, ModuleData):
  
         # Reject '8'*24 = 3 
         self._assert_req('/data/approval',  { 'user_id' : self.employee_id, 'project_id' : self.projects_ids[1], 'expence_id' : '8'*24, 'action' : 'reject', 'note' : 'asd2'  }, 
-               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(self.employee_data, self.expence_data_8, self.employee_data[0], 'expences', 'notify_reject', additional_notes = [ 'asd2' ]) }
+               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(self.employee_data, self.expence_data_8, self.employee_data[0], 'expences', 'notify_reject', 'PROJECTNAME2', additional_notes = [ 'asd2' ]) }
 
            )
     
@@ -687,7 +688,7 @@ class ApprovalAPIAsAccount(TestCaseAsAccount, ModuleData):
   
         # Decrement status flow of '9'*24, that was 1 (correct flow)
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[2], 'trip_id' : '9'*24, 'action' : 'approve', 'note' : 'asd'  }, 
-               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.account_data, self.expence_data_9, self.account_data[0], 'trips', 'notify_approve', additional_notes = [ 'asd' ]) }
+               { 'error' : None, 'status' : 0, 'notifications' : _debug_notification(self.account_data, self.expence_data_9, self.account_data[0], 'trips', 'notify_approve', 'PROJECTNAME3', additional_notes = [ 'asd' ]) }
            )
           
         # Try to decrement again '4'*24, but is not reachable anymore
@@ -697,7 +698,7 @@ class ApprovalAPIAsAccount(TestCaseAsAccount, ModuleData):
      
         # Try to reject '5'*24, is rejectable although on draft
         self._assert_req('/data/approval',  { 'project_id' : self.projects_ids[0], 'expence_id' : '5'*24, 'action' : 'reject', 'note' : 'asd3'  }, 
-               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(self.admin_data, self.expence_data_5, self.admin_data[0], 'expences', 'notify_reject', additional_notes = [ 'asd3' ]) }
+               { 'error' : None, 'status' : -3, 'notifications' : _debug_notification(self.admin_data, self.expence_data_5, self.admin_data[0], 'expences', 'notify_reject', 'PROJECTNAME1', additional_notes = [ 'asd3' ]) }
            )
    
         # Search all approvals with project_id

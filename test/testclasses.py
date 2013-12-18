@@ -3,7 +3,9 @@ from cookielib import CookieJar
 from core.validation.validation import recursive_replace
 import unittest, copy
 
+# TODO: get credentials from config.yaml
 admin_credentials = { 'username' : 'usr', 'password' : 'pwd' }
+
 admin_data = [ { 'password' : admin_credentials['password'], 
               'name' : admin_credentials['username'], 
               'surname' : 'Default', 
@@ -39,21 +41,25 @@ class TestClassBase(unittest.TestCase):
         self.cookies = CookieJar()
         self.opener = urllib2.build_opener(urllib2.HTTPCookieProcessor(self.cookies))
         self._assert_unlogged()
-        self._login(admin_credentials, 'administrator')
-        self._assert_logged(admin_credentials)
+        self._login(admin_data[0], 'administrator')
+        self._assert_logged(admin_data[0])
         self.admin_data = admin_data
     
-    def _login(self, credentials, group):
+    def _login(self, data, group):
         self.cookies.clear()
-        encoded_credentials = urllib.urlencode(credentials)
+        encoded_credentials = urllib.urlencode({ 'username' : data['username'], 'password' : data['password']})
         self.opener.open(url + "/auth/login", encoded_credentials)
         self.group = group
     
-    def _assert_logged(self, credentials):
+    def _assert_logged(self, data, notifications = None):
         
         json_out = self._request('/me', {})
-        json_out['notifications'] = 0
-        self.assertEqual(clean_id(copy.deepcopy(json_out)), { 'username' : credentials['username'], '_id' : '', 'group' : self.group, 'notifications' : 0 })
+        
+        if notifications != None:
+            self.assertEqual({ 'username' : json_out['username'], 'group' : json_out['group'], 'notifications' : json_out['notifications'] }, { 'username' : data['username'], 'group' : self.group, 'notifications' : notifications })
+        else:
+           self.assertEqual({ 'username' : json_out['username'], 'group' : json_out['group'] }, { 'username' : data['username'], 'group' : self.group })
+ 
         
     def _assert_unlogged(self):
         self.assertEqual(urllib2.urlopen(url + '/me').geturl(), url + '/auth/login')
@@ -73,8 +79,8 @@ class TestClassBase(unittest.TestCase):
         
     def tearDown(self):
         
-        self._login(admin_credentials, 'administrator')
-        self._assert_logged(admin_credentials)
+        self._login(self.admin_data[0], 'administrator')
+        self._assert_logged(self.admin_data[0])
         
         for command in self.execOnTearDown:
             uri, json_in, json_expected = command
@@ -102,9 +108,8 @@ class TestCaseAsEmployee(TestClassBase):
         self.execOnTearDown.append(('/remove/user', [ { '_id' : self.employee_id } ], { 'error' : None }))
         
     def _log_as_user(self):     
-        employee_credentials = { 'username' : 'EMPNAME', 'password' : 'mypassword' }
-        self._login(employee_credentials, 'employee')
-        self._assert_logged(employee_credentials)
+        self._login(self.employee_data[0], 'employee')
+        self._assert_logged(self.employee_data[0])
     
 class TestCaseAsManager(TestClassBase):
 
@@ -124,10 +129,8 @@ class TestCaseAsManager(TestClassBase):
         self.execOnTearDown.append(('/remove/user', [ { '_id' : self.manager_id } ], { 'error' : None }))
       
     def _log_as_user(self):
-        
-        manager_credentials = { 'username' : 'MANAGER', 'password' : 'mypassword' }
-        self._login(manager_credentials, 'project manager')
-        self._assert_logged(manager_credentials)
+        self._login(self.manager_data[0], 'project manager')
+        self._assert_logged(self.manager_data[0])
                 
                 
                 
@@ -151,8 +154,8 @@ class TestCaseAsAccount(TestClassBase):
     def _log_as_user(self):
         
         account_credentials = { 'username' : 'ACCOUNT', 'password' : 'mypassword' }
-        self._login(account_credentials, 'account')
-        self._assert_logged(account_credentials)
+        self._login(self.account_data[0], 'account')
+        self._assert_logged(self.account_data[0])
         
         
 class TestCaseMultipleUsers(TestClassBase):
@@ -178,22 +181,18 @@ class TestCaseMultipleUsers(TestClassBase):
         self.execOnTearDown.append(('/remove/user', [ { '_id' : self.account_id }, { '_id' : self.manager_id }, { '_id' : self.employee_id } ], { 'error' : None }))        
 
     def _log_as_account(self):
-        
-        account_credentials = { 'username' : 'ACCOUNT', 'password' : 'mypassword' }
-        self._login(account_credentials, 'account')
-        self._assert_logged(account_credentials)  
+        self._login(self.account_data[0], 'account')
+        self._assert_logged(self.account_data[0])  
 
     def _log_as_manager(self):
-        manager_credentials = { 'username' : 'MANAGER', 'password' : 'mypassword' }
-        self._login(manager_credentials, 'project manager')
-        self._assert_logged(manager_credentials)
+        self._login(self.manager_data[0], 'project manager')
+        self._assert_logged(self.manager_data[0])
         
     def _log_as_employee(self):
-        employee_credentials = { 'username' : 'EMPNAME', 'password' : 'mypassword' }
-        self._login(employee_credentials, 'employee')
-        self._assert_logged(employee_credentials)       
+        self._login(self.employee_data[0], 'employee')
+        self._assert_logged(self.employee_data[0])       
         
     def _log_as_admin(self):     
-        self._login(admin_credentials, 'administrator')
-        self._assert_logged(admin_credentials)
+        self._login(self.admin_data[0], 'administrator')
+        self._assert_logged(self.admin_data[0])
         

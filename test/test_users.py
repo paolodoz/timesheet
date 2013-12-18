@@ -37,22 +37,21 @@ class UserAPIAsAdmin(TestClassBase):
     def test_user_add(self):
          
         # Add one user with password, should login
-        json_user_pwd = self._assert_req('/add/user', [ { 'name' : 'NEW_USER_WITH_PWD', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '' ] })
+        user_data_pwd = [ { 'name' : 'NEW_USER_WITH_PWD', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ]
+        json_user_pwd = self._assert_req('/add/user', user_data_pwd, { 'error' : None, 'ids' : [ '' ] })
         id_user_pwd = json_user_pwd['ids'][0]
          
+        user_data_nopwd = [ { 'name' : 'NEW_USER_WITH_NO_PWD', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT', 'salary' : []  } ]
         # Add user without password, should raise error
-        self._assert_req('/add/user', [ { 'name' : 'NEW_USER_WITH_NO_PWD', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT', 'salary' : []  } ], { 'error' : "ValidationError: u'' is too short", 'ids' : [ ] })
+        self._assert_req('/add/user', user_data_nopwd, { 'error' : "ValidationError: u'' is too short", 'ids' : [ ] })
          
         # Check if can't login with NEW_USER_WITH_NO_PWD
-        credentials = {'username' : 'NEW_USER_WITH_NO_PWD', 'password' : '' }
-        self._login(credentials, 'employee')
+        self._login(user_data_nopwd[0], 'employee')
         self._assert_unlogged()
          
         # Check if can login with NEW_USER_WITH_PWD
-        credentials = {'username' : 'NEW_USER_WITH_PWD', 'password' : 'mypassword' }
-        self._login(credentials, 'employee')
-        
-        self._assert_logged(credentials)
+        self._login(user_data_pwd[0], 'employee')
+        self._assert_logged(user_data_pwd[0])
          
         # Delete the inserted user
         self.execOnTearDown.append(('/remove/user', [ { '_id' :  id_user_pwd } ], { 'error' : None }))
