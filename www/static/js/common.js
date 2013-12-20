@@ -752,7 +752,10 @@ var report = {
     var report, url, hours, i=0;
     report = {};
     url = "/data/report_projects";
-    report.start = $("#reportstart").val();
+    if($("#reportstart").val() == "")
+      report.start = "2012-01-01";
+    else
+      report.start = $("#reportstart").val();
     report.end = $("#reportend").val();
     if($("#reportmode").is(":checked"))
       report.mode = 'total';

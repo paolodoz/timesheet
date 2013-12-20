@@ -42,7 +42,6 @@ $(document).ready(function() {
   validator = $("#reportForm").validate({
     rules: {
       reportstart: {
-        required: true,
         dateISO: true
       },
       reportend: {
@@ -173,7 +172,7 @@ function createSingleGraph(index, data, prj_id) {
         xaxis:{
           renderer:$.jqplot.DateAxisRenderer,
           tickOptions:{formatString:'%b, %Y'},
-          min:$("#reportstart").val(),
+          min: data[0][0] ,
           tickInterval:'1 month'
         }
       },
