@@ -404,6 +404,8 @@ var expence = {
     prj_arr[0].expences = new Array();
     prj_arr[0].expences[0] = {};
     var expence_el = prj_arr[0].expences[0];
+    if(isupdate)
+      expence_el._id = $("#exp_id").val();
     expence_el.trip_id = $("#exptrip").val();
     if($("#expuser_id").is(":checked")) {
       expence_el.user_id = me._id;

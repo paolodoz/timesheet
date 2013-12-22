@@ -1,6 +1,6 @@
 <script src="/static/js/bootstrap-switch.js"></script>
 <script type="text/javascript">
-var validator, elemnum = 0, cur_file;
+var validator, isupdate = false, elemnum = 0, cur_file;
 var totals = new Array();
 $(document).ready(function() {
   $("#exptable tbody tr td:last").click(function() {
@@ -27,9 +27,9 @@ $(document).ready(function() {
     if(!validator.form())
       return;
     if(this.id == "btnsubmit")
-      expence.update(false, "expForm", 3, sendapprove);
+      expence.update(isupdate, "expForm", 3, sendapprove);
     else
-      expence.update(false, "expForm", 3, resetExpForm);
+      expence.update(isupdate, "expForm", 3, resetExpForm);
   });
   newtableline();
   var today = new Date();
@@ -48,17 +48,75 @@ function sendapprove(data) {
 function userdata(data){
   me = data;
   loadProjectsList("expprj");
+  loadExpencesList("expList");
 }
 
-function resetExpForm(data) {
+function resetExpForm(load) {
+  if(load == true) {} else {
+    loadExpencesList("expList");
+  }
   elemnum = 0;
+  isupdate = false;
+  $("#exp_id").val("0");
   $("#offerfile").val();
   $("#offerfile").removeClass("hidden");
   $("#offerfile").next("p").addClass("hidden");
+  $("#expList li").removeClass("active");
   $("#exptable tbody").html("");
   $("#expForm")[0].reset();
   newtableline();
   $("#exptable tfoot tr:last").html("");
+}
+
+function loadExpencesList(list) {
+  var filter = {status:[3], user_id: me._id, employee_id: me._id};
+  expence.load(filter, loadExpences, "expList", "");
+}
+
+function loadExpences(data,container) {
+  var i,j;
+  var htmllist = "";
+  for(i=0; i< data.length; i++) {
+          htmllist += "<li id='" + data[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + project.getname(data[i].project_id) + " " + data[i].date + "</li>";
+  }
+  htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Expence ...</li>";
+  $("#" + container).html(htmllist);
+  $("#" + container + " li").click(function() {
+    resetExpForm(true);
+    $(this).addClass("active");
+    if(this.id == "")
+      return;
+    isupdate = true;
+    loadExpDetails(expence.getexp(this.id), container);
+  });
+}
+
+function loadExpDetails(data, container) {
+  var j;
+  $("#exp_id").val(data._id);
+  $("#expprj").val(data.project_id);
+  $("#exptrip").val(data.trip_id);
+  $("#expdate").val(data.date);
+  if(data.user_id != "0") {
+    $("#expuser_id").val(true);
+  }
+  //general file uploaded
+  for(j=0; j < data.objects.length; j++) {
+    $("input[name=" + (j+1) + "exp_date]").val(data.objects[j].date);
+    $("input[name=" + (j+1) + "exp_city]").val(data.objects[j].city);
+    $("input[name=" + (j+1) + "exp_amount]").val(data.objects[j].amount);
+    $("select[name=" + (j+1) + "exp_category]").val(data.objects[j].category);
+    $("input[name=" + (j+1) + "exp_description]").val(data.objects[j].description);
+    $("input[name=" + (j+1) + "exp_invoice]").parent().parent().bootstrapSwitch('setState',data.objects[j].invoice);
+    if(data.objects[j].paidby == 0)
+      $("input[name=" + (j+1) + "exp_paidby]").parent().parent().bootstrapSwitch('setState', false);
+    else
+      $("input[name=" + (j+1) + "exp_paidby]").parent().parent().bootstrapSwitch('setState', true);
+    //load file
+    if(j+1 < data.objects.length)
+      newtableline();
+  }
+  computetotal();
 }
 
 function loadProjects(data, container) {
@@ -198,9 +256,13 @@ function generatetableline(index) {
 <h2>New expences</h2>
   <form class="form-horizontal" role="form" method="post" action="/index/customers" id="expForm">
 <div class="row">
-  <p>Create a new note for expences</p>
+  <p>Select a draft note expence or create a new one</p>
+  <div class="col-lg-4">
+    <ul class="list-group" id="expList"></ul>
+  </div>
   <div class="col-lg-4">
     <div class="form-group">
+      <input type="hidden" id="exp_id" value="0" />
       <label for="exptrip" class="col-lg-6 control-label">Expences related to project</label>
       <div class="col-lg-6">
         <select class="form-control" id="expprj" name="expprj" ></select>
