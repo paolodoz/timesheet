@@ -100,7 +100,18 @@ function loadExpDetails(data, container) {
   if(data.user_id != "0") {
     $("#expuser_id").val(true);
   }
-  //general file uploaded
+  if(data.file) {
+    cur_file = $("#offerfile");
+    $(cur_file).addClass("hidden");
+    var filename = $(cur_file).next("p");
+    $(filename).attr("id",data.file._id);
+    $(filename).html(generateFileEntry(data.file._id, data.file.name));
+    $(filename).removeClass("hidden");
+    $(cur_file).next("p").find(".glyphicon-trash").click(function() {
+      var id = $(this).parent().attr("id");
+      file.delete($(this).parent().attr("id"), deleteFile, $(this).parent());
+    });
+  }
   for(j=0; j < data.objects.length; j++) {
     $("input[name=" + (j+1) + "exp_date]").val(data.objects[j].date);
     $("input[name=" + (j+1) + "exp_city]").val(data.objects[j].city);
@@ -112,7 +123,18 @@ function loadExpDetails(data, container) {
       $("input[name=" + (j+1) + "exp_paidby]").parent().parent().bootstrapSwitch('setState', false);
     else
       $("input[name=" + (j+1) + "exp_paidby]").parent().parent().bootstrapSwitch('setState', true);
-    //load file
+    if(data.objects[j].file) {
+      cur_file = $("input[name=" + (j+1) + "exp_file]");
+      $(cur_file).addClass("hidden");
+      var filename = $(cur_file).next("p");
+      $(filename).attr("id",data.objects[j].file._id);
+      $(filename).html(generateFileEntry(data.objects[j].file._id, data.objects[j].file.name));
+      $(filename).removeClass("hidden");
+      $(cur_file).next("p").find(".glyphicon-trash").click(function() {
+        var id = $(this).parent().attr("id");
+        file.delete($(this).parent().attr("id"), deleteFile, $(this).parent());
+      });
+    }
     if(j+1 < data.objects.length)
       newtableline();
   }
