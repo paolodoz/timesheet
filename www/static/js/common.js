@@ -1,3 +1,8 @@
+Function.prototype.method = function (name, func) {
+  if(!this.prototype[name]) {
+    this.prototype[name] = func;
+  }
+}
 var user = {
   usr: new Array(),
   load : function (filter, callback, target) {
@@ -906,15 +911,15 @@ function getTaskName(id) {
   return tasks[id];
 }
 
-Date.prototype.getMonthName = function(lang) {
+Date.method('getMonthName', function(lang) {
     lang = lang && (lang in Date.locale) ? lang : 'en';
     return Date.locale[lang].month_names[this.getMonth()];
-};
+});
 
-Date.prototype.getMonthNameShort = function(lang) {
+Date.method('getMonthNameShort', function(lang) {
     lang = lang && (lang in Date.locale) ? lang : 'en';
     return Date.locale[lang].month_names_short[this.getMonth()];
-};
+});
 
 Date.locale = {
     en: {
@@ -923,14 +928,13 @@ Date.locale = {
     }
 };
 
-String.prototype.bool = function() {
+String.method('bool', function() {
     return (/^true$/i).test(this);
-};
+});
 
-function capFirstLet(string)
-{
-    return string.charAt(0).toUpperCase() + string.slice(1);
-}
+String.method('capitalizeFirst',function() {
+  return this.charAt(0).toUpperCase() + this.slice(1);
+});
 
 function updateStatus(type, id, status, motivation) {
   var selelem, filter;

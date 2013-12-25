@@ -49,7 +49,7 @@ function loadTrips(data, container) {
   var htmllist = "";
   cur_trips = data;
   for(i=0;i < data.length; i++) {
-      htmllist += "<li id='" + data[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data[i].city + " " + data[i].start + " <button data-toggle='popover' type='button' class='btn btn-default btn-sm'><span class='glyphicon glyphicon-info-sign'></span>  Details</button> <button type='button' class='btn btn-success btn-sm'><span class='glyphicon glyphicon-thumbs-up'></span>  Accept</button>  <button type='button' class='btn btn-danger btn-sm'><span class='glyphicon glyphicon-thumbs-down'></span>  Reject</button></li>";
+      htmllist += "<li id='" + data[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-globe'></span> " + data[i].city + " " + data[i].start + " <button data-toggle='popover' type='button' class='btn btn-default btn-sm'><span class='glyphicon glyphicon-info-sign'></span>  Details</button> <button type='button' class='btn btn-success btn-sm'><span class='glyphicon glyphicon-thumbs-up'></span>  Accept</button>  <button type='button' class='btn btn-danger btn-sm'><span class='glyphicon glyphicon-thumbs-down'></span>  Reject</button></li>";
   }
   $("#" + container).html(htmllist);
   $("#" + container + " .list-group-item button.btn-default").each(function() {
@@ -90,7 +90,7 @@ function generateTripPopover(id, ctrips) {
           }
           html += '</div></dd>';
         } else {
-          html += '<dt>' + capFirstLet(key) + '</dt><dd>' + ctrips[i][key] + '</dd>';
+          html += '<dt>' + key.capitalizeFirst() + '</dt><dd>' + ctrips[i][key] + '</dd>';
         }
       }
       break;
@@ -101,7 +101,7 @@ function generateTripPopover(id, ctrips) {
 </script>
 <div style="min-height:200px;display:block"></div>
 <div id="pm" class="hidden">
-<h3>List of trip waiting for approval</h3>
+<h3>List of trips waiting for approval</h3>
 <ul id="tripreq" class="col-lg-5"></ul>
 <h3>List of expences waiting for approval</h3>
 <ul id="expreq" class="col-lg-7"></ul>
