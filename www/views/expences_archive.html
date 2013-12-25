@@ -14,7 +14,12 @@ $(document).ready(function() {
     event.preventDefault();
     if(!validator.form())
       return;
-    var filter = {start: $("#expdatestart").val() , end: $("#expdateend").val(), status: [4,5], user_id:me._id, employee_id:me._id };
+    var filter;
+    if($("#exppersonal").bootstrapSwitch('status')) {
+      filter = {start: $("#expdatestart").val() , end: $("#expdateend").val(), status: [0,1,2], user_id:me._id, employee_id:me._id };
+    } else {
+      filter = {start: $("#expdatestart").val() , end: $("#expdateend").val(), status: [0,1,2], responsible_id:me._id };
+    }
     if($("#expprj").val() != "" ) {
       filter.project_id = $("#expprj").val(); 
     }
@@ -30,6 +35,7 @@ function userdata(data){
   me = data;
   loadProjectsList("expprj");
   if(me.group != "employee") {
+    $(".pmaccount").removeClass("hidden");
     var filter;
     if(me.group == "admin") {
       filter = [ { }, { name: 1 }, { name: 1 } ];
@@ -104,6 +110,14 @@ function loadTrips(data, container) {
       <label for="expdateend" class="col-lg-6 control-label">Date End</label>
       <div class="col-lg-6">
         <input type="text" class="form-control datepicker" id="expdateend" name="expdateend" placeholder="2013-01-31">
+      </div>
+    </div>
+    <div class="form-group hidden pmaccount">
+      <label for="exppersonal" class="col-lg-6 control-label">My expences</label>
+      <div class="col-lg-6">
+        <div class="make-switch switch-small" data-on-label="YES" data-off-label="NO" id="exppersonal">
+          <input type="checkbox" name="exppersonal" checked>
+        </div>
       </div>
     </div>
     <div class="form-group">
