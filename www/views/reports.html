@@ -84,11 +84,12 @@ function resetReportsForm(load) {
   $("#real").html("");
 }
 
-function loadUsers(data, container) {
+function loadUsers(data, args) {
+  var container = args[0];
   var i;
   var htmllist = "";
-  for(i=0;i < data.records.length; i++) {
-    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-user'></span> " + data.records[i].name + " " + data.records[i].surname + "</li>";
+  for(i=0;i < data.length; i++) {
+    htmllist += "<li id='" + data[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-user'></span> " + data[i].name + " " + data[i].surname + "</li>";
   }
   $("#" + container).html(htmllist);
   $("#" + container + " .list-group-item").click(function() {

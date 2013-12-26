@@ -3,17 +3,35 @@ Function.prototype.method = function (name, func) {
     this.prototype[name] = func;
   }
 }
-var user = {
-  usr: new Array(),
-  load : function (filter, callback, target) {
+
+var baseObject = {
+  _records: new Array(),
+  loadurl : '',
+  load : function (filter, callback) {
+    args = [];
+    for(var i=2; i<arguments.length; i++) {
+      args.push(arguments[i]);
+    }
+    this._post(this.loadurl, filter, true, callback, args);
+  },
+  loadSingle : function (filter, callback) {
+    args = [];
+    for(var i=2; i<arguments.length; i++) {
+      args.push(arguments[i]);
+    }
+    this._post(this.loadurl, filter, false, callback, args);
+  },
+  _post : function (targetUrl, data, save, callback, args) {
+    that = this;
     $.ajax({
       type: "POST",
-      url: "/get/user",
-      data: JSON.stringify(filter),
+      url: targetUrl,
+      data: JSON.stringify(data),
       success: function(data) {
         if(!data.error) {
-          user.usr = data.records;
-          callback(data, target);
+          if(save)
+            that._records = data.records;
+          callback(data.records, args);
         } else {
           showmessage("error", data.error);
         }
@@ -21,63 +39,53 @@ var user = {
       contentType: 'application/json; charset=utf-8',
       dataType: "json",
     });
-  },
-  update : function(cuser, form, callback) {
-    var datestart, i = 0;
-    url = "/update/user";
-    cuser.group = $("#usergroup").val();
-    if($("#userstart").val() != "" && $("#usernewsalary").val() != "") {
-      datestart = new Date($("#userstart").val());
-      datestart.setDate(datestart.getDate() -1);
-      if(cuser.salary)
-        i = cuser.salary.length;
-      if( i == 0 ) {
-        cuser.salary = new Array();
-      } else {
-        cuser.salary[i-1].to = simpleDate(datestart);
-      }
-      cuser.salary[i] = {}
-      cuser.salary[i].cost = Number($("#usernewsalary").val());
-      cuser.salary[i].from = $("#userstart").val();
-      cuser.salary[i].to = "2099-12-31";
-    }
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: JSON.stringify(cuser),
-      success: function(data) {
-        if(!data.error) {
-          callback(data);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  me : function (callback) {
-    $.ajax({
-      type: "GET",
-      url: "/me",
-      data : "",
-      success: function(data) {
-        $("span.badge").text(data.notifications);
-	callback(data);
-      },
-      dataType: "json",
-    });
-  },
-  getname : function(id) {
-    var i;
-    if(!this.usr)
-      return "error";
-    for(i = 0; i < this.usr.length; i++) {
-      if(this.usr[i]._id == id)
-        return this.usr[i].name + " " + this.usr[i].surname;
-    }
-    return "error";
   }
+}
+
+var user = Object.create(baseObject);
+user.loadurl = '/get/user';
+user.me = function (callback) {
+  $.ajax({
+    type: "GET",
+    url: "/me",
+    data : "",
+    success: function(data) {
+      $("span.badge").text(data.notifications);
+      callback(data);
+    },
+    dataType: "json",
+  });
+};
+user.getname = function(id) {
+  var i;
+  if(!this._records)
+    return "Error, data not available";
+  for(i = 0; i < this._records.length; i++) {
+    if(this._records[i]._id == id)
+      return this._records[i].name + " " + this._records[i].surname;
+  }
+  return "User not found";
+};
+user.update = function(cuser, form, callback) {
+  var datestart, i = 0;
+  url = "/update/user";
+  cuser.group = $("#usergroup").val();
+  if($("#userstart").val() != "" && $("#usernewsalary").val() != "") {
+    datestart = new Date($("#userstart").val());
+    datestart.setDate(datestart.getDate() -1);
+    if(cuser.salary)
+      i = cuser.salary.length;
+    if( i == 0 ) {
+      cuser.salary = new Array();
+    } else {
+      cuser.salary[i-1].to = simpleDate(datestart);
+    }
+    cuser.salary[i] = {}
+    cuser.salary[i].cost = Number($("#usernewsalary").val());
+    cuser.salary[i].from = $("#userstart").val();
+    cuser.salary[i].to = "2099-12-31";
+  }
+  this._post(url, cuser, false, callback, []);
 }
 
 var project = {

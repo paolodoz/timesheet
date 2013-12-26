@@ -82,25 +82,26 @@ function resetUsersForm()
   $("#btnsubmit, #btnreset").addClass("hidden");
 }
 
-function loadUsers(data, container) {
+function loadUsers(data, args) {
+  var container = args[0];
   var i;
   var htmllist = "";
-  for(i=0;i < data.records.length; i++) {
-    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-user'></span> " + data.records[i].name + " " + data.records[i].surname + "</li>";
+  for(i=0;i < data.length; i++) {
+    htmllist += "<li id='" + data[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-user'></span> " + data[i].name + " " + data[i].surname + "</li>";
   }
   $("#" + container).html(htmllist);
   $("#" + container + " .list-group-item").click(function() {
     var filter = [{},{name:1, surname:1, salary:1, group:1},{surname:1}];
     filter[0]._id = this.id;
-    user.load(filter,loadUserDetails, container);
+    user.loadSingle(filter,loadUserDetails);
   });
 }
 
-function loadUserDetails(data,container) {
-  cur_user = data.records[0];
-  $("#username").text(data.records[0].name + " " + data.records[0].surname);
-  $("#usergroup").val(data.records[0].group);
-  $("#userhistory").html(generateSalary(data.records[0].salary));
+function loadUserDetails(data) {
+  cur_user = data[0];
+  $("#username").text(cur_user.name + " " + cur_user.surname);
+  $("#usergroup").val(cur_user.group);
+  $("#userhistory").html(generateSalary(cur_user.salary));
   addDeleteSalaryEvent();
   $("#btnsubmit, #btnreset").removeClass("hidden");
 }

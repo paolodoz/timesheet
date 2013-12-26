@@ -118,11 +118,12 @@ function resetProjectsForm(load) {
   $("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
   $("#usersList li").removeClass("active");
 }
-function loadUsers(data, container) {
+function loadUsers(data, args) {
+  var container = args[0];
   var i;
   var htmllist = "";
-  for(i=0;i < data.records.length; i++) {
-    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-user'></span> <span class='user'>" + data.records[i].surname + " " + data.records[i].name + "</span><div class='btn-group' data-toggle='buttons'><label class='btn btn-default btn-xs active'><input type='checkbox'>Employee</label><label class='btn btn-default btn-xs'><input type='checkbox'>Project Manager</label><label class='btn btn-default btn-xs'><input type='checkbox'>Account</label></div></li>";
+  for(i=0;i < data.length; i++) {
+    htmllist += "<li id='" + data[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-user'></span> <span class='user'>" + data[i].surname + " " + data[i].name + "</span><div class='btn-group' data-toggle='buttons'><label class='btn btn-default btn-xs active'><input type='checkbox'>Employee</label><label class='btn btn-default btn-xs'><input type='checkbox'>Project Manager</label><label class='btn btn-default btn-xs'><input type='checkbox'>Account</label></div></li>";
   }
   $("#" + container).html(htmllist);
   $("#" + container + " .list-group-item span.user").click(function() {
