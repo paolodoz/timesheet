@@ -22,7 +22,7 @@ var baseObject = {
     this._post(this.loadurl, filter, false, callback, args);
   },
   _post : function (targetUrl, data, save, callback, args) {
-    that = this;
+    var that = this;
     $.ajax({
       type: "POST",
       url: targetUrl,
@@ -200,155 +200,106 @@ trip.remove = function (obj, callback) {
   this._post('/data/push_trips', obj, false, callback, args);
 };
 trip.update = function (isupdate, form, callback) {
-    var prj_arr = new Array(), url;
-    prj_arr[0] = {};
-    prj = prj_arr[0];
-    url = "/data/push_trips";
-    prj._id = $("#tripproject").val();
-    prj.trips = new Array();
-    prj.trips[0] = {}
-    prj.trips[0].user_id = me._id;
-    prj.trips[0].accommodation = {};
-    $("#" + form + " input, #" + form + " select, #" + form + " checkbox, #" + form + " textarea").each(function (){
-      var property = $(this).attr("id").substr(4);
-      if (property == "project" || (property == "_id" && !isupdate))
-        return;
-      if($(this).is(':checkbox')) {
-        prj.trips[0].accommodation[property] = $(this).is(':checked') ? true : false;
-      }
-      else {
-        value = Number($(this).val());
-        if(isNaN(value))
-          prj.trips[0][property] = $(this).val();
-        else
-          prj.trips[0][property] = value;
-      }
-    });
-    this._post(url, prj_arr, false, callback);
+  var prj_arr = new Array(), url;
+  prj_arr[0] = {};
+  prj = prj_arr[0];
+  url = "/data/push_trips";
+  prj._id = $("#tripproject").val();
+  prj.trips = new Array();
+  prj.trips[0] = {}
+  prj.trips[0].user_id = me._id;
+  prj.trips[0].accommodation = {};
+  $("#" + form + " input, #" + form + " select, #" + form + " checkbox, #" + form + " textarea").each(function (){
+    var property = $(this).attr("id").substr(4);
+    if (property == "project" || (property == "_id" && !isupdate))
+      return;
+    if($(this).is(':checkbox')) {
+      prj.trips[0].accommodation[property] = $(this).is(':checked') ? true : false;
+    }
+    else {
+      value = Number($(this).val());
+      if(isNaN(value))
+        prj.trips[0][property] = $(this).val();
+      else
+        prj.trips[0][property] = value;
+    }
+  });
+  this._post(url, prj_arr, false, callback);
 };
 trip.get = function(id) {
-    var i;
-    for(i = 0; i < this._records.length; i++) {
-      if(this._records[i]._id == id)
-        return this._records[i];
-    }
-    return "error";
+  var i;
+  for(i = 0; i < this._records.length; i++) {
+    if(this._records[i]._id == id)
+      return this._records[i];
+  }
+  return "Error, no trip found";
 };
 
-var expence = {
-  _expence: new Array(),
-  load : function (filter, callback, target, param) {
-    $.ajax({
-      type: "POST",
-      url: "/data/search_expences",
-      data: JSON.stringify(filter),
-      success: function(data) {
-        if(!data.error) {
-          _expence = data.records;
-          callback(data.records, target, param);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  remove : function (id, callback) {
-    if (id == 0)
-      return;
-    var filter = [{}];
-    filter[0]._id = id;
-    $.ajax({
-      type: "POST",
-      url: "/remove/expences",
-      data: JSON.stringify(filter),
-      success: function(data) {
-        if(!data.error) {
-          callback(data);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  update : function (isupdate, form, status, callback) {
-    var i = 0, prj_arr = [{}], url;
-    url = "/data/push_expences";
-    prj_arr[0]._id = $("#expprj").val();
-    prj_arr[0].expences = new Array();
-    prj_arr[0].expences[0] = {};
-    var expence_el = prj_arr[0].expences[0];
-    if(isupdate)
-      expence_el._id = $("#exp_id").val();
-    expence_el.trip_id = $("#exptrip").val();
-    if($("#expuser_id").is(":checked")) {
-      expence_el.user_id = me._id;
-    } else {
-      expence_el.user_id = "0";
-    }
-    expence_el.date = $("#expdate").val();
-    expence_el.status = status;
-    //file
-    if(!$("#offerfile").next("p").hasClass("hidden")) {
-      expence_el.file = {};
-      expence_el.file._id = $("#offerfile").next("p").attr("id");
-      expence_el.file.name = $("#offerfile").next("p").text();
-    }
-    expence_el.objects = new Array();
-    $("#exptable tbody tr").each(function() {
-      expence_el.objects[i] = {};
-      var index = Number($(this).find("td:eq(0)").text());
-      var elem = expence_el.objects[i];
-      elem.date = $(this).find("input[name='" + index + "exp_date']").val();
-      elem.city = $(this).find("input[name='" + index + "exp_city']").val();
-      elem.amount = parseFloat($(this).find("input[name='" + index + "exp_amount']").val());
-      elem.category = Number($(this).find("select[name='" + index + "exp_category']").val());
-      elem.description = $(this).find("input[name='" + index + "exp_description']").val();
-      if($(this).find("input[name='" + index + "exp_paidby']").is(":checked"))
-        elem.paidby = 1;
-      else
-        elem.paidby = 0;
-      elem.invoice = $(this).find("input[name='" + index + "exp_invoice']").is(":checked");
-      if(!$(this).find("p").hasClass("hidden")) {
-        elem.file = {};
-        elem.file._id = $(this).find("p").attr("id");
-        elem.file.name = $(this).find("p").text();
-      }
-      i++;
-    });
-    expence._update(url, prj_arr, callback);
-  },
-  updatestatus : function (prj_arr, callback) {
-    expence._update("/data/push_expences", prj_arr, callback);
-  },
-  _update : function (url, prj, callback) {
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: JSON.stringify(prj),
-      success: function(data) {
-        if(!data.error) {
-          callback(data);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  getexp : function(id) {
-    var i;
-    for(i = 0; i < _expence.length; i++) {
-      if(_expence[i]._id == id)
-        return _expence[i];
-    }
-    return "error";
+var expence = Object.create(baseObject);
+expence.loadurl = '/data/search_expences';
+expence.remove = function (id, callback) {
+  if (id == 0)
+    return;
+  var url = '/remove/expences';
+  var filter = [{}];
+  filter[0]._id = id;
+  this._post(url, filter, false, callback, []);
+};
+expence.update = function (isupdate, form, status, callback) {
+  var i = 0, prj_arr = [{}], url;
+  url = "/data/push_expences";
+  prj_arr[0]._id = $("#expprj").val();
+  prj_arr[0].expences = new Array();
+  prj_arr[0].expences[0] = {};
+  var expence_el = prj_arr[0].expences[0];
+  if(isupdate)
+    expence_el._id = $("#exp_id").val();
+  expence_el.trip_id = $("#exptrip").val();
+  if($("#expuser_id").is(":checked")) {
+    expence_el.user_id = me._id;
+  } else {
+    expence_el.user_id = "0";
   }
-}
+  expence_el.date = $("#expdate").val();
+  expence_el.status = status;
+  //file
+  if(!$("#offerfile").next("p").hasClass("hidden")) {
+    expence_el.file = {};
+    expence_el.file._id = $("#offerfile").next("p").attr("id");
+    expence_el.file.name = $("#offerfile").next("p").text();
+  }
+  expence_el.objects = new Array();
+  $("#exptable tbody tr").each(function() {
+    expence_el.objects[i] = {};
+    var index = Number($(this).find("td:eq(0)").text());
+    var elem = expence_el.objects[i];
+    elem.date = $(this).find("input[name='" + index + "exp_date']").val();
+    elem.city = $(this).find("input[name='" + index + "exp_city']").val();
+    elem.amount = parseFloat($(this).find("input[name='" + index + "exp_amount']").val());
+    elem.category = Number($(this).find("select[name='" + index + "exp_category']").val());
+    elem.description = $(this).find("input[name='" + index + "exp_description']").val();
+    if($(this).find("input[name='" + index + "exp_paidby']").is(":checked"))
+      elem.paidby = 1;
+    else
+      elem.paidby = 0;
+    elem.invoice = $(this).find("input[name='" + index + "exp_invoice']").is(":checked");
+    if(!$(this).find("p").hasClass("hidden")) {
+      elem.file = {};
+      elem.file._id = $(this).find("p").attr("id");
+      elem.file.name = $(this).find("p").text();
+    }
+    i++;
+  });
+  this._post(url, prj_arr, false, callback, []);
+};
+expence.getexp = function(id) {
+  var i;
+  for(i = 0; i < _records.length; i++) {
+    if(_records[i]._id == id)
+      return _records[i];
+  }
+  return "Error, expence not found";
+};
 
 var approval = {
   search : function (filter, callback, target) {
@@ -821,8 +772,8 @@ function updateStatus(type, id, status, motivation) {
   approval.set(filter, removeElement, "");
 }
 
-function generateExpencesList(data, container, approve) {
-  var i,j;
+function generateExpencesList(data, args) {
+  var i,j, container = args[0], approve = args[1];
   var username, name, total, htmllist = "";
   cur_expences = data;
   for(i=0;i < data.length; i++) {

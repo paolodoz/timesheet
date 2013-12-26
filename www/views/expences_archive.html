@@ -1,6 +1,6 @@
 <script src="/static/js/bootstrap-switch.js"></script>
 <script type="text/javascript">
-var validator, element, elemnum = 0;
+var validator, element, elemnum = 0, myprj = [];
 var totals = new Array();
 $(document).ready(function() {
   $(".datepicker").datepicker();
@@ -42,10 +42,14 @@ function userdata(data){
     } else {
       filter = [ { 'responsibles._id' : me._id }, { name: 1 }, { name: 1 } ];
     }
-    project.load(filter, nop);
+    project.load(filter, mergearray);
     filter = [ {}, {name:1, surname:1}, {surname:1}];
     user.load(filter, nop);
   }
+}
+function mergearray(data) {
+  $.extend(true, myprj, data);
+  project._records = myprj;
 }
 
 function resetExpForm(data) {
@@ -59,6 +63,7 @@ function loadProjects(data, args) {
   var container = args[0];
   var i;
   var htmlselect = "<option value=''>All projects</option>";
+  myprj = data;
   for(i=0;i < data.length; i++) {
     htmlselect += "<option value='" + data[i]._id + "'>" + data[i].name + "</option>";
   }

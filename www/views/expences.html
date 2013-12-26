@@ -70,11 +70,11 @@ function resetExpForm(load) {
 
 function loadExpencesList(list) {
   var filter = {status:[3], employee_id: me._id};
-  expence.load(filter, loadExpences, "expList", "");
+  expence.load(filter, loadExpences, "expList");
 }
 
-function loadExpences(data,container) {
-  var i,j;
+function loadExpences(data, args) {
+  var i,j, container = args[0];
   var htmllist = "";
   for(i=0; i< data.length; i++) {
           htmllist += "<li id='" + data[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + project.getname(data[i].project_id) + " " + data[i].date + "</li>";
