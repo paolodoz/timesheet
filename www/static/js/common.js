@@ -187,59 +187,19 @@ project.gettxtcolor = function (id) {
   return this.getSingleProperty(id,'txtcolor');
 };
 
-var trip = {
-  _trip: new Array(),
-  load : function (filter, callback, target) {
-    $.ajax({
-      type: "POST",
-      url: "/data/search_trips",
-      data: JSON.stringify(filter),
-      success: function(data) {
-        if(!data.error) {
-          _trip = data.records;
-          callback(data.records, target);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  loaddetails : function (filter, callback, target) {
-    $.ajax({
-      type: "POST",
-      url: "/get/project",
-      data: JSON.stringify(filter),
-      success: function(data) {
-        if(!data.error) {
-          _trip = data.records;
-          callback(data.records, target);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  remove : function (obj, callback) {
-    $.ajax({
-      type: "POST",
-      url: "/data/push_trips",
-      data: JSON.stringify(obj),
-      success: function(data) {
-        if(!data.error) {
-          callback(data);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  update : function (isupdate, form, callback) {
+var trip = Object.create(baseObject);
+trip.loadurl = '/data/search_trips';
+trip.loadDetails = function (filter, callback) {
+  args = [];
+  for(var i=2; i<arguments.length; i++) {
+    args.push(arguments[i]);
+  }
+  this._post('/get/project', filter, false, callback, args);
+};
+trip.remove = function (obj, callback) {
+  this._post('/data/push_trips', obj, false, callback, args);
+};
+trip.update = function (isupdate, form, callback) {
     var prj_arr = new Array(), url;
     prj_arr[0] = {};
     prj = prj_arr[0];
@@ -264,44 +224,16 @@ var trip = {
           prj.trips[0][property] = value;
       }
     });
-    trip._update(url, prj_arr, callback);
-  },
-  updatestatus : function (prj_arr, callback) {
-    trip._update("/data/push_trips", prj_arr, callback);
-  },
-  _update : function (url, prj, callback) {
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: JSON.stringify(prj),
-      success: function(data) {
-        if(!data.error) {
-          callback(data);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  getname : function(id) {
+    this._post(url, prj_arr, false, callback);
+};
+trip.get = function(id) {
     var i;
-    for(i = 0; i < _trip.length; i++) {
-      if(_trip[i]._id == id)
-        return _trip[i].name;
+    for(i = 0; i < this._records.length; i++) {
+      if(this._records[i]._id == id)
+        return this._records[i];
     }
     return "error";
-  },
-  get : function(id) {
-    var i;
-    for(i = 0; i < _trip.length; i++) {
-      if(_trip[i]._id == id)
-        return _trip[i];
-    }
-    return "error";
-  }
-}
+};
 
 var expence = {
   _expence: new Array(),
