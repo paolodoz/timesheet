@@ -42,7 +42,7 @@ function userdata(data){
     } else {
       filter = [ { 'responsibles._id' : me._id }, { name: 1 }, { name: 1 } ];
     }
-    project.load(filter, nop ,"");
+    project.load(filter, nop);
     filter = [ {}, {name:1, surname:1}, {surname:1}];
     user.load(filter, nop);
   }
@@ -55,11 +55,12 @@ function resetExpForm(data) {
   newtableline();
 }
 
-function loadProjects(data, container) {
+function loadProjects(data, args) {
+  var container = args[0];
   var i;
   var htmlselect = "<option value=''>All projects</option>";
-  for(i=0;i < data.records.length; i++) {
-    htmlselect += "<option value='" + data.records[i]._id + "'>" + data.records[i].name + "</option>";
+  for(i=0;i < data.length; i++) {
+    htmlselect += "<option value='" + data[i]._id + "'>" + data[i].name + "</option>";
   }
   $("#" + container).html(htmlselect);
   $("#" + container).change(function() {

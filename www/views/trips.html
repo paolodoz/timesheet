@@ -122,11 +122,11 @@ function resetTripForm(load)
   $("#tripstatus").val("3");
 }
 
-function loadProjects(data, container) {
-  var i;
+function loadProjects(data, args) {
+  var i, container = args[0];
   var htmlselect = "<option value=''></option>";
-  for(i=0;i < data.records.length; i++) {
-    htmlselect += "<option value='" + data.records[i]._id + "'>" + data.records[i].name + "</option>";
+  for(i=0;i < data.length; i++) {
+    htmlselect += "<option value='" + data[i]._id + "'>" + data[i].name + "</option>";
   }
   $("#" + container).html(htmlselect);
 }

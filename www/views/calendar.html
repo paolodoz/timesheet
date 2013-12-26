@@ -1,6 +1,6 @@
 <link rel='stylesheet' type='text/css' href='/static/css/fullcalendar.css' />
 <script type="text/javascript">
-var me, myprj, validator, datestart, dateend, cevent, calendar, firstday, lastday, myhours = new Array();
+var me, validator, datestart, dateend, cevent, calendar, firstday, lastday, myhours = new Array();
 $(document).ready( function() {
   calendar = $('#calendar').fullCalendar({
     firstDay:1,
@@ -146,9 +146,8 @@ function loadDays(data) {
   loadCalendarHours(myhours);
 }
 
-function loadprojects(data, target) {
+function loadprojects(myprj) {
   var i, j, index, htmlselect = "<option value=''></option>";
-  myprj = data.records;
   for(i = 0; i < myprj.length; i++) {
     htmlselect += "<option value='" + myprj[i]._id + "'>" + myprj[i].name + " -- " + myprj[i].description.substr(0,30) +  "</option>";
   }

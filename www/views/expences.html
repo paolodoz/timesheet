@@ -141,11 +141,11 @@ function loadExpDetails(data, container) {
   computetotal();
 }
 
-function loadProjects(data, container) {
-  var i;
+function loadProjects(data, args) {
+  var i, container = args[0];
   var htmlselect = "";
-  for(i=0;i < data.records.length; i++) {
-    htmlselect += "<option value='" + data.records[i]._id + "'>" + data.records[i].name + "</option>";
+  for(i=0;i < data.length; i++) {
+    htmlselect += "<option value='" + data[i]._id + "'>" + data[i].name + "</option>";
   }
   $("#" + container).html(htmlselect);
   var filter = { start:"2013-01-01", end:"2014-12-31", status: [0], user_id: me._id, employee_id:me._id, project_id: $("#" + container).val() };

@@ -87,11 +87,11 @@ function resetReportsForm(load) {
   $("#real").html("");
 }
 
-function loadProjects(data, container) {
-  var i;
+function loadProjects(data, args) {
+  var i, container = args[0];
   var htmllist = "";
-  for(i=0;i < data.records.length; i++) {
-    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data.records[i].name + " -- " + data.records[i].description.substr(0,20) + "</li>";
+  for(i=0;i < data.length; i++) {
+    htmllist += "<li id='" + data[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data[i].name + " -- " + data[i].description.substr(0,20) + "</li>";
   }
   $("#" + container).html(htmllist);
   $("#" + container + " .list-group-item").click(function() {

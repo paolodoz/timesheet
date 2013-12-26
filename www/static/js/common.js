@@ -39,6 +39,16 @@ var baseObject = {
       contentType: 'application/json; charset=utf-8',
       dataType: "json",
     });
+  },
+  getSingleProperty : function (id, property) {
+    var i;
+    if(!this._records)
+      return "Error, data not available";
+    for(i = 0; i < this._records.length; i++) {
+      if(this._records[i]._id == id)
+        return this._records[i][property];
+    }
+    return "Error, property " + property + " not found";
   }
 }
 
@@ -49,14 +59,14 @@ user.me = function (callback) {
     type: "GET",
     url: "/me",
     data : "",
-    success: function(data) {
+    success: function (data) {
       $("span.badge").text(data.notifications);
       callback(data);
     },
     dataType: "json",
   });
 };
-user.getname = function(id) {
+user.getname = function (id) {
   var i;
   if(!this._records)
     return "Error, data not available";
@@ -66,7 +76,7 @@ user.getname = function(id) {
   }
   return "User not found";
 };
-user.update = function(cuser, form, callback) {
+user.update = function (cuser, form, callback) {
   var datestart, i = 0;
   url = "/update/user";
   cuser.group = $("#usergroup").val();
@@ -88,172 +98,94 @@ user.update = function(cuser, form, callback) {
   this._post(url, cuser, false, callback, []);
 }
 
-var project = {
-  prj: new Array(),
-  load : function (filter, callback, target) {
-    $.ajax({
-      type: "POST",
-      url: "/get/project",
-      data: JSON.stringify(filter),
-      success: function(data) {
-        if(!data.error) {
-          project.prj = data.records;
-          callback(data, target);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  remove : function (id, callback) {
-    if (id == 0)
-      return;
-    var filter = [{}];
-    filter[0]._id = id;
-    $.ajax({
-      type: "POST",
-      url: "/remove/project",
-      data: JSON.stringify(filter),
-      success: function(data) {
-        if(!data.error) {
-          callback(data);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  update : function (isupdate, form, callback) {
-    var project, _proj, url;
-    if(isupdate) {
-      _proj = {};
-      project = _proj;
-      url = "/update/project";
-    } else {
-      _proj = [{}];
-      project = _proj[0];
-      url = "/add/project";
-    }
-    $("#" + form + " input, #" + form + " select, #" + form + " textarea").each(function (){
-      var property = $(this).attr("id").substr(7);
-      if (property == "_id" && !isupdate)
-        return;
-      if (property == "type")
-        return;
-      project[property] = $(this).val();
-    });
-    project.tags = new Array();
-    $("#taglist .active").each(function (i) {
-      project.tags[i] = {};
-      project.tags[i] = $(this).text();
-    });
-
-    for(i = 0; i < project.tasks.length; i++) {
-      project.tasks[i] = Number(project.tasks[i]);
-    }
-    project.responsibles = new Array();
-    project.employees = new Array();
-    $("#usersList li.active").each(function() {
-      var element = {};
-      element._id = this.id;
-      element.name = $(this).find(".user").text().trim();
-      $(this).find(".active").each(function() {
-        if($(this).text() == "Employee") {
-          var copy_el = {};
-          jQuery.extend(copy_el, element);
-          project.employees.push(copy_el);
-        } else {
-          if($(this).text() == "Project Manager") {
-            element.role = "project manager";
-          } else {
-            element.role = "account";
-          }
-          var copy_resp = {};
-          jQuery.extend(copy_resp, element);
-          project.responsibles.push(copy_resp);
-        }
-      });
-    });
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: JSON.stringify(_proj),
-      success: function(data) {
-        if(!data.error) {
-          callback(data);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  production : function (prj, form, callback) {
-    var url;
+var project = Object.create(baseObject);
+project.loadurl = '/get/project';
+project.remove = function (id, callback) {
+  if (id == 0)
+    return;
+  var url = '/remove/project';
+  var filter = [{}];
+  filter[0]._id = id;
+  this._post(url, filter, false, callback, []);
+};
+project.update = function (isupdate, form, callback) {
+  var project, _proj, url;
+  if(isupdate) {
+    _proj = {};
+    project = _proj;
     url = "/update/project";
-    var prod = {};
-    if(!prj.economics) {
-      prj.economics = new Array();
-    }
-    if($("#productionperiod").val() != "") {
-      prod.period = $("#productionperiod").val();
-      prod.budget = Number($("#productionbudget").val());
-      prod.extra = Number($("#productionextra").val());
-      prod.note = $("#productionnote").val();
-      prod.invoiced = 0;
-      prj.economics.push(prod);
-    }
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: JSON.stringify(prj),
-      success: function(data) {
-        if(!data.error) {
-          callback(data);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  getname : function(id) {
-    var i;
-    if(!this.prj)
-      return "error";
-    for(i = 0; i < this.prj.length; i++) {
-      if(this.prj[i]._id == id)
-        return this.prj[i].name;
-    }
-    return "error";
-  },
-  getbkgcolor : function(id) {
-    var i;
-    if(!this.prj)
-      return "error";
-    for(i = 0; i < this.prj.length; i++) {
-      if(this.prj[i]._id == id)
-        return this.prj[i].bkgcolor;
-    }
-    return "error";
-  },
-  gettxtcolor : function(id) {
-    var i;
-    if(!this.prj)
-      return "error";
-    for(i = 0; i < this.prj.length; i++) {
-      if(this.prj[i]._id == id)
-        return this.prj[i].txtcolor;
-    }
-    return "error";
+  } else {
+    _proj = [{}];
+    project = _proj[0];
+    url = "/add/project";
   }
-}
+  $("#" + form + " input, #" + form + " select, #" + form + " textarea").each(function (){
+    var property = $(this).attr("id").substr(7);
+    if (property == "_id" && !isupdate)
+      return;
+    if (property == "type")
+      return;
+    project[property] = $(this).val();
+  });
+  project.tags = new Array();
+  $("#taglist .active").each(function (i) {
+    project.tags[i] = {};
+    project.tags[i] = $(this).text();
+  });
+  for(i = 0; i < project.tasks.length; i++) {
+    project.tasks[i] = Number(project.tasks[i]);
+  }
+  project.responsibles = new Array();
+  project.employees = new Array();
+  $("#usersList li.active").each(function() {
+    var element = {};
+    element._id = this.id;
+    element.name = $(this).find(".user").text().trim();
+    $(this).find(".active").each(function() {
+      if($(this).text() == "Employee") {
+        var copy_el = {};
+        jQuery.extend(copy_el, element);
+        project.employees.push(copy_el);
+      } else {
+        if($(this).text() == "Project Manager") {
+          element.role = "project manager";
+        } else {
+          element.role = "account";
+        }
+        var copy_resp = {};
+        jQuery.extend(copy_resp, element);
+        project.responsibles.push(copy_resp);
+      }
+    });
+  });
+  this._post(url, _proj, false, callback, []);
+};
+project.production = function (prj, form, callback) {
+  var url;
+  url = "/update/project";
+  var prod = {};
+  if(!prj.economics) {
+    prj.economics = new Array();
+  }
+  if($("#productionperiod").val() != "") {
+    prod.period = $("#productionperiod").val();
+    prod.budget = Number($("#productionbudget").val());
+    prod.extra = Number($("#productionextra").val());
+    prod.note = $("#productionnote").val();
+    prod.invoiced = 0;
+    prj.economics.push(prod);
+  }
+  this._post(url, prj, false, callback, []);
+};
+project.getname = function (id) {
+  return this.getSingleProperty(id,'name');
+};
+project.getbkgcolor = function (id) {
+  return this.getSingleProperty(id,'bkgcolor');
+};
+project.gettxtcolor = function (id) {
+  return this.getSingleProperty(id,'txtcolor');
+};
 
 var trip = {
   _trip: new Array(),

@@ -19,7 +19,7 @@ function userdata(data){
   me = data;
   if(me.group != "employee") {
     var filter = [ { 'responsibles._id' : me._id }, { name: 1 }, { name: 1 } ];
-    project.load(filter, firststage ,"");
+    project.load(filter, firststage);
   }
 }
 
@@ -31,8 +31,8 @@ function firststage() {
 function secondstage() {
   var filter = {};
   filter.projects_id = new Array();
-  for (var i = 0; i < project.prj.length; i++) {
-    filter.projects_id.push(project.prj[i]._id);
+  for (var i = 0; i < project._records.length; i++) {
+    filter.projects_id.push(project._records[i]._id);
   }
   filter.status = 'toapprove';
   approval.search(filter, loadapprovals);

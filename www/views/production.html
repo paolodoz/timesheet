@@ -70,11 +70,11 @@ function resetProductionForm()
   $("#productionperiod").html("");
 }
 
-function loadProjects(data, container) {
-  var i;
+function loadProjects(data, args) {
+  var i, container = args[0];
   var htmllist = "";
-  for(i=0;i < data.records.length; i++) {
-    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data.records[i].name + " -- " + data.records[i].description.substr(0,20) + "</li>";
+  for(i=0;i < data.length; i++) {
+    htmllist += "<li id='" + data[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data[i].name + " -- " + data[i].description.substr(0,20) + "</li>";
   }
   $("#" + container).html(htmllist);
   $("#" + container + " .list-group-item").click(function() {
@@ -89,15 +89,15 @@ function loadProjects(data, container) {
     filter[1].economics = 1;
     filter[1].start = 1;
     filter[1].end = 1;
-    project.load(filter,loadProjectDetails, container);
+    project.load(filter,loadProjectDetails);
   });
 }
 
-function loadProjectDetails(data,container) {
-  var currentdate = startdate = new Date(data.records[0].start);
-  var enddate = new Date(data.records[0].end);
+function loadProjectDetails(data) {
+  var currentdate = startdate = new Date(data[0].start);
+  var enddate = new Date(data[0].end);
   $("#productionperiod").html(generateDropDate(currentdate,enddate));
-  var table = generateEconomicsTable(data.records[0].economics);
+  var table = generateEconomicsTable(data[0].economics);
   $("#economics").html(table);
   $("#economics table span").click(function() {
     var index = $(this).parent().parent().index();
@@ -106,8 +106,8 @@ function loadProjectDetails(data,container) {
     isupdate = true;
   });
   cur_prj = {};
-  cur_prj._id = data.records[0]._id;
-  cur_prj.economics = data.records[0].economics;
+  cur_prj._id = data[0]._id;
+  cur_prj.economics = data[0].economics;
   isupdate = false;
 }
 
