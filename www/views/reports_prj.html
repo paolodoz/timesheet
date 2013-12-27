@@ -30,7 +30,8 @@ $(document).ready(function() {
   $("#btnreset").click(function() {
     resetReportsForm(true);
   });
-  tag.load("taglist", 30, false);
+  var filter = { 'count': 30 };
+  tag.load(filter, generateTags, "taglist", false);
   $("#reportForm").submit(function(event) {
     event.preventDefault();
     if(!validator.form())

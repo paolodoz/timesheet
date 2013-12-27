@@ -475,46 +475,33 @@ var file = {
   }
 }
 
-var tag = {
-  load: function(container, count, edit) {
-    var filter = { 'count':count };
-    $.ajax({
-      type: "POST",
-      url: "/data/search_tags",
-      data: JSON.stringify(filter),
-      success: function(data) {
-        if(!data.error) {
-          var htmlli = "";
-          for(var i = 0; i < data.records.length; i++) {
-            htmlli += "<li>" + data.records[i] + "</li>";
-          }
-          if(edit) {
-            htmlli += '<li><div class="input-group"><input type="text" class="form-control input-sm" id="projecttags" name="projecttags" placeholder="New tag"><span class="input-group-addon">Add</span></div></li>';
-          }
-          $("#" + container).html(htmlli);
-          $("#" + container + " li").click(function() {
-            $(this).toggleClass("active");
-          });
-          $("#" + container + " li:last").unbind();
-          $("#" + container + " li span").click(function() {
-            var text = $(this).prev().val();
-            if(text == "")
-              return;
-            var newhtml = "<li class='active'>" + text + "</li>";
-            $(this).prev().val("");
-            $("#" + container + " li:last").before(newhtml);
-            $("#" + container + " li:last").prev().click(function() {
-              $(this).toggleClass("active");
-            });
-          });
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
+var tag = Object.create(baseObject);
+tag.loadurl = '/data/search_tags';
+
+function generateTags(data, args) {
+  var htmlli = "", container = args[0], edit = args[1];
+  for(var i = 0; i < data.length; i++) {
+    htmlli += "<li>" + data[i] + "</li>";
   }
+  if(edit) {
+    htmlli += '<li><div class="input-group"><input type="text" class="form-control input-sm" id="projecttags" name="projecttags" placeholder="New tag"><span class="input-group-addon">Add</span></div></li>';
+  }
+  $("#" + container).html(htmlli);
+  $("#" + container + " li").click(function() {
+    $(this).toggleClass("active");
+  });
+  $("#" + container + " li:last").unbind();
+  $("#" + container + " li span").click(function() {
+    var text = $(this).prev().val();
+    if(text == "")
+      return;
+    var newhtml = "<li class='active'>" + text + "</li>";
+    $(this).prev().val("");
+    $("#" + container + " li:last").before(newhtml);
+    $("#" + container + " li:last").prev().click(function() {
+      $(this).toggleClass("active");
+    });
+  });
 }
 
 function showmessage(type, msg) {

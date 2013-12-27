@@ -26,7 +26,8 @@ $(document).ready(function() {
   $("#btnremove").click(function() {
     project.remove($("#project_id").val(),resetProjectsForm);
   });
-  tag.load("taglist", 30, true);
+  var filter = { 'count': 30 };
+  tag.load(filter, generateTags, "taglist", true);
   $("#projectForm").submit(function(event) {
     event.preventDefault();
     if(!validator.form())
