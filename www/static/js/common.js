@@ -740,7 +740,7 @@ function saveExpence(id, td) {
   delete element.project_id;
   prj_arr[0].expences = new Array();
   prj_arr[0].expences[0] = element;
-  expence._update(url, prj_arr, nop);
+  expence._post(url, prj_arr, false, nop, []);
   var newrow = $(td).parent();
   $(newrow).html(generateExpencesDetailsRow(element.objects[i],false));
   $(newrow).find("td:eq(0)").click(function() {
