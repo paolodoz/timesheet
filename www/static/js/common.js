@@ -341,94 +341,46 @@ day.update = function (obj, callback) {
   this._post('/data/push_days', obj, false, callback, []);
 };
 
-var offer = {
-  load : function (filter, callback, target) {
-    $.ajax({
-      type: "POST",
-      url: "/get/offer",
-      data: JSON.stringify(filter),
-      success: function(data) {
-        if(!data.error) {
-          callback(data, target);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  remove : function (id, callback) {
-    if (id == 0)
+var offer = Object.create(baseObject);
+offer.loadurl = '/get/offer';
+offer.removeurl = '/remove/offer';
+offer.update = function (isupdate, form, callback) {
+  var offer, _off, url, i;
+  if(isupdate) {
+    _off = {};
+    offer = _off;
+    url = "/update/offer";
+  } else {
+    _off = [{}];
+    offer = _off[0];
+    url = "/add/offer";
+  }
+  $("#" + form + " input, #" + form + " select, #" + form + " textarea").each(function (){
+    var value, property = $(this).attr("id").substr(5);
+    if (property == "_id" && !isupdate)
       return;
-    var filter = [{}];
-    filter[0]._id = id;
-    $.ajax({
-      type: "POST",
-      url: "/remove/offer",
-      data: JSON.stringify(filter),
-      success: function(data) {
-        if(!data.error) {
-          callback(data);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  update : function (isupdate, form, callback) {
-    var offer, _off, url, i;
-    if(isupdate) {
-      _off = {};
-      offer = _off;
-      url = "/update/offer";
+    if (property == "file")
+      return;
+    if($(this).is(':checkbox')) {
+      offer[property] = $(this).is(':checked') ? true : false;
     } else {
-      _off = [{}];
-      offer = _off[0];
-      url = "/add/offer";
+      value = Number($(this).val());
+      if(isNaN(value) || value == 0)
+        offer[property] = $(this).val();
+      else
+        offer[property] = value;
     }
-    $("#" + form + " input, #" + form + " select, #" + form + " textarea").each(function (){
-      var value, property = $(this).attr("id").substr(5);
-      if (property == "_id" && !isupdate)
-        return;
-      if (property == "file")
-        return;
-      if($(this).is(':checkbox')) {
-        offer[property] = $(this).is(':checked') ? true : false;
-      } else {
-        value = Number($(this).val());
-        if(isNaN(value) || value == 0)
-          offer[property] = $(this).val();
-        else
-          offer[property] = value;
-      }
-    });
-    offer.upload_files = new Array();
-    i = 0;
-    $("#offerfiles li").each(function () {
-      offer.upload_files[i] = {};
-      offer.upload_files[i].id = $(this).attr("id");
-      offer.upload_files[i].name = $(this).text();
-      i++;
-    });
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: JSON.stringify(_off),
-      success: function(data) {
-        if(!data.error) {
-          callback(data);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-}
+  });
+  offer.upload_files = new Array();
+  i = 0;
+  $("#offerfiles li").each(function () {
+    offer.upload_files[i] = {};
+    offer.upload_files[i].id = $(this).attr("id");
+    offer.upload_files[i].name = $(this).text();
+    i++;
+  });
+  this._post(url, _off, false, callback, []);
+};
 
 var report = {
   byuser: function (form, callback) {

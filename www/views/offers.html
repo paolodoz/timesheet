@@ -113,11 +113,11 @@ function loadProjects(data, args) {
   $("#" + container).html(htmlselect);
 }
 
-function loadOffers(data, container) {
-  var i;
+function loadOffers(data, args) {
+  var i, container = args[0];
   var htmllist = "";
-  for(i=0;i < data.records.length; i++) {
-    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data.records[i].name + "</li>";
+  for(i=0;i < data.length; i++) {
+    htmllist += "<li id='" + data[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data[i].name + "</li>";
   }
   //add line for new project
   htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Project ...</li>";
@@ -130,7 +130,7 @@ function loadOffers(data, container) {
     isupdate = true;
     var filter = createFilterForm("offerForm");
     filter[0]._id = this.id;
-    offer.load(filter,loadOfferDetails, container);
+    offer.loadSingle(filter,loadOfferDetails);
   });
 }
 
@@ -138,17 +138,17 @@ function generateFileEntry(id, name) {
   return '<li id="' + id + '" class="list-group-item"><a href="/file/download/'+ id + '">' + name + '</a> <span class="glyphicon glyphicon-trash"></span></li>'
 }
 
-function loadOfferDetails(data,container) {
+function loadOfferDetails(data) {
   var i, htmlli = "";
-  for(var key in data.records[0]) {
-    if(data.records[0][key] == true || data.records[0][key] == false) {
-      $("#offer" + key).prop('checked',data.records[0][key]);
+  for(var key in data[0]) {
+    if(data[0][key] == true || data[0][key] == false) {
+      $("#offer" + key).prop('checked',data[0][key]);
     } else {
       if(key != "upload_files") {
-        $("#offer" + key).val(data.records[0][key]);
+        $("#offer" + key).val(data[0][key]);
       } else {
-        for(i = 0; i < data.records[0][key].length; i++) {
-          htmlli += generateFileEntry(data.records[0][key][i].id, data.records[0][key][i].name);
+        for(i = 0; i < data[0][key].length; i++) {
+          htmlli += generateFileEntry(data[0][key][i].id, data[0][key][i].name);
         }
         $("#offerfiles").append(htmlli);
         $('#offerfiles li span').click(function() {
