@@ -22,7 +22,7 @@ $(document).ready(function() {
   $("#reportstart").change(function() {
     var firstday = new Date($(this).val());
     var lastday = new Date(firstday.getFullYear(), firstday.getMonth() + 1,0);
-    $("#reportend").val(simpleDate(lastday));
+    $("#reportend").val(lastday.simpleDate());
   });
   $("#btnreset").click(function() {
     resetReportsForm(true);

@@ -97,7 +97,7 @@ user.update = function (cuser, form, callback) {
     if( i == 0 ) {
       cuser.salary = new Array();
     } else {
-      cuser.salary[i-1].to = simpleDate(datestart);
+      cuser.salary[i-1].to = datestart.simpleDate();
     }
     cuser.salary[i] = {}
     cuser.salary[i].cost = Number($("#usernewsalary").val());
@@ -518,19 +518,10 @@ function showmessage(type, msg) {
   box.fadeIn("slow").delay(5000).fadeOut("slow");
 }
 
-function simpleDate(date) {
-  var day,month;
-  day = date.getDate();
-  month = date.getMonth() + 1;
-  day = (day < 10 ) ? "0" + day : day;
-  month = (month < 10 ) ? "0" + month : month;
-  return date.getFullYear() + "-" + month + "-" + day;
-}
-
 function generateDropDate(from,to) {
   var htmlselect = "<option value=''></option>";
   while (from < to) {
-    htmlselect += "<option value='" + simpleDate(from) + "'>" + from.getMonthName() + " " + from.getFullYear() + "</option>";
+    htmlselect += "<option value='" + from.simpleDate() + "'>" + from.getMonthName() + " " + from.getFullYear() + "</option>";
     from = new Date(from.setMonth(from.getMonth() + 1));
   }
   return htmlselect;
@@ -542,6 +533,15 @@ var tasks = ["","Office","Away","Holiday","Bank Holiday","Leave","Unpaid leave"]
 function getTaskName(id) {
   return tasks[id];
 }
+
+Date.method('simpleDate', function() {
+  var day,month;
+  day = this.getDate();
+  month = this.getMonth() + 1;
+  day = (day < 10 ) ? "0" + day : day;
+  month = (month < 10 ) ? "0" + month : month;
+  return this.getFullYear() + "-" + month + "-" + day;
+});
 
 Date.method('getMonthName', function(lang) {
     lang = lang && (lang in Date.locale) ? lang : 'en';

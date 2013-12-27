@@ -10,7 +10,7 @@ $(document).ready( function() {
     select: function(start, end, allDay) {
       datestart = start;
       dateend = end;
-      if(simpleDate(end) < firstday || simpleDate(start) > lastday) {
+      if(end.simpleDate() < firstday || start.simpleDate() > lastday) {
         calendar.fullCalendar('unselect');
         return;
       }
@@ -72,7 +72,7 @@ $(document).ready( function() {
     for(i = 0; i < myhours[cday].users[0].hours.length; i++) {
       event.project = cevent.id.substr(11,24);
       event.isextra = cevent.id.substr(36).bool();
-      event.date = simpleDate(cevent.start);
+      event.date = cevent.start.simpleDate();
       if(eventCompare(myhours[cday].users[0].hours[i],event)) {
         myhours[cday].users[0].hours.splice(i,1);
         var singleday = [{}];
@@ -117,10 +117,10 @@ function userdata(data){
 }
 
 function currentVis() {
-  firstday = simpleDate(calendar.fullCalendar('getView').start);
+  firstday = calendar.fullCalendar('getView').start.simpleDate();
   lastday = new Date(calendar.fullCalendar('getView').end);
   lastday.setDate(lastday.getDate()-1);
-  lastday = simpleDate(lastday);
+  lastday = lastday.simpleDate();
 }
 
 function eventCompare(array, myevent) {
@@ -136,7 +136,7 @@ function loadDays(data) {
   for(i=0; i < 31; i++) {
     aday = new Date(aday);
     myhours[i] = {};
-    myhours[i].date = simpleDate(aday);
+    myhours[i].date = aday.simpleDate();
     aday.setDate(aday.getDate() + 1);
   }
   for(i=0; i< data.length; i++) {
@@ -170,10 +170,10 @@ function loadprojects(myprj) {
 }
 
 function addCalEvent(start, end, event, allDay) {
-  if (simpleDate(start) < firstday) {
+  if (start.simpleDate() < firstday) {
     start = new Date(firstday);
   }
-  if (simpleDate(end) > lastday) {
+  if (end.simpleDate() > lastday) {
     end = new Date(lastday);
   }
   var diffdays = end.getDate() - start.getDate();
