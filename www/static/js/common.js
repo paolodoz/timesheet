@@ -335,40 +335,11 @@ customer.update = function (isupdate, form, callback) {
   this._post(url, _cust, false, callback, []);
 };
 
-var day  = {
-  load : function (filter, callback) {
-    $.ajax({
-      type: "POST",
-      url: "/data/search_days",
-      data: JSON.stringify(filter),
-      success: function(data) {
-        if(!data.error) {
-          callback(data);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  update : function (isupdate, obj, callback) {
-    $.ajax({
-      type: "POST",
-      url: '/data/push_days',
-      data: JSON.stringify(obj),
-      success: function(data) {
-        if(!data.error) {
-          callback(data);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-}
+var day = Object.create(baseObject);
+day.loadurl = '/data/search_days';
+day.update = function (obj, callback) {
+  this._post('/data/push_days', obj, false, callback, []);
+};
 
 var offer = {
   load : function (filter, callback, target) {

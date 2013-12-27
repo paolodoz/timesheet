@@ -77,7 +77,7 @@ $(document).ready( function() {
         myhours[cday].users[0].hours.splice(i,1);
         var singleday = [{}];
         singleday[0] = myhours[cday];
-        day.update(true, singleday, loadCalendarHours);
+        day.update(singleday, loadCalendarHours);
         break;
       }
     }
@@ -139,9 +139,9 @@ function loadDays(data) {
     myhours[i].date = simpleDate(aday);
     aday.setDate(aday.getDate() + 1);
   }
-  for(i=0; i< data.records.length; i++) {
-    index = Number(data.records[i].date.substr(8));
-    myhours[index-1].users = data.records[i].users;
+  for(i=0; i< data.length; i++) {
+    index = Number(data[i].date.substr(8));
+    myhours[index-1].users = data[i].users;
   }
   loadCalendarHours(myhours);
 }
@@ -218,7 +218,7 @@ function addCalEvent(start, end, event, allDay) {
     start.setDate(start.getDate()+1);
    }
   //savedata
-  day.update(true, myhours, nothing);
+  day.update(myhours, nop);
   loadCalendarHours(myhours);
   calendar.fullCalendar('unselect');
   //reset form
@@ -242,10 +242,6 @@ function saveEvent(arrayEl, event) {
   arrayEl.isextra = event.isextra;
   arrayEl.note = event.note;
   arrayEl.task = Number(event.task);
-}
-
-function nothing(){
-
 }
 
 function loadCalendarHours(list) {
