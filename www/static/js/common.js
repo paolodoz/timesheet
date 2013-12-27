@@ -42,6 +42,13 @@ var baseObject = {
       dataType: "json",
     });
   },
+  remove : function (id, callback) {
+    if (id == 0)
+      return;
+    var filter = [{}];
+    filter[0]._id = id;
+    this._post(this.removeurl, filter, false, callback, []);
+  },
   getSingleProperty : function (id, property) {
     var i;
     if(!this._records)
@@ -102,14 +109,7 @@ user.update = function (cuser, form, callback) {
 
 var project = Object.create(baseObject);
 project.loadurl = '/get/project';
-project.remove = function (id, callback) {
-  if (id == 0)
-    return;
-  var url = '/remove/project';
-  var filter = [{}];
-  filter[0]._id = id;
-  this._post(url, filter, false, callback, []);
-};
+project.removeurl = '/remove/project';
 project.update = function (isupdate, form, callback) {
   var project, _proj, url;
   if(isupdate) {
@@ -239,14 +239,7 @@ trip.get = function(id) {
 
 var expence = Object.create(baseObject);
 expence.loadurl = '/data/search_expences';
-expence.remove = function (id, callback) {
-  if (id == 0)
-    return;
-  var url = '/remove/expences';
-  var filter = [{}];
-  filter[0]._id = id;
-  this._post(url, filter, false, callback, []);
-};
+expence.remove = '/remove/expences';
 expence.update = function (isupdate, form, status, callback) {
   var i = 0, prj_arr = [{}], url;
   url = "/data/push_expences";
@@ -319,76 +312,28 @@ approval.set = function (filter, callback) {
   this._post('/data/approval', filter, false, callback, args);
 };
 
-var customer = {
-  load : function (filter, callback, target) {
-    $.ajax({
-      type: "POST",
-      url: "/get/customer",
-      data: JSON.stringify(filter),
-      success: function(data) {
-        if(!data.error) {
-          callback(data, target);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  remove : function (id, callback) {
-    if (id == 0)
+var customer = Object.create(baseObject);
+customer.loadurl = '/get/customer';
+customer.removeurl = '/remove/customer';
+customer.update = function (isupdate, form, callback) {
+  var customer, _cust, url;
+  if(isupdate) {
+    _cust = {};
+    customer = _cust;
+    url = "/update/customer";
+  } else {
+    _cust = [{}];
+    customer = _cust[0];
+    url = "/add/customer";
+  }
+  $("#" + form + " input, #" + form + " textarea").each(function (){
+    var property = $(this).attr("id").substr(4);
+    if (property == "_id" && !isupdate)
       return;
-    var filter = [{}];
-    filter[0]._id = id;
-    $.ajax({
-      type: "POST",
-      url: "/remove/customer",
-      data: JSON.stringify(filter),
-      success: function(data) {
-        if(!data.error) {
-          callback(data);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  update : function (isupdate, form, callback) {
-    var customer, _cust, url;		
-    if(isupdate) {
-      _cust = {};
-      customer = _cust;
-      url = "/update/customer";
-    } else {
-      _cust = [{}];
-      customer = _cust[0];
-      url = "/add/customer";
-    }
-    $("#" + form + " input").each(function (){
-      var property = $(this).attr("id").substr(4);
-      if (property == "_id" && !isupdate)
-        return;
-      customer[property] = $(this).val();
-    });
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: JSON.stringify(_cust),
-      success: function(data) {
-        if(!data.error) {
-          callback(data);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-}
+    customer[property] = $(this).val();
+  });
+  this._post(url, _cust, false, callback, []);
+};
 
 var day  = {
   load : function (filter, callback) {

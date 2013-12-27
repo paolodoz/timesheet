@@ -85,11 +85,11 @@ function resetCustomerForm(load) {
   $("#custList li").removeClass("active");
   $("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
 }
-function loadCustomers(data, container) {
-  var i;
+function loadCustomers(data, args) {
+  var i, container = args[0];
   var htmllist = "";
-  for(i=0;i < data.records.length; i++) {
-    htmllist += "<li id='" + data.records[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data.records[i].name + "</li>";
+  for(i=0;i < data.length; i++) {
+    htmllist += "<li id='" + data[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-edit'></span> " + data[i].name + "</li>";
   }
   //add line for new customer
   htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Customer ...</li>";
@@ -102,13 +102,13 @@ function loadCustomers(data, container) {
     isupdate = true;
     var filter = createFilterForm("custForm");
     filter[0]._id = this.id;
-    customer.load(filter,loadCustomerDetails, container);
+    customer.loadSingle(filter,loadCustomerDetails);
   });
 }
 
 function createFilterForm(container) {
   var filter = [{},{},{name:1}];
-  $("#" + container + " input").each(function (){
+  $("#" + container + " input, #" + container + " textarea").each(function (){
     var property = $(this).attr("id").substr(4);
     if (property == "_id")
       return;
@@ -117,11 +117,11 @@ function createFilterForm(container) {
   return filter;
 }
 
-function loadCustomerDetails(data,container) {
-  for(var key in data.records[0]) {
-    $("#cust" + key).val( data.records[0][key]);
-    $(".btn-danger").removeClass("hidden");
+function loadCustomerDetails(data) {
+  for(var key in data[0]) {
+    $("#cust" + key).val(data[0][key]);
   }
+  $(".btn-danger").removeClass("hidden");
   $("#btnsubmit").html("<span class='glyphicon glyphicon-edit'></span> Update");
 }
 </script>
