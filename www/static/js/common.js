@@ -382,97 +382,68 @@ offer.update = function (isupdate, form, callback) {
   this._post(url, _off, false, callback, []);
 };
 
-var report = {
-  byuser: function (form, callback) {
-    var report, url, hours, i;
-    report = {};
-    url = "/data/report_users_hours";
+var report = Object.create(baseObject);
+report.byuser = function (form, callback) {
+  var report, url, hours, i;
+  report = {};
+  url = "/data/report_users_hours";
+  report.start = $("#reportstart").val();
+  report.end = $("#reportend").val();
+  report.projects =  new Array();
+  if($("#reportproject").val() != "")
+    report.projects[0] = $("#reportproject").val();
+  hours = $("label.active").children().attr("id").substr(5);
+  if(hours == "B") {
+    report.hours_standard = true;
+    report.hours_extra = true;
+  } else if(hours == "N") {
+    report.hours_standard = true;
+    report.hours_extra = false;
+  } else {
+    report.hours_standard = false;
+    report.hours_extra = true;
+  }
+  report.users_ids = new Array();
+  i = 0;
+  $("#usersList li.active").each(function() {
+    report.users_ids[i++] = $(this).attr("id");
+  });
+  report.tasks = new Array();
+  i = 0;
+  $("#reporttasks > option:selected").each(function() {
+    report.tasks[i++] = Number($(this).val());
+  });
+  this._post(url, report, false, callback, []);
+};
+report.byproject = function (form, callback) {
+  var report, url, hours, i=0;
+  report = {};
+  url = "/data/report_projects";
+  if($("#reportstart").val() == "")
+    report.start = "2012-01-01";
+  else
     report.start = $("#reportstart").val();
-    report.end = $("#reportend").val();
-    report.projects =  new Array();
-    if($("#reportproject").val() != "")
-      report.projects[0] = $("#reportproject").val();
-    hours = $("label.active").children().attr("id").substr(5);
-    if(hours == "B") {
-      report.hours_standard = true;
-      report.hours_extra = true;
-    } else if(hours == "N") {
-      report.hours_standard = true;
-      report.hours_extra = false;
-    } else {
-      report.hours_standard = false;
-      report.hours_extra = true;
-    }
-    report.users_ids = new Array();
-    i = 0;
-    $("#usersList li.active").each(function() {
-      report.users_ids[i++] = $(this).attr("id");
-    });
-    report.tasks = new Array();
-    i = 0;
-    $("#reporttasks > option:selected").each(function() {
-      report.tasks[i++] = Number($(this).val());
-    });
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: JSON.stringify(report),
-      success: function(data) {
-        if(!data.error) {
-          callback(data.records);
-        } else {
-          $('#reportwait').modal('hide');
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  byproject: function (form, callback) {
-    var report, url, hours, i=0;
-    report = {};
-    url = "/data/report_projects";
-    if($("#reportstart").val() == "")
-      report.start = "2012-01-01";
-    else
-      report.start = $("#reportstart").val();
-    report.end = $("#reportend").val();
-    if($("#reportmode").is(":checked"))
-      report.mode = 'total';
-    else
-      report.mode = 'project';
-    report.projects =  new Array();
-    i = 0;
-    $("#projectsList li.active").each(function() {
-      report.projects[i++] = $(this).attr("id");
-    });
-    report.customers = new Array();
-    if($("#reportcustomer").val() != "") {
-      report.customers[0] = $("#reportcustomer").val();
-    }
-    i = 0;
-    report.tags = new Array();
-    $("#taglist li.active").each(function() {
-      report.tags[i++] = $(this).text();
-    });
-    $.ajax({
-      type: "POST",
-      url: url,
-      data: JSON.stringify(report),
-      success: function(data) {
-        if(!data.error) {
-          callback(data.records);
-        } else {
-          $('#reportwait').modal('hide');
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-}
+  report.end = $("#reportend").val();
+  if($("#reportmode").is(":checked"))
+    report.mode = 'total';
+  else
+    report.mode = 'project';
+  report.projects =  new Array();
+  i = 0;
+  $("#projectsList li.active").each(function() {
+    report.projects[i++] = $(this).attr("id");
+  });
+  report.customers = new Array();
+  if($("#reportcustomer").val() != "") {
+    report.customers[0] = $("#reportcustomer").val();
+  }
+  i = 0;
+  report.tags = new Array();
+  $("#taglist li.active").each(function() {
+    report.tags[i++] = $(this).text();
+  });
+  this._post(url, report, false, callback, []);
+};
 
 var file = {
   upload: function(filename, upComplete, upFailed) {
