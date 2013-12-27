@@ -40,7 +40,7 @@ function secondstage() {
 }
 
 function loadapprovals(data) {
-  generateExpencesList(data.expences, "expreq", true);
+  generateExpencesList(data.expences, ["expreq", true]);
   loadTrips(data.trips, "tripreq");
 }
 
