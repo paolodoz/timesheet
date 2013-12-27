@@ -43,7 +43,7 @@ $(document).ready(function() {
 
 function sendapprove(data) {
   var filter = { project_id:$("#expprj").val(), user_id: me._id, expence_id:data.ids[0], action:'approve', note:''}
-  approval.set(filter, resetExpForm, "");
+  approval.set(filter, resetExpForm);
 }
 function userdata(data){
   me = data;

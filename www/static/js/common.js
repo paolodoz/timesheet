@@ -28,12 +28,14 @@ var baseObject = {
       url: targetUrl,
       data: JSON.stringify(data),
       success: function(data) {
-        if(!data.error) {
+        if(data.error) {
+          showmessage("error", data.error);
+        } else if(data.records) {
           if(save)
             that._records = data.records;
           callback(data.records, args);
         } else {
-          showmessage("error", data.error);
+          callback(data,args);
         }
       },
       contentType: 'application/json; charset=utf-8',
@@ -301,40 +303,21 @@ expence.getexp = function(id) {
   return "Error, expence not found";
 };
 
-var approval = {
-  search : function (filter, callback, target) {
-    $.ajax({
-      type: "POST",
-      url: "/data/search_approvals",
-      data: JSON.stringify(filter),
-      success: function(data) {
-        if(!data.error) {
-          callback(data, target);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
-  },
-  set : function (filter, callback) {
-    $.ajax({
-      type: "POST",
-      url: "/data/approval",
-      data: JSON.stringify(filter),
-      success: function(data) {
-        if(!data.error) {
-          callback(data);
-        } else {
-          showmessage("error", data.error);
-        }
-      },
-      contentType: 'application/json; charset=utf-8',
-      dataType: "json",
-    });
+var approval = Object.create(baseObject);
+approval.search = function (filter, callback) {
+  args = [];
+  for(var i=2; i<arguments.length; i++) {
+    args.push(arguments[i]);
   }
-}
+  this._post('/data/search_approvals', filter, false, callback, args);
+};
+approval.set = function (filter, callback) {
+  args = [];
+  for(var i=2; i<arguments.length; i++) {
+    args.push(arguments[i]);
+  }
+  this._post('/data/approval', filter, false, callback, args);
+};
 
 var customer = {
   load : function (filter, callback, target) {
