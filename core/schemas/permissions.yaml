@@ -8,8 +8,70 @@ customer:
   account:
     get:
       True
+  administrator:
+    get:
+      True
+    update:
+      True
+    add:
+      True
+    remove:
+      True
+
+day:
+  administrator:
+    get:
+      True
+    update:
+      True
+    add:
+      True
+    remove:
+      True    
+
+file_upload:
+  administrator:
+    get:
+      True
+    update:
+      True
+    add:
+      True
+    remove:
+      True    
+
+file_download:
+  administrator:
+    get:
+      True
+    update:
+      True
+    add:
+      True
+    remove:
+      True 
+      
+file_remove:
+  administrator:
+    get:
+      True
+    update:
+      True
+    add:
+      True
+    remove:
+      True 
 
 user:
+  administrator:
+    get:
+      True
+    update:
+      True
+    add:
+      True
+    remove:
+      True
   employee:
     get:
       projections:
@@ -62,6 +124,8 @@ user:
           - _id        
     
 search_trips:
+  administrator:
+    True
   employee:
     type: object
     required: [ employee_id, user_id ]
@@ -99,6 +163,8 @@ search_trips:
 
     
 search_expences:
+  administrator:
+    True
   employee:
     type: object
     required: [ employee_id, user_id ]
@@ -137,6 +203,9 @@ search_expences:
 
     
 search_days:
+    administrator:
+      True
+      
     employee:
         type: object
         properties:
@@ -165,6 +234,8 @@ search_days:
           - users.user_id   
 
 push_days:
+    administrator:
+      True
     employee:
         type: object
         properties:
@@ -220,6 +291,9 @@ push_days:
                         enum : '%%projects%%'
 
 report_users_hours:
+    administrator:
+      True
+
     project manager:
         type: object
         properties:
@@ -247,6 +321,8 @@ report_users_hours:
           - users.hours.project      
   
 report_projects:
+    administrator:
+      True
     project manager:
         type: object
         required : [ 'users.hours.project' ]
@@ -275,6 +351,16 @@ report_projects:
    
                   
 project:
+  administrator:
+    get:
+      True
+    update:
+      True
+    add:
+      True
+    remove:
+      True
+
   employee:
     get:
       criteria:
@@ -353,6 +439,9 @@ project:
                 minimum: '%%approval_flow%%'
 
 push_trips:
+  administrator:
+    True
+
   # employees._id is validated manually
   employee:
         type: object
@@ -387,6 +476,8 @@ push_trips:
           enum: '%%projects%%'          
           
 push_expences:
+  administrator:
+    True
   # employees._id is validated manually
   employee:
         type: object
@@ -421,12 +512,16 @@ push_expences:
           enum: '%%projects%%'          
           
 search_tags:
+  administrator:
+    True
   project manager:
       True
   account:
       True
 
 approval:
+  administrator:
+    True
   project manager:
       type: object
       required: [ project_id ]
@@ -454,6 +549,10 @@ approval:
 
 
 search_approvals:
+
+  administrator:
+    True
+    
   project manager:
     oneOf:
       - type: object

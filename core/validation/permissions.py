@@ -63,8 +63,6 @@ def get_user_restrictions():
 def check_datamine_permissions(action, document):
     # Get datamine permissions
     
-    if cherrypy.session['_ts_user']['group'] == 'administrator': return
-    
     try:
         restrictions = cherrypy.session['_ts_user']['restrictions'][action]
     except (KeyError, TypeError):
@@ -79,8 +77,6 @@ def check_datamine_permissions(action, document):
     
 def check_remove_permissions(collection, document):
     
-    if cherrypy.session['_ts_user']['group'] == 'administrator': return
-    
     # Get remove permissions
     try:
         restrictions = cherrypy.session['_ts_user']['restrictions'][collection]['remove']
@@ -93,8 +89,6 @@ def check_remove_permissions(collection, document):
         validator(restrictions, format_checker=jsonschema.FormatChecker()).validate(document)
     
 def check_upsert_permissions(action, collection, document):
-    
-    if cherrypy.session['_ts_user']['group'] == 'administrator': return
     
     # Get add/update permissions
     try:
@@ -109,8 +103,6 @@ def check_upsert_permissions(action, collection, document):
 
 def check_get_permissions(collection, criteria, projection, sort):
 
-    if cherrypy.session['_ts_user']['group'] == 'administrator': return
-    
     # Get criteria permissions
     try:
         criteria_restrictions = cherrypy.session['_ts_user']['restrictions'][collection]['get']['criteria']
