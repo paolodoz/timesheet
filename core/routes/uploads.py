@@ -47,13 +47,13 @@ class UploadsRoutes:
             upload_id = uploads.upload()
             
         except ValidationError as e:
-            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            error_msg = '%s %s\n%s %s\n' % ('', type(e).__name__, str(e), traceback.format_exc())
             json_out = {'error' : '%s: %s' % (type(e).__name__, cgi.escape(e.message)), 'upload_id' : ''}
         except TSValidationError as e:
-            error_msg = '%s %s\n%s %s\n' % (str(json_in), type(e).__name__, str(e), traceback.format_exc())
+            error_msg = '%s %s\n%s %s\n' % ('', type(e).__name__, str(e), traceback.format_exc())
             json_out = {'error' : '%s: %s' % (type(e).__name__, cgi.escape(str(e))), 'upload_id' : '' }
         except Exception as e:      
-            error_msg = '%s %s\n%s %s\n' % (str(''), type(e).__name__, str(e), traceback.format_exc())
+            error_msg = '%s %s\n%s %s\n' % ('', type(e).__name__, str(e), traceback.format_exc())
             json_out = {'error' : '%s internal exception' % (type(e).__name__), 'upload_id' : '' } 
         else:
             error_msg = None
