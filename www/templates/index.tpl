@@ -77,9 +77,9 @@
 		<ul aria-labelledby="drop4" role="menu" class="dropdown-menu" id="menu_reports">
 	            <li role="presentation"><a href="/index/reports" tabindex="-1" role="menuitem">By user</a></li>
 	            <li role="presentation"><a href="/index/reports_prj" tabindex="-1" role="menuitem">By project</a></li>
-	            <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Per cliente</a></li>
+<!--	            <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Per cliente</a></li>
 	            <li class="divider" role="presentation"></li>
-	            <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Totale mese</a></li>
+	            <li role="presentation"><a href="#" tabindex="-1" role="menuitem">Totale mese</a></li>-->
 	        </ul>
 	  </li>
 	  
