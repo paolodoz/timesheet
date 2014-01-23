@@ -7,11 +7,11 @@ Setup
 
   1. Install Python package installer and some libraries
 
-        sudo apt-get install python-dev libldap2-dev libsasl2-dev
+        sudo apt-get install python-dev python-pip libldap2-dev libsasl2-dev
 
   2. Install the main dependencies
 
-        sudo pip install --upgrade PyYAML pymongo mako jsonschema python-ldap
+        sudo pip install --upgrade PyYAML pymongo mako jsonschema python-ldap pyOpenSSL
 
   3. Install and run [mongodb](http://docs.mongodb.org/manual/installation/) database
 
