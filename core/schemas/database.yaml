@@ -61,6 +61,18 @@ user:
         - employee
         - project manager
         - account
+    status:
+      type: string
+      enum:
+        - active
+        - disable
+    contract:
+      type: string
+      enum:
+        - oe
+        - ft
+        - st
+        - co
     password: 
       type: string
       minLength: 1

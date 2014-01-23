@@ -91,7 +91,7 @@ function loadUsers(data, args) {
   }
   $("#" + container).html(htmllist);
   $("#" + container + " .list-group-item").click(function() {
-    var filter = [{},{name:1, surname:1, salary:1, group:1},{surname:1}];
+    var filter = [{},{name:1, surname:1, salary:1, group:1, status:1, contract:1},{surname:1}];
     filter[0]._id = this.id;
     user.loadSingle(filter,loadUserDetails);
   });
@@ -101,6 +101,8 @@ function loadUserDetails(data) {
   cur_user = data[0];
   $("#username").text(cur_user.name + " " + cur_user.surname);
   $("#usergroup").val(cur_user.group);
+  $("#userstatus").val(cur_user.status);
+  $("#usercontract").val(cur_user.contract);
   $("#userhistory").html(generateSalary(cur_user.salary));
   addDeleteSalaryEvent();
   $("#btnsubmit, #btnreset").removeClass("hidden");
@@ -176,7 +178,7 @@ function filterlist(list, currenttext) {
   </div>
 </div>
 <div class="form-group">
-  <label for="usergroup" class="col-lg-4 control-label">Type</label>
+  <label for="usergroup" class="col-lg-4 control-label">Group</label>
   <div class="col-lg-6">
     <select class="form-control" id="usergroup">
       <option value=""></option>
@@ -184,6 +186,26 @@ function filterlist(list, currenttext) {
       <option value="administrator">Administrator</option>
       <option value="project manager">Project Manager</option>
       <option value="account">Account</option>
+    </select>
+  </div>
+</div>
+<div class="form-group">
+  <label for="userstatus" class="col-lg-4 control-label">Status</label>
+  <div class="col-lg-6">
+    <select class="form-control" id="userstatus">
+      <option value="active">Active</option>
+      <option value="disable">Disable</option>
+    </select>
+  </div>
+</div>
+<div class="form-group">
+  <label for="usercontract" class="col-lg-4 control-label">Contract</label>
+  <div class="col-lg-6">
+    <select class="form-control" id="usercontract">
+      <option value="oe">Open-ended contract</option>
+      <option value="ft">Fixed-term contract</option>
+      <option value="st">Stage</option>
+      <option value="co">Co.co.pro</option>
     </select>
   </div>
 </div>

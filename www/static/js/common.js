@@ -89,6 +89,8 @@ user.update = function (cuser, form, callback) {
   var datestart, i = 0;
   url = "/update/user";
   cuser.group = $("#usergroup").val();
+  cuser.status = $("#userstatus").val();
+  cuser.contract = $("#usercontract").val();
   if($("#userstart").val() != "" && $("#usernewsalary").val() != "") {
     datestart = new Date($("#userstart").val());
     datestart.setDate(datestart.getDate() -1);
