@@ -25,6 +25,7 @@ $(document).ready(function() {
       return;
     user.update(cur_user, "userForm",resetUsersForm);
   });
+  user.me(nop);
   validator = $("#userForm").validate({
     rules: {
       usernewsalary: {

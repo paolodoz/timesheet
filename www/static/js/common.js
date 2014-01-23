@@ -70,6 +70,7 @@ user.me = function (callback) {
     data : "",
     success: function (data) {
       $("span.badge").text(data.notifications);
+      $("span.badge").removeClass("hidden");
       callback(data);
     },
     dataType: "json",

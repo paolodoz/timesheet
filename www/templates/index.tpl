@@ -29,7 +29,7 @@
 <ul class="nav nav-pills nav-stacked">
   <li>
     <a href="/">
-      <span class="badge pull-right">0</span>
+      <span class="badge pull-right hidden"></span>
       <span class="glyphicon glyphicon-cog"></span> Control Panel
     </a>
   </li>
