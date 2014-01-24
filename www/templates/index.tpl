@@ -27,7 +27,7 @@
 <div class="row">
     <div class="col-lg-2">
 <ul class="nav nav-pills nav-stacked">
-  <li>
+  <li class="${'active' if view == 'index' else ''}">
     <a href="/">
       <span class="badge pull-right hidden"></span>
       <span class="glyphicon glyphicon-cog"></span> Control Panel
