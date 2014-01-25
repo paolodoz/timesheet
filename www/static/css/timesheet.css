@@ -75,6 +75,10 @@ form .error {
 .filename span {
   cursor: pointer;
 }
+
+#pm h2 {
+  clear:both;
+}
 #tripreq .popover-content dt {
   width:80px;
 }
