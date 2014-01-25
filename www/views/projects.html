@@ -36,6 +36,7 @@ $(document).ready(function() {
   });
   $("#projectbkgcolor").colorPicker({pickerDefault: '#008000'});
   $("#projecttxtcolor").colorPicker({pickerDefault: '#FFFFFF'});
+  labelPreview();
   validator = $("#projectForm").validate({
     rules: {
       projectcustomer: {
@@ -69,7 +70,19 @@ $(document).ready(function() {
       $(element).closest('.form-group').removeClass('has-error');
     }
   });
+  $("#projectbkgcolor, #projecttxtcolor, #projectname").change(function () {
+    labelPreview();
+  });
 });
+
+function labelPreview() {
+  var text = $("#projectname").val();
+  if(text == "")
+    text = "Project Name";
+  $("#eventpreview").html(text);
+  $("#eventpreview").css('background-color', $("#projectbkgcolor").val());
+  $("#eventpreview").css('color', $("#projecttxtcolor").val());
+}
 
 function userdata(data) {
   me = data;
@@ -287,7 +300,7 @@ function filterlist(list, currenttext) {
   <label for="projectbkgcolor" class="col-lg-4 control-label">Background Color</label>
   <div class="col-lg-8">
     <div class="input-group">
-      <input type="text" class="form-control color" id="projectbkgcolor" placeholder="#ffffff">
+      <input type="text" class="form-control color" id="projectbkgcolor" value="#008000">
     </div>
   </div>
 </div>
@@ -295,7 +308,15 @@ function filterlist(list, currenttext) {
   <label for="projecttxtcolor" class="col-lg-4 control-label">Text Color</label>
   <div class="col-lg-8">
     <div class="input-group">
-      <input type="text" class="form-control color" id="projecttxtcolor" placeholder="#ffffff">
+      <input type="text" class="form-control color" id="projecttxtcolor" value="#FFFFFF">
+    </div>
+  </div>
+</div>
+<div class="form-group">
+  <label class="col-lg-4 control-label">Label preview</label>
+  <div class="col-lg-8">
+    <div class="input-group">
+      <span id="eventpreview"></span>
     </div>
   </div>
 </div>

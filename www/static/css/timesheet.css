@@ -150,3 +150,20 @@ form .error {
   float:right;
   max-width:35%;
 }
+
+button[type="reset"] {
+  background-color:#c2c2c2;
+}
+.panel-default > .panel-heading {
+  background-color:#c2c2c2;
+}
+
+.nav-pills hr {
+  border-color:#a2a2a2;
+}
+
+#eventpreview {
+  padding:2px 5px;
+  border-radius: 4px;
+  margin:0;
+}
