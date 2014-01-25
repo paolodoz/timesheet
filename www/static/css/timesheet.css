@@ -167,3 +167,7 @@ button[type="reset"] {
   border-radius: 4px;
   margin:0;
 }
+
+.fc-content {
+  background-color:#FFF;
+}
