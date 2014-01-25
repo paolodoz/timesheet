@@ -154,11 +154,16 @@ function loadprojects(myprj) {
   $("#hoursproject").html(htmlselect);
   $("#hoursproject").change(function() {
     var htmlselect = "";
+    $("#hoursisextra").prop("disabled",false);
     for(i = 0; i < myprj.length; i++) {
       if (myprj[i]._id == $(this).val())  {
         for(j = 0; j < myprj[i].tasks.length; j++) {
           index = myprj[i].tasks[j];
           htmlselect += "<option value='" + index + "'>" + getTaskName(index) + "</option>";
+        }
+        if (myprj[i].name == "ABI_H000") {
+          $("#hoursisextra").prop("disabled",true);
+          $("#hoursisextra").prop("checked",false);
         }
         break;
       }
@@ -331,7 +336,7 @@ function loadCalendarHours(list) {
 	  <div class="form-group">
 	    <label for="hoursamount" class="col-lg-3 control-label">Hours</label>
 	    <div class="col-lg-7">
-		<div id="hours-range"></div>
+              <div id="hours-range"></div>
 	    </div>
 	      <div class="col-lg-2">
 	        <input type="text" class="form-control" name="hoursamount" id="hoursamount">
