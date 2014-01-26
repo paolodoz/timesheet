@@ -630,13 +630,13 @@ function generateExpencesDetails(id, container, edit) {
     html += '<thead><tr><th></th>';
   html += '<th>Date</th><th>City</th><th>Amount</th><th>Category</th><th>Description</th><th>Paid by company</th><th>Invoice</th><th>Receipt</th></thead><tbody>';
   var element = findExpence(id);
-  for(j=0; j<element.objects.length; j++) {
+  for(j=0; j < element.objects.length; j++) {
     html += '<tr>' + generateExpencesDetailsRow(element.objects[j], edit) + '</tr>';
   }
   html += "</tbody></table>";
   $(container).html(html);
   if(!edit) {
-    $(container).find("tbody tr td:eq(0)").click(function() {
+    $(container).find("tr td:first-child").click(function() {
       editClick($(this));
     });
   }
