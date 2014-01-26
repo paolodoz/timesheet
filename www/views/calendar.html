@@ -30,13 +30,10 @@ $(document).ready( function() {
     }
   });
   $("#hours-range").slider({
-    range: "min",
-    min: 1,
-    max: 8,
-    value: 8,
-    slide: function( event, ui ) {
-      $("#hoursamount").val( ui.value );
-    }
+    tooltip:'hide'
+  });
+  $("#hours-range").on('slide', function(slideEvt) {
+    $("#hoursamount").val(slideEvt.value);
   });
   $(document).keypress(function(e) {
     if(e.keyCode == 13) {
@@ -84,7 +81,10 @@ $(document).ready( function() {
     }
     $('#removehours').modal('hide');
   });
-  $("#hoursamount").val( $("#hours-range").slider("value"));
+  $("#hoursamount").val( $("#hours-range").slider("getValue"));
+  $("#hoursamount").focusout(function() {
+    $("#hours-range").slider("setValue", parseInt($(this).val()));
+  });
   currentVis();
   user.me(userdata);
   $("#hoursisextra").bootstrapSwitch();
@@ -338,7 +338,7 @@ function loadCalendarHours(list) {
 	  <div class="form-group">
 	    <label for="hoursamount" class="col-lg-3 control-label">Hours</label>
 	    <div class="col-lg-7">
-              <div id="hours-range"></div>
+              <input type="text" style="width:300px;" id="hours-range" data-slider-min="1" data-slider-max="8" data-slider-step="1" data-slider-value="8" >
 	    </div>
 	      <div class="col-lg-2">
 	        <input type="text" class="form-control" name="hoursamount" id="hoursamount">
