@@ -292,9 +292,9 @@ expence.update = function (isupdate, form, status, callback) {
 };
 expence.getexp = function(id) {
   var i;
-  for(i = 0; i < _records.length; i++) {
-    if(_records[i]._id == id)
-      return _records[i];
+  for(i = 0; i < this._records.length; i++) {
+    if(this._records[i]._id == id)
+      return this._records[i];
   }
   return "Error, expence not found";
 };
