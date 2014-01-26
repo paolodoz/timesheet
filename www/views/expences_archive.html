@@ -3,8 +3,7 @@
 var validator, element, elemnum = 0, myprj = [];
 var totals = new Array();
 $(document).ready(function() {
-  $(".datepicker").datepicker();
-  $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
+  $(".datepicker").datepicker({format: "yyyy-mm-dd"});
   validator = $("#expForm").validate();
   $("input[name='expdatestart'], input[name='expdateend']").rules("add", {
     required: true,
@@ -103,13 +102,19 @@ function loadTrips(data, container) {
     <div class="form-group">
       <label for="expdatestart" class="col-lg-6 control-label">Date Start</label>
       <div class="col-lg-6">
-        <input type="text" class="form-control datepicker" id="expdatestart" name="expdatestart" placeholder="2013-01-01">
+        <div class="input-group">
+          <span class="input-group-addon glyphicon glyphicon-calendar"></span>
+          <input type="text" class="form-control datepicker" id="expdatestart" name="expdatestart" placeholder="2013-01-01">
+        </div>
       </div>
     </div>
     <div class="form-group">
       <label for="expdateend" class="col-lg-6 control-label">Date End</label>
       <div class="col-lg-6">
-        <input type="text" class="form-control datepicker" id="expdateend" name="expdateend" placeholder="2013-01-31">
+        <div class="input-group">
+          <span class="input-group-addon glyphicon glyphicon-calendar"></span>
+          <input type="text" class="form-control datepicker" id="expdateend" name="expdateend" placeholder="2013-01-31">
+        </div>
       </div>
     </div>
     <div class="form-group hidden pmaccount">

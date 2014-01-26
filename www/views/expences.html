@@ -202,8 +202,7 @@ function newtableline() {
     $("#exptable tbody").append(generatetableline(++elemnum));
     var row = $("#exptable tbody tr:last");
     generateSelect($(row).find("select[name='" + elemnum + "exp_category']"));
-    $(row).find("input[name='" + elemnum + "exp_date']").datepicker();
-    $(row).find("input[name='" + elemnum + "exp_date']").datepicker("option", "dateFormat", "yy-mm-dd");
+    $(row).find("input[name='" + elemnum + "exp_date']").datepicker({format: "yyyy-mm-dd"});
     $("#exptable tbody tr:last td:last").click(function() {
       removetableline($(this).parent());
       computetotal();

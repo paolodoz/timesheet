@@ -2,8 +2,7 @@
 var cur_user, validator;
 $(document).ready(function() {
   loadUsersList("usersList");
-  $(".datepicker").datepicker();
-  $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
+  $(".datepicker").datepicker({format: "yyyy-mm-dd"});
   $('.rapidsearch').keyup(function () {
     var list = this.id.substr(3);
     var currenttext = $(this).val().toLowerCase();
@@ -229,7 +228,10 @@ function filterlist(list, currenttext) {
 <div class="form-group">
   <label for="userstart" class="col-lg-4 control-label">From date</label>
   <div class="col-lg-6">
-    <input type="text" class="form-control datepicker" id="userstart" name="userstart" placeholder="2012-03-01">
+    <div class="input-group">
+      <span class="input-group-addon glyphicon glyphicon-calendar"></span>
+      <input type="text" class="form-control datepicker" id="userstart" name="userstart" placeholder="2012-03-01">
+    </div>
   </div>
 </div>
 <div class="form-group">

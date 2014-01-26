@@ -6,14 +6,15 @@
     <!-- Bootstrap -->
     <link rel="icon" href="/static/images/favicon.ico" />
     <link href="/static/css/bootstrap.min.css" rel="stylesheet" media="screen" />
-    <link rel='stylesheet' type='text/css' href='/static/css/redmond/jquery-ui-1.10.3.custom.min.css' />
+    <link rel='stylesheet' type='text/css' href='/static/css/redmond/jquery-ui-1.10.4.custom.min.css' />
     <link href="/static/css/bootstrap-switch.min.css" rel="stylesheet" media="screen" />
+    <link href="/static/css/bootstrap-datepicker.css" rel="stylesheet" media="screen" />
     <link href="/static/css/flat-ui-fonts.css" rel="stylesheet" media="screen" />
     <link href="/static/css/timesheet.css" rel="stylesheet" media="screen" />
     <!-- JavaScript plugins (requires jQuery) -->
     <script src="/static/js/jquery-1.10.2.js"></script>
     <script src="/static/js/json2.js"></script>
-    <script src="/static/js/jquery-ui-1.10.3.custom.min.js"></script>
+    <script src="/static/js/jquery-ui-1.10.4.custom.min.js"></script>
     <script src="/static/js/jquery.validate.min.js"></script>
     <script src="/static/js/common.js"></script>
   </head>
@@ -159,6 +160,7 @@
 
     <!-- Include all compiled plugins (below), or include individual files as needed -->
     <script src="/static/js/bootstrap.min.js"></script>
+    <script src="/static/js/bootstrap-datepicker.js"></script>
     <script src="/static/js/fullcalendar.min.js"></script>
 
     <!-- Enable responsive features in IE8 with Respond.js (https://github.com/scottjehl/Respond) 

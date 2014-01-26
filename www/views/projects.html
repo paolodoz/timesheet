@@ -9,8 +9,7 @@ $(document).ready(function() {
     htmltasks += "<option value='" + i + "'>" + tasks[i] + "</option>";
   }
   $("#projecttasks").html(htmltasks);
-  $(".datepicker").datepicker();
-  $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
+  $(".datepicker").datepicker({format: "yyyy-mm-dd"});
   $('.rapidsearch').keyup(function () {
     var list = this.id.substr(3);
     var currenttext = $(this).val().toLowerCase();
@@ -286,17 +285,23 @@ function filterlist(list, currenttext) {
     </div>
 </div>
 <div class="form-group">
-    <label for="projectstart" class="col-lg-4 control-label">Date start</label>
-    <div class="col-lg-8">
+  <label for="projectstart" class="col-lg-4 control-label">Date start</label>
+  <div class="col-lg-8">
+    <div class="input-group">
+      <span class="input-group-addon glyphicon glyphicon-calendar"></span>
       <input type="text" class="form-control datepicker" id="projectstart" name="projectstart" placeholder="2013-01-01">
     </div>
   </div>
+</div>
 <div class="form-group">
-    <label for="projectend" class="col-lg-4 control-label">Date end</label>
-    <div class="col-lg-8">
+  <label for="projectend" class="col-lg-4 control-label">Date end</label>
+  <div class="col-lg-8">
+    <div class="input-group">
+      <span class="input-group-addon glyphicon glyphicon-calendar"></span>
       <input type="text" class="form-control datepicker" id="projectend" name="projectend" placeholder="2020-12-31">
     </div>
   </div>
+</div>
 <div class="form-group">
   <label for="projectbkgcolor" class="col-lg-4 control-label">Background Color</label>
   <div class="col-lg-8">

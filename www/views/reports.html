@@ -8,8 +8,7 @@ $(document).ready(function() {
   }
   $("#reporttasks").html(htmltasks);
   $("div.results").hide();
-  $(".datepicker").datepicker();
-  $(".datepicker").datepicker("option", "dateFormat", "yy-mm-dd");
+  $(".datepicker").datepicker({format: "yyyy-mm-dd"});
   $('.rapidsearch').keyup(function () {
     var list = this.id.substr(3);
     var currenttext = $(this).val().toLowerCase();
@@ -177,13 +176,19 @@ function filterlist(list, currenttext) {
       <div class="form-group">
         <label for="reportstart" class="col-lg-4 control-label">Date start</label>
         <div class="col-lg-6">
-          <input type="text" class="form-control datepicker" id="reportstart" name="reportstart" placeholder="2013-01-01">
+          <div class="input-group">
+            <span class="input-group-addon glyphicon glyphicon-calendar"></span>
+            <input type="text" class="form-control datepicker" id="reportstart" name="reportstart" placeholder="2013-01-01">
+          </div>
         </div>
       </div>
       <div class="form-group">
         <label for="reportend" class="col-lg-4 control-label">Date end</label>
         <div class="col-lg-6">
-          <input type="text" class="form-control datepicker" id="reportend" name="reportend" placeholder="2020-12-31">
+          <div class="input-group">
+            <span class="input-group-addon glyphicon glyphicon-calendar"></span>
+            <input type="text" class="form-control datepicker" id="reportend" name="reportend" placeholder="2020-12-31">
+          </div>
         </div>
       </div>
       <div class="form-group">
