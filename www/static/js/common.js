@@ -701,7 +701,7 @@ function generateExpencesDetailsRow(row,edit) {
 
 function saveExpence(id, td) {
   element = expence.getexp(id);
-  var i = $("#expresults tr").index($(td).parent()) - 1;
+  var i = $(td).closest('tr').index();
   $(td).nextAll("td").each(function(index) {
     switch(index) {
       case 0:
