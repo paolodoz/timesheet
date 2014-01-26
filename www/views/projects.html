@@ -184,6 +184,7 @@ function loadProjectDetails(data) {
   $("#projecttags").val("");
   $("#projectbkgcolor").prev("span").css("background-color",$("#projectbkgcolor").val());
   $("#projecttxtcolor").prev("span").css("background-color",$("#projecttxtcolor").val());
+  labelPreview();
   $(".btn-danger").removeClass("hidden");
   $("#btnsubmit").html("<span class='glyphicon glyphicon-edit'></span> Update");
 }
