@@ -670,7 +670,7 @@ function editClick(td) {
         break;
     }
   });
-  $(td).parent().find("input[type='checkbox']").wrap('<div class="make-switch switch-small" data-on-label="YES" data-off-label="NO"  />').parent().bootstrapSwitch();
+  $(td).parent().find("input[type='checkbox']").addClass('switch-small').attr('data-on-label','YES').attr('data-off-label','NO').bootstrapSwitch();
   $(td).unbind();
   $(td).html('<span class="glyphicon glyphicon-save"></span>  Save');
   $(td).click(function() {

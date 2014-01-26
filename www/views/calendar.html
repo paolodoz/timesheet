@@ -1,4 +1,5 @@
 <link rel='stylesheet' type='text/css' href='/static/css/fullcalendar.css' />
+<script src="/static/js/bootstrap-switch.min.js"></script>
 <script type="text/javascript">
 var me, validator, datestart, dateend, cevent, calendar, firstday, lastday, myhours = new Array();
 $(document).ready( function() {
@@ -86,6 +87,7 @@ $(document).ready( function() {
   $("#hoursamount").val( $("#hours-range").slider("value"));
   currentVis();
   user.me(userdata);
+  $("#hoursisextra").bootstrapSwitch();
   validator = $("#frmedithours").validate({
     rules: {
       hoursamount: {
@@ -154,7 +156,7 @@ function loadprojects(myprj) {
   $("#hoursproject").html(htmlselect);
   $("#hoursproject").change(function() {
     var htmlselect = "";
-    $("#hoursisextra").prop("disabled",false);
+    $("#hoursisextra").bootstrapSwitch('setDisabled',false);
     for(i = 0; i < myprj.length; i++) {
       if (myprj[i]._id == $(this).val())  {
         for(j = 0; j < myprj[i].tasks.length; j++) {
@@ -162,8 +164,8 @@ function loadprojects(myprj) {
           htmlselect += "<option value='" + index + "'>" + getTaskName(index) + "</option>";
         }
         if (myprj[i].name == "ABI_H000") {
-          $("#hoursisextra").prop("disabled",true);
-          $("#hoursisextra").prop("checked",false);
+          $("#hoursisextra").bootstrapSwitch('setDisabled',true);
+          $("#hoursisextra").bootstrapSwitch('setState',false);
         }
         break;
       }
@@ -345,7 +347,7 @@ function loadCalendarHours(list) {
 	  <div class="form-group">
 	    <label for="hoursisextra" class="col-lg-3 control-label">Is extra hour</label>
 	    <div class="col-lg-9">
-	      <input type="checkbox" id="hoursisextra">
+              <input type="checkbox" id="hoursisextra" data-on-label="YES" data-off-label="NO" class="switch-small">
 	    </div>
 	  </div>
 	  <div class="form-group">

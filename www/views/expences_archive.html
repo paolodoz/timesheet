@@ -1,4 +1,4 @@
-<script src="/static/js/bootstrap-switch.js"></script>
+<script src="/static/js/bootstrap-switch.min.js"></script>
 <script type="text/javascript">
 var validator, element, elemnum = 0, myprj = [];
 var totals = new Array();
@@ -10,12 +10,13 @@ $(document).ready(function() {
     required: true,
     dateISO: true
   });
+  $("#exppersonal").bootstrapSwitch();
   $("#expForm").submit(function(event) {
     event.preventDefault();
     if(!validator.form())
       return;
     var filter;
-    if($("#exppersonal").bootstrapSwitch('status')) {
+    if($("#exppersonal").bootstrapSwitch('state')) {
       filter = {start: $("#expdatestart").val() , end: $("#expdateend").val(), status: [0,1,2], user_id:me._id, employee_id:me._id };
     } else {
       filter = {start: $("#expdatestart").val() , end: $("#expdateend").val(), status: [0,1,2], responsible_id:me._id };
@@ -121,9 +122,7 @@ function loadTrips(data, container) {
     <div class="form-group hidden pmaccount">
       <label for="exppersonal" class="col-lg-6 control-label">My expences</label>
       <div class="col-lg-6">
-        <div class="make-switch switch-small" data-on-label="YES" data-off-label="NO" id="exppersonal">
-          <input type="checkbox" name="exppersonal" checked>
-        </div>
+        <input type="checkbox" name="exppersonal" checked class="switch-small" data-on-label="YES" data-off-label="NO" id="exppersonal">
       </div>
     </div>
     <div class="form-group">

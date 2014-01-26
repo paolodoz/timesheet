@@ -1,4 +1,4 @@
-<script src="/static/js/bootstrap-switch.js"></script>
+<script src="/static/js/bootstrap-switch.min.js"></script>
 <script type="text/javascript">
 var validator, isupdate = false, elemnum = 0, cur_file;
 var totals = new Array();
@@ -31,6 +31,7 @@ $(document).ready(function() {
     else
       expence.update(isupdate, "expForm", 3, resetExpForm);
   });
+  $("#expuser_id").bootstrapSwitch();
   newtableline();
   var today = new Date();
   today = new Date(today.setDate(1));
@@ -118,11 +119,11 @@ function loadExpDetails(data, container) {
     $("input[name=" + (j+1) + "exp_amount]").val(data.objects[j].amount);
     $("select[name=" + (j+1) + "exp_category]").val(data.objects[j].category);
     $("input[name=" + (j+1) + "exp_description]").val(data.objects[j].description);
-    $("input[name=" + (j+1) + "exp_invoice]").parent().parent().bootstrapSwitch('setState',data.objects[j].invoice);
+    $("input[name=" + (j+1) + "exp_invoice]").bootstrapSwitch('setState',data.objects[j].invoice);
     if(data.objects[j].paidby == 0)
-      $("input[name=" + (j+1) + "exp_paidby]").parent().parent().bootstrapSwitch('setState', false);
+      $("input[name=" + (j+1) + "exp_paidby]").bootstrapSwitch('setState', false);
     else
-      $("input[name=" + (j+1) + "exp_paidby]").parent().parent().bootstrapSwitch('setState', true);
+      $("input[name=" + (j+1) + "exp_paidby]").bootstrapSwitch('setState', true);
     if(data.objects[j].file) {
       cur_file = $("input[name=" + (j+1) + "exp_file]");
       $(cur_file).addClass("hidden");
@@ -238,7 +239,7 @@ function newtableline() {
         file.upload($(this)[0].files[0], uploadComplete, uploadFailed);
       }
     });
-    $(row).find("input[type='checkbox']").wrap('<div class="make-switch switch-small" data-on-label="YES" data-off-label="NO">').parent().bootstrapSwitch();
+    $(row).find("input[type='checkbox']").addClass('switch-small').attr('data-on-label','YES').attr('data-off-label','NO').bootstrapSwitch();
 }
 function fillWithData() {
   var date = $("#exptable tr:last").prev().find("td:eq(1) input").val();
@@ -307,9 +308,7 @@ function generatetableline(index) {
     <div class="form-group">
       <label for="offerfile" class="col-lg-6 control-label">Personal Expences</label>
       <div class="col-lg-6">
-        <div class="make-switch switch-small" data-on-label="YES" data-off-label="NO">
-          <input type="checkbox" name="expuser_id" id="expuser_id" checked>
-        </div>
+        <input type="checkbox" name="expuser_id" id="expuser_id" class="switch-small" checked data-on-label="YES" data-off-label="NO">
       </div>
     </div>
     <div class="form-group">

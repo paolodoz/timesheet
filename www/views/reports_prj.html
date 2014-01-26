@@ -4,7 +4,7 @@
 <script type="text/javascript" src="/static/js/plugins/jqplot.barRenderer.min.js"></script>
 <script type="text/javascript" src="/static/js/plugins/jqplot.categoryAxisRenderer.min.js"></script>
 <link rel="stylesheet" type="text/css" href="/static/css/jquery.jqplot.min.css" />
-<script src="/static/js/bootstrap-switch.js"></script>
+<script src="/static/js/bootstrap-switch.min.js"></script>
 <script type="text/javascript">
 var validator;
 $(document).ready(function() {
@@ -20,6 +20,7 @@ $(document).ready(function() {
     }
     filterlist($('#' + list + 'List li'), currenttext);
   });
+  $("#reportmode").bootstrapSwitch();
   $("#reportstart").change(function() {
     if($("#reportend").val() == "") {
       var firstday = new Date($(this).val());
@@ -319,9 +320,7 @@ function filterlist(list, currenttext) {
 <div class="form-group">
     <label for="reportmode" class="col-lg-4 control-label">Aggregate results</label>
     <div class="col-lg-6">
-        <div class="make-switch switch-small" data-on-label="YES" data-off-label="NO">
-          <input type="checkbox" name="reportmode" id="reportmode">
-        </div>
+          <input type="checkbox" name="reportmode" id="reportmode" class="switch-small" data-on-label="YES" data-off-label="NO">
     </div>
   </div>
 <div class="form-group">
