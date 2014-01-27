@@ -29,6 +29,15 @@ def check_credentials(username, password):
         
     return auth_error
     
+def check_active_status(username):
+    user_record = db.user.find({ 'username' : username }, { 'status' : 1, '_id' : 0}).limit(1)
+    if user_record: 
+        user_status = user_record[0].get('status')
+        print 'NDEEE', user_status
+        if user_status == 'active':
+            return
+        
+    return u"User not active."
 
 
 def check_auth(*args, **kwargs):
@@ -163,6 +172,9 @@ class AuthController(object):
             return self.get_loginform("", from_page=from_page)
         
         error_msg = check_credentials(username, password)
+        if not error_msg:
+            error_msg = check_active_status(username)
+        
         if error_msg:
             return self.get_loginform(username, error_msg, from_page)
         else:
