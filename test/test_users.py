@@ -52,7 +52,12 @@ class UserAPIAsAdmin(TestClassBase):
         user_data_pwd = [ { 'name' : 'NEW_USER_WITH_PWD', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [], 'status' : 'active'  } ]
         json_user_pwd = self._assert_req('/add/user', user_data_pwd, { 'error' : None, 'ids' : [ '' ] })
         id_user_pwd = json_user_pwd['ids'][0]
-         
+        
+        # Add one user with status != active, should not login
+        user_data_inactive = [ { 'name' : 'NEW_USER_INACTIVE', 'surname' : 'SURNAME', 'username' : 'NEW_USER_INACTIVE', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [], 'status' : 'disabled'  } ]
+        json_user_inactive = self._assert_req('/add/user', user_data_inactive, { 'error' : None, 'ids' : [ '' ] })
+        id_user_inactive = json_user_inactive['ids'][0]
+        
         user_data_nopwd = [ { 'name' : 'NEW_USER_WITH_NO_PWD', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT', 'salary' : [], 'status' : 'active'  } ]
         # Add user without password, should raise error
         self._assert_req('/add/user', user_data_nopwd, { 'error' : "ValidationError: u'' is too short", 'ids' : [ ] })
@@ -60,13 +65,17 @@ class UserAPIAsAdmin(TestClassBase):
         # Check if can't login with NEW_USER_WITH_NO_PWD
         self._login(user_data_nopwd[0], 'employee')
         self._assert_unlogged()
-         
+        
         # Check if can login with NEW_USER_WITH_PWD
         self._login(user_data_pwd[0], 'employee')
         self._assert_logged(user_data_pwd[0])
+
+        # Check if can login with NEW_USER_INACTIVE
+        self._login(user_data_inactive[0], 'employee')
+        self._assert_unlogged()
          
         # Delete the inserted user
-        self.execOnTearDown.append(('/remove/user', [ { '_id' :  id_user_pwd } ], { 'error' : None }))
+        self.execOnTearDown.append(('/remove/user', [ { '_id' :  id_user_pwd }, { '_id' :  id_user_inactive } ], { 'error' : None }))
          
  
 class DayAPIAsEmployee(TestCaseAsEmployee):
