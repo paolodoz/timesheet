@@ -15,7 +15,8 @@ admin_data = [ { 'password' : admin_credentials['password'],
               'mobile' : '', 
               'city' : '', 
               'group' : 'administrator', 
-              'salary' : []  } ]
+              'salary' : [],
+              'status' : 'active'  } ]
 
 url = "https://localhost:9090"
 
@@ -101,7 +102,7 @@ class TestCaseAsEmployee(TestClassBase):
     def _add_user_data(self):
                 
         uri = '/add/user'
-        self.employee_data = [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'EMPNAME', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ]
+        self.employee_data = [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'EMPNAME', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [], 'status' : 'active' } ]
         
         employee_json = self._assert_req(uri, self.employee_data, { 'error' : None, 'ids' : [ '' ] })
         self.employee_id = employee_json['ids'][0]
@@ -121,7 +122,7 @@ class TestCaseAsManager(TestClassBase):
     def _add_user_data(self):        
         # Add manager user
         uri = '/add/user'
-        self.manager_data = [ { 'name' : 'MANAGER', 'surname' : 'MANAGERSURNAME', 'username' : 'MANAGER', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'project manager', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ]
+        self.manager_data = [ { 'name' : 'MANAGER', 'surname' : 'MANAGERSURNAME', 'username' : 'MANAGER', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'project manager', 'password' : 'mypassword', 'salt' : '', 'salary' : [], 'status' : 'active'  } ]
     
         manager_json = self._assert_req(uri, self.manager_data, { 'error' : None, 'ids' : [ '' ] })
         self.manager_id = manager_json['ids'][0]
@@ -144,7 +145,7 @@ class TestCaseAsAccount(TestClassBase):
     def _add_user_data(self):        
         # Add manager user
         uri = '/add/user'
-        self.account_data = [ { 'name' : 'ACCOUNT', 'surname' : 'ACCOUNTSURNAME', 'username' : 'ACCOUNT', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'account', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ]
+        self.account_data = [ { 'name' : 'ACCOUNT', 'surname' : 'ACCOUNTSURNAME', 'username' : 'ACCOUNT', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'account', 'password' : 'mypassword', 'salt' : '', 'salary' : [], 'status' : 'active'  } ]
     
         account_json = self._assert_req(uri, self.account_data, { 'error' : None, 'ids' : [ '' ] })
         self.account_id = account_json['ids'][0]
@@ -166,15 +167,15 @@ class TestCaseMultipleUsers(TestClassBase):
     def _add_multi_user_data(self):        
         uri = '/add/user'
         
-        self.account_data = [ { 'name' : 'ACCOUNT', 'surname' : 'ACCOUNTSURNAME', 'username' : 'ACCOUNT', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'account', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ]
+        self.account_data = [ { 'name' : 'ACCOUNT', 'surname' : 'ACCOUNTSURNAME', 'username' : 'ACCOUNT', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'account', 'password' : 'mypassword', 'salt' : '', 'salary' : [], 'status' : 'active'  } ]
         account_json = self._assert_req(uri, self.account_data, { 'error' : None, 'ids' : [ '' ] })
         self.account_id = account_json['ids'][0]
         
-        self.employee_data = [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'EMPNAME', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ]
+        self.employee_data = [ { 'name' : 'USERTEST', 'surname' : 'SURNAME', 'username' : 'EMPNAME', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [], 'status' : 'active' } ]
         employee_json = self._assert_req(uri, self.employee_data, { 'error' : None, 'ids' : [ '' ] })
         self.employee_id = employee_json['ids'][0]
         
-        self.manager_data = [ { 'name' : 'MANAGER', 'surname' : 'MANAGERSURNAME', 'username' : 'MANAGER', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'project manager', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ]
+        self.manager_data = [ { 'name' : 'MANAGER', 'surname' : 'MANAGERSURNAME', 'username' : 'MANAGER', 'email' : 'EMAIL@DOMAIN', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'project manager', 'password' : 'mypassword', 'salt' : '', 'salary' : [], 'status' : 'active'  } ]
         manager_json = self._assert_req(uri, self.manager_data, { 'error' : None, 'ids' : [ '' ] })
         self.manager_id = manager_json['ids'][0]
         

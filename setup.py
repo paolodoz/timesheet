@@ -124,7 +124,7 @@ def _add_default_admin(db):
         
         print 'OK!\n[+] Adding credentials ' + username + ':' + password + ' in group ' + group,
     
-        json_user = { 'password' : password, 'name' : username, 'surname' : 'Default', 'username': username, 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : group, 'salary' : []  }
+        json_user = { 'password' : password, 'name' : username, 'surname' : 'Default', 'username': username, 'email' : 'admin@localhost', 'phone' : '', 'mobile' : '', 'city' : '', 'group' : group, 'salary' : [], 'status' : 'active'  }
         validate_json_list('user', [ json_user ])
         
         if group == 'administrator':

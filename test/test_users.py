@@ -36,9 +36,9 @@ class UserAPIAsAdmin(TestClassBase):
     def test_username_uniqueness(self):
           
         # Add one customer (return one id)
-        self._assert_req('/add/user', [ { 'name' : 'UNIQTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [] } ], { 'error' : None, 'ids' : [ '' ] })
+        self._assert_req('/add/user', [ { 'name' : 'UNIQTEST', 'surname' : 'SURNAME', 'username' : 'USERNAME', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [], 'status' : 'active' } ], { 'error' : None, 'ids' : [ '' ] })
         # Add a double customer (UNIQ test)
-        self._assert_req('/add/user', [ { 'name' : 'UNIQTEST', 'surname' : 'SURNAME2', 'username' : 'USERNAME', 'email' : 'EMAIL2@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ], { 'error' : "DuplicateKeyError internal exception", 'ids' : [ ] })
+        self._assert_req('/add/user', [ { 'name' : 'UNIQTEST', 'surname' : 'SURNAME2', 'username' : 'USERNAME', 'email' : 'EMAIL2@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [], 'status' : 'active'  } ], { 'error' : "DuplicateKeyError internal exception", 'ids' : [ ] })
         # Get the inserted customer (is only one because UNIQ)
         self._assert_req('/get/user', [ { 'name' : 'UNIQTEST' }, { 'surname' : 1, '_id' : 0 }, { } ], { 'error': None, 'records' : [ { 'surname' : 'SURNAME'  } ] })
           
@@ -49,11 +49,11 @@ class UserAPIAsAdmin(TestClassBase):
     def test_user_add(self):
          
         # Add one user with password, should login
-        user_data_pwd = [ { 'name' : 'NEW_USER_WITH_PWD', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  } ]
+        user_data_pwd = [ { 'name' : 'NEW_USER_WITH_PWD', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [], 'status' : 'active'  } ]
         json_user_pwd = self._assert_req('/add/user', user_data_pwd, { 'error' : None, 'ids' : [ '' ] })
         id_user_pwd = json_user_pwd['ids'][0]
          
-        user_data_nopwd = [ { 'name' : 'NEW_USER_WITH_NO_PWD', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT', 'salary' : []  } ]
+        user_data_nopwd = [ { 'name' : 'NEW_USER_WITH_NO_PWD', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT', 'salary' : [], 'status' : 'active'  } ]
         # Add user without password, should raise error
         self._assert_req('/add/user', user_data_nopwd, { 'error' : "ValidationError: u'' is too short", 'ids' : [ ] })
          
