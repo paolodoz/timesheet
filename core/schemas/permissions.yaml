@@ -77,6 +77,8 @@ user:
       projections:
         - salt
         - password
+        - contract
+        - status
       criteria:
         type: object
         properties:
@@ -85,6 +87,7 @@ user:
             pattern: '%%_id%%'
         required: 
           - _id
+        
     update:
         type: object
         properties:
@@ -95,11 +98,13 @@ user:
           - _id      
   project manager:
     get:
-      # Project manager can see every user record but salt, password and salary
+      # Project manager can see every user record but the following
       projections:
         - salt
         - password
-        - salary       
+        - salary
+        - contract
+        - status
     update:
         type: object
         properties:
@@ -113,7 +118,9 @@ user:
       projections:
         - salt
         - password
-        - salary       
+        - salary
+        - contract
+        - status     
     update:
         type: object
         properties:

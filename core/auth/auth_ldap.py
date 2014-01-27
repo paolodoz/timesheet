@@ -49,7 +49,8 @@ def _migrate_user_to_db(ldap_result_dict, password, group):
                  'group' : group,
                  'password' : '',
                  'salary' : [],
-                 'salt' : ''
+                 'salt' : '',
+                 'status': 'active'
                  }
     
     # Copy user_dict with a fake password to permit correct validation

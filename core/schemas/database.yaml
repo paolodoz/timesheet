@@ -65,7 +65,7 @@ user:
       type: string
       enum:
         - active
-        - disable
+        - disabled
     contract:
       type: string
       enum:

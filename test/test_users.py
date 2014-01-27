@@ -8,7 +8,7 @@ class UserAPIAsAdmin(TestClassBase):
         self._assert_req('/remove/user', [ { 'name' : 'UNEXISTANT'  } ], { 'error' : None  })
           
         # Add two elements USERTEST1 and USERTEST2
-        self._assert_req('/add/user', [ { 'name' : 'USERTEST1', 'surname' : 'SURNAME', 'username' : 'USERNAME1' , 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : []  }, { 'name' : 'USERTEST2', 'surname' : 'SURNAME', 'username' : 'USERNAME2' , 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'myotherpassword', 'salt' : '', 'salary' : []  } ], { 'error' : None, 'ids' : [ '', '' ] })
+        self._assert_req('/add/user', [ { 'name' : 'USERTEST1', 'surname' : 'SURNAME', 'username' : 'USERNAME1' , 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [], 'contract' : 'oe', 'status' : 'active'  }, { 'name' : 'USERTEST2', 'surname' : 'SURNAME', 'username' : 'USERNAME2' , 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'USER1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'myotherpassword', 'salt' : '', 'salary' : [], 'contract' : 'oe', 'status' : 'active'   } ], { 'error' : None, 'ids' : [ '', '' ] })
         # Delete USERTEST1
         self._assert_req('/remove/user', [ { 'name' : 'USERTEST1'  }, { 'name' : 'USERTEST2'  } ], { 'error' : None })
         # Check if USERTEST1 is deleted
@@ -16,10 +16,22 @@ class UserAPIAsAdmin(TestClassBase):
   
         # Delete the remaining user
         self.execOnTearDown.append(('/remove/user', [ { 'name' : 'USERTEST2'  } ], { 'error' : None }))
-  
+        
         # Add one user with unknown group
-        self._assert_req('/add/user', [ { 'name' : 'NEW_USER_NOGROUP', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'EMPLOIERZ', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT', 'salary' : []  } ], { 'error' : "ValidationError: u'EMPLOIERZ' is not one of ['administrator', 'employee', 'project manager', 'account']", 'ids' : [ ] })
+        self._assert_req('/add/user', [ { 'name' : 'NEW_USER_NOGROUP', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_NO_PWD', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'EMPLOIERZ', 'password' : '', 'salt' : 'RANDOM_UNUSED_SALT', 'salary' : [], 'contract' : 'oe', 'status' : 'active'  } ], { 'error' : "ValidationError: u'EMPLOIERZ' is not one of ['administrator', 'employee', 'project manager', 'account']", 'ids' : [ ] })
+        
+        
+    def test_user_private_values(self):
+        
+        user_data_pwd = [ { 'name' : 'NEW_USER_WITH_PWD', 'surname' : 'SURNAME', 'username' : 'NEW_USER_WITH_PWD', 'email' : 'EMAIL@DOMAIN.COM', 'phone' : '123456789', 'mobile' : 'MOB1', 'city' : 'USERCITY', 'group' : 'employee', 'password' : 'mypassword', 'salt' : '', 'salary' : [], 'contract' : 'oe', 'status' : 'active'  } ]
+        json_user_pwd = self._assert_req('/add/user', user_data_pwd, { 'error' : None, 'ids' : [ '' ] })
+        id_user_pwd = json_user_pwd['ids'][0]
+        
+        # Get contract and status "private" fields available to admin
+        self._assert_req('/get/user', [ { 'name' : 'NEW_USER_WITH_PWD' }, { '_id' : 0, 'contract' : 1, 'status' : 1 }, { } ], { 'error': None, 'records' : [ { 'contract' : 'oe', 'status' : 'active' } ] })
          
+        # Delete the inserted user
+        self.execOnTearDown.append(('/remove/user', [ { '_id' :  id_user_pwd } ], { 'error' : None }))
   
     def test_username_uniqueness(self):
           
@@ -75,10 +87,16 @@ class DayAPIAsEmployee(TestCaseAsEmployee):
         # Get admin
         self._assert_req('/get/user', [ { '_id' : '1'*24 }, { '_id' : 1 }, { } ], { 'error': "ValidationError: u'111111111111111111111111' does not match '^%s$'" % (self.employee_id), 'records' : [ ] })
   
-        # Get its password and salt
+        # Get its private fields
         self._assert_req('/get/user', [ { '_id' : self.employee_id }, { 'password' : 1 }, { } ], { 'error': "TSValidationError: Field 'get.user.password' is restricted for current user", 'records' : [ ] })
         self._assert_req('/get/user', [ { '_id' : self.employee_id }, { 'salt' : 1 }, { } ], { 'error': "TSValidationError: Field 'get.user.salt' is restricted for current user", 'records' : [ ] })
+        self._assert_req('/get/user', [ { '_id' : self.employee_id }, { 'status' : 1 }, { } ], { 'error': "TSValidationError: Field 'get.user.status' is restricted for current user", 'records' : [ ] })
+        self._assert_req('/get/user', [ { '_id' : self.employee_id }, { 'contract' : 1 }, { } ], { 'error': "TSValidationError: Field 'get.user.contract' is restricted for current user", 'records' : [ ] })
   
+        # Update private fields
+        # TODO: restrict this
+        # self._assert_req('/update/user', { '_id' : self.employee_id, 'status' : 'active' }, { 'error': "none" })
+   
         # Wrong email type
         self._assert_req('/update/user', { '_id' : self.employee_id, 'email' : 'CHANGEDEMAIL#DOMAIN.COM' }, {u'error': u"ValidationError: u'CHANGEDEMAIL#DOMAIN.COM' is not a 'email'"})
          
@@ -107,10 +125,16 @@ class DayAPIAsManager(TestCaseAsManager):
         # Get admin salary
         self._assert_req('/get/user', [ { '_id' : '1'*24 }, { 'salary' : 1 }, { } ], { 'error': "TSValidationError: Field 'get.user.salary' is restricted for current user", 'records' : [ ] })
         
-        # Get its password and salt
+        # Get its private fields
         self._assert_req('/get/user', [ { '_id' : self.manager_id }, { 'password' : 1 }, { } ], { 'error': "TSValidationError: Field 'get.user.password' is restricted for current user", 'records' : [ ] })
         self._assert_req('/get/user', [ { '_id' : self.manager_id }, { 'salt' : 1 }, { } ], { 'error': "TSValidationError: Field 'get.user.salt' is restricted for current user", 'records' : [ ] })
- 
+        self._assert_req('/get/user', [ { '_id' : self.manager_id }, { 'status' : 1 }, { } ], { 'error': "TSValidationError: Field 'get.user.status' is restricted for current user", 'records' : [ ] })
+        self._assert_req('/get/user', [ { '_id' : self.manager_id }, { 'contract' : 1 }, { } ], { 'error': "TSValidationError: Field 'get.user.contract' is restricted for current user", 'records' : [ ] })
+
+        # Update private fields
+        # TODO: restrict this
+        # self._assert_req('/update/user', { '_id' : self.manager_id, 'status' : 'active' }, { 'error': "none" })
+
         # Delete himself
         self._assert_req('/remove/user', [ {  '_id' : self.manager_id } ], { 'error': "TSValidationError: Access to 'remove.user' is restricted for current user" })
  
