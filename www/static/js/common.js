@@ -532,7 +532,7 @@ function generateDropDate(from,to) {
 
 var expcategories = ["", "Hotel", "Transportation", "Food", "Other"];
 var statuses = ["", "Rejected", "Pending", "Draft", "Approved by PM", "Approved by administration", "Refounded"];
-var tasks = ["","Office","Away","Holiday","Bank Holiday","Leave","Unpaid leave"];
+var tasks = ["","Office","Away","Holiday","Bank Holiday","Leave","Unpaid leave", "Short sick leave", "Long sick leave"];
 function getTaskName(id) {
   return tasks[id];
 }
