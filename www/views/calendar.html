@@ -27,6 +27,9 @@ $(document).ready( function() {
         filter = { 'start' : firstday, 'end' : lastday, 'user_id' : me._id };
         day.load(filter,loadDays);
       }
+    },
+    eventRender: function (event, element) {
+      element.find('span.fc-event-title').html(element.find('span.fc-event-title').text());
     }
   });
   $("#hours-range").slider({
@@ -263,7 +266,7 @@ function loadCalendarHours(list) {
         var event = {};
         singleentry = list[i].users[0].hours[j];
         event.id = list[i].date + "+" + singleentry.project + "+" + singleentry.isextra;
-        event.title = project.getname(singleentry.project) + "." + getTaskName(singleentry.task) + " -- " + singleentry.amount + "h";
+        event.title = "<b>" + project.getname(singleentry.project) + "</b><br>" + singleentry.amount + "h -- " + getTaskName(singleentry.task);
         event.backgroundColor = project.getbkgcolor(singleentry.project);
         event.borderColor = project.getbkgcolor(singleentry.project);
         event.textColor = project.gettxtcolor(singleentry.project);
