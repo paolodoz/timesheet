@@ -79,6 +79,7 @@ function resetUsersForm()
   $("#user_id").val(0);
   $("#username").text("");
   $("#userhistory").html("");
+  $("#usersList li").removeClass("active");
   $("#btnsubmit, #btnreset").addClass("hidden");
 }
 
@@ -91,6 +92,8 @@ function loadUsers(data, args) {
   }
   $("#" + container).html(htmllist);
   $("#" + container + " .list-group-item").click(function() {
+    resetUsersForm();
+    $(this).addClass("active");
     var filter = [{},{name:1, surname:1, salary:1, group:1, status:1, contract:1},{surname:1}];
     filter[0]._id = this.id;
     user.loadSingle(filter,loadUserDetails);
