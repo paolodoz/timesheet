@@ -8,7 +8,7 @@ $(document).ready(function() {
   }
   $("#reporttasks").html(htmltasks);
   $("div.results").hide();
-  $(".datepicker").datepicker({format: "yyyy-mm-dd"});
+  $(".datepicker").datepicker({format: "yyyy-mm-dd", autoclose:true});
   $('.rapidsearch').keyup(function () {
     var list = this.id.substr(3);
     var currenttext = $(this).val().toLowerCase();

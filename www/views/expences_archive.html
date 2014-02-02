@@ -3,7 +3,7 @@
 var validator, element, elemnum = 0, myprj = [];
 var totals = new Array();
 $(document).ready(function() {
-  $(".datepicker").datepicker({format: "yyyy-mm-dd"});
+  $(".datepicker").datepicker({format: "yyyy-mm-dd", autoclose:true});
   validator = $("#expForm").validate();
   $("input[name='expdatestart'], input[name='expdateend']").rules("add", {
     required: true,
