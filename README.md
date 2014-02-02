@@ -29,3 +29,28 @@ Setup
   
   8. Make profits :)
 
+Technology references
+-----
+
+  1. Cherrypy (http://www.cherrypy.org/)
+
+  2. Bootstrap (http://getbootstrap.com/)
+
+  3. Fullcalendar (http://arshaw.com/fullcalendar/)
+
+  4. jqPlot (http://www.jqplot.com/)
+
+  5. jQuery (http://jquery.com/)
+
+  6. JSON2 (https://github.com/douglascrockford/JSON-js)
+
+  7. jQuery validation (http://jqueryvalidation.org/)
+
+  8. jQuery colorpicker (https://github.com/paolodoz/really-simple-bootstrap-color-picker)
+
+  9. Bootstrap datepicker (https://github.com/eternicode/bootstrap-datepicker)
+
+  10. Bootstrap slider (https://github.com/seiyria/bootstrap-slider)
+
+  11. Bootstrap switch (https://github.com/nostalgiaz/bootstrap-switch)
+
