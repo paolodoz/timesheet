@@ -1,7 +1,7 @@
 <link rel='stylesheet' type='text/css' href='/static/css/fullcalendar.css' />
 <script src="/static/js/bootstrap-switch.min.js"></script>
 <script type="text/javascript">
-var me, validator, datestart, dateend, cevent, calendar, firstday, lastday, myhours = new Array();
+var me, validator, datestart, dateend, cevent, calendar, firstday, lastday, expectedwh, signedwh, myhours = new Array();
 $(document).ready( function() {
   calendar = $('#calendar').fullCalendar({
     firstDay:1,
@@ -125,6 +125,12 @@ function currentVis() {
   firstday = calendar.fullCalendar('getView').start.simpleDate();
   lastday = new Date(calendar.fullCalendar('getView').end);
   lastday.setDate(lastday.getDate()-1);
+  singleday = firstday;
+  expectedwh = 0;
+  for (var d = calendar.fullCalendar('getView').start; d <= lastday; d.setDate(d.getDate() + 1)) {
+    if(d.getDay() != 0 && d.getDay() != 6)
+      expectedwh += 8;
+  }
   lastday = lastday.simpleDate();
 }
 
@@ -257,7 +263,8 @@ function saveEvent(arrayEl, event) {
 function loadCalendarHours(list) {
   if(!list.error)
     list = myhours;
-  var i, j, singleentry;
+  var i, d, j, singleentry;
+  signedwh = 0;
   $("#calendar").fullCalendar('removeEvents');
   for(i = 0; i < list.length; i++) {
     if(list[i].users) {
@@ -273,12 +280,26 @@ function loadCalendarHours(list) {
         event.start = list[i].date;
         event.end = list[i].date;
         event.note = singleentry.note;
+        d = new Date(list[i].date);
+        if(d.getDay() != 0 && d.getDay() != 0 && singleentry.isextra == false)
+          signedwh += singleentry.amount;
         if(singleentry.isextra)
           event.borderColor = "#f00";
         $("#calendar").fullCalendar('renderEvent', event , false);
       }
     }
   }
+  displayHours(signedwh, expectedwh);
+}
+
+function displayHours(partial, total) {
+  var html;
+  if(partial == total)
+    html = '<span id="hours" class="badge pull-right green">';
+  else
+    html = '<span id="hours" class="badge pull-right red">';
+  html += partial + '/'+ total + ' Hours</span><span class="glyphicon glyphicon-calendar"></span> Calendar';
+  $("#menu_calendar").html(html);
 }
 </script>
 

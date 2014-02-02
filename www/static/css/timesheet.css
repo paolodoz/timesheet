@@ -171,3 +171,12 @@ button[type="reset"] {
 .fc-content {
   background-color:#FFF;
 }
+
+#hours.green {
+  color:white;
+  background-color: #49c349;
+}
+#hours.red {
+  color:white;
+  background-color:#dc2e2e;
+}
