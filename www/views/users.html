@@ -88,7 +88,7 @@ function loadUsers(data, args) {
   var i;
   var htmllist = "";
   for(i=0;i < data.length; i++) {
-    htmllist += "<li id='" + data[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-user'></span> " + data[i].name + " " + data[i].surname + "</li>";
+    htmllist += "<li id='" + data[i]._id + "'class='list-group-item'><span class='glyphicon glyphicon-user'></span> " + data[i].surname + " " + data[i].name + "</li>";
   }
   $("#" + container).html(htmllist);
   $("#" + container + " .list-group-item").click(function() {
