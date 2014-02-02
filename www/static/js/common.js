@@ -64,11 +64,20 @@ var baseObject = {
 var user = Object.create(baseObject);
 user.loadurl = '/get/user';
 user.me = function (callback) {
+  var cookie = getCookie("userdata");
+  if(cookie.length > 10) {
+    var data = JSON.parse(cookie);
+    $("span.badge").text(data.notifications);
+    $("span.badge").removeClass("hidden");
+    callback(data);
+    return;
+  }
   $.ajax({
     type: "GET",
     url: "/me",
     data : "",
     success: function (data) {
+      setCookie("userdata",JSON.stringify(data),5);
       $("span.badge").text(data.notifications);
       $("span.badge").removeClass("hidden");
       callback(data);
@@ -819,4 +828,25 @@ function getColorForPercentage (pct) {
     return "#5fff1b";
   else
     return "#13ff1e";
+}
+
+function setCookie(c_name,value,expireminutes)
+{
+  var exdate = new Date();
+  exdate.setMinutes(exdate.getMinutes()+expireminutes);
+  document.cookie = c_name + "=" + escape(value) + ((expireminutes==null) ? "" : ";expires=" + exdate.toUTCString());
+}
+
+function getCookie(c_name)
+{
+  if (document.cookie.length>0) {
+    c_start = document.cookie.indexOf(c_name + "=");
+    if (c_start != -1) {
+      c_start = c_start + c_name.length + 1;
+      c_end = document.cookie.indexOf(";",c_start);
+      if (c_end == -1) c_end = document.cookie.length;
+      return unescape(document.cookie.substring(c_start,c_end));
+    }
+  }
+  return "";
 }
