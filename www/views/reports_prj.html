@@ -119,7 +119,17 @@ function loadReportResults(data) {
 */
   $("#real").html("");
   if($("#reportmode").is(":checked")) {
-    //
+    $("#real").append('<table class="table table-bordered table-condensed graphtable" id="detailtable' + i + '"></table>');
+    $("#real").append('<div class="cont"><div id="singlechart' + i + '" class="singlechart"></div></div>');
+    $("#real").append('<div class="clearfix"></div>');
+    $("#real").append('<table class="table table-bordered table-condensed graphtable" id="summarytable' + i + '"></table>');
+    $("#real").append('<div class="cont"><div id="globalchart' + i + '" class="totalchart"></div></div>');
+    //create graph
+    $("#real").append(createSingleGraph(i, data, "aggregate"));
+    //create table
+    $("#real").append(createGraphDataTable(i, data, "aggregate"));
+    //create cleardiv
+    $("#real").append('<div class="clearfix"></div>');
   } else {
     //for each project
     var i=0,html;
@@ -143,8 +153,12 @@ function loadReportResults(data) {
 }
 
 function createSingleGraph(index, data, prj_id) {
-  var i,salary = [], costs = [], budget = [], extra = [];
+  var i, gtitle, salary = [], costs = [], budget = [], extra = [];
   var tsalary, tcosts, tbudget, textra;
+  if(prj_id == "aggregate")
+    gtitle = "Aggreagate data for selected projects";
+  else
+    gtitle = 'Data for ' + project.getname(prj_id);
   tsalary = 0;
   tcosts = 0;
   tbudget = 0;
@@ -161,7 +175,7 @@ function createSingleGraph(index, data, prj_id) {
   }
   $.jqplot('singlechart' + index, [salary, costs, budget, extra],
     {
-      title:'Data for ' + project.getname(prj_id),
+      title: gtitle,
       // Series options are specified as an array of objects, one object
       // for each series.
       seriesColors: [ g_colorsalary, g_colorcosts, g_colorbugdet, g_colorextra],
@@ -173,7 +187,7 @@ function createSingleGraph(index, data, prj_id) {
       axes:{
         xaxis:{
           renderer:$.jqplot.DateAxisRenderer,
-          tickOptions:{formatString:'%b, %Y'},
+          tickOptions:{formatString:'%b, %y'},
           min: data[0][0] ,
           tickInterval:'1 month'
         }
@@ -202,7 +216,7 @@ function createSingleGraph(index, data, prj_id) {
   var tick = ['Expences','Entrances','Revenue'];
   $.jqplot('globalchart' + index, [serie1, serie2, serie3, serie4, serie5],
     {
-      title:'Data for ' + project.getname(prj_id),
+      title: gtitle,
       stackSeries: true,
       seriesColors: [ g_colorsalary, g_colorcosts, g_colorbugdet, g_colorextra, g_totalcolor],
       negativeSeriesColors: [ g_colorsalary, g_colorcosts, g_colorbugdet, g_colorextra, g_totalcolor],
@@ -229,22 +243,25 @@ function createSingleGraph(index, data, prj_id) {
         {label:'Costs'},
         {label:'Budget'},
         {label:'Extra budget'},
-        {label:'Total'},
+        {label:'EBITDA'},
       ]
     }
   );
   return "";
 }
 function createGraphDataTable(index, data, value) {
-  var i, total, html, head = "<thead><tr><th>Period</th><th>Budget</th><th>Extra budget</th><th>Salary</th><th>Costs</th><th>Total</th>Total</tr></thead><tbody>";
+  var i, ebitda, ebitdaperc, html, head = "<thead><tr><th>Period</th><th>Budget</th><th>Extra budget</th><th>Salary</th><th>Costs</th><th>EBITDA</th><th>%</th></tr></thead><tbody>";
   html = head;
   for(i=0; i < data.length; i++) {
-    total = data[i][1].budget + data[i][1].extra_budget - data[i][1].salary - data[i][1].costs;
-    if(total < 0)
+    ebitda = data[i][1].budget + data[i][1].extra_budget - data[i][1].salary - data[i][1].costs;
+    ebitdaperc = ebitda/(data[i][1].budget + data[i][1].extra_budget)*100;
+    if(ebitdaperc < 0)
       html += "<tr class='danger'>";
+    else if(ebitdaperc < 10)
+      html += "<tr class='warning'>";
     else
       html += "<tr>";
-    html += "<td>" + data[i][0] + "</td><td>" + data[i][1].budget.toFixed(2) + " &euro;</td><td>" + data[i][1].extra_budget.toFixed(2) + " &euro;</td><td>" + data[i][1].salary.toFixed(2) + " &euro;</td><td>" + data[i][1].costs.toFixed(2) + " &euro;</td><td>" + total.toFixed(2) + " &euro;</td></tr>";
+    html += "<td>" + data[i][0] + "</td><td>" + data[i][1].budget.toFixed(2) + " &euro;</td><td>" + data[i][1].extra_budget.toFixed(2) + " &euro;</td><td>" + data[i][1].salary.toFixed(2) + " &euro;</td><td>" + data[i][1].costs.toFixed(2) + " &euro;</td><td>" + ebitda.toFixed(2) + " &euro;</td><td>" + ebitdaperc.toFixed(2) + " %</td></tr>";
   }
   html += "</tbody>";
   $("#detailtable" + index).html(html);
@@ -261,8 +278,9 @@ function createGraphDataTable(index, data, value) {
     tbudget += data[i][1].budget;
     textra += data[i][1].extra_budget;
   }
-  total = tbudget + textra - tsalary - tcosts;
-  html += "<tr><td>Total</td><td>" + tbudget.toFixed(2) + " &euro;</td><td>" + textra.toFixed(2) + " &euro;</td><td>" + tsalary.toFixed(2) + " &euro;</td><td>" + tcosts.toFixed(2) + " &euro;</td><td>" + total.toFixed(2) + " &euro;</td></tr></tbody>";
+  ebitda = tbudget + textra - tsalary - tcosts;
+  ebitdaperc = ebitda/(tbudget + textra)*100;
+  html += "<tr><td>Grand Total</td><td>" + tbudget.toFixed(2) + " &euro;</td><td>" + textra.toFixed(2) + " &euro;</td><td>" + tsalary.toFixed(2) + " &euro;</td><td>" + tcosts.toFixed(2) + " &euro;</td><td>" + ebitda.toFixed(2) + " &euro;</td><td>" + ebitdaperc.toFixed(2) + " %</td></tr></tbody>";
   $("#summarytable" + index).html(html);
   return "";
 }
