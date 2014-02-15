@@ -150,7 +150,7 @@ def report_projects(criteria):
                 if not total_costs.get(user_YM):
                     total_costs[user_YM] = { 'salary' : 0, 'budget' : 0, 'extra_budget' : 0, 'costs' : 0}
              
-                total_costs[user_YM]['salary'] = total_costs[user_YM]['salary']  + round( salary * user_hours, 2 )
+                total_costs[user_YM]['salary'] += round( salary * user_hours, 2 )
         
         for budget in budget_result:
             budget_YM = '-'.join(budget['_id']['period'].split('-')[:2])
@@ -158,8 +158,8 @@ def report_projects(criteria):
             if not total_costs.get(budget_YM):
                  total_costs[budget_YM] = { 'salary' : 0, 'budget' : 0, 'extra_budget' : 0, 'costs' : 0}
             
-            total_costs[budget_YM]['budget'] = budget['_id']['budget']
-            total_costs[budget_YM]['extra_budget'] = budget['_id']['extra']
+            total_costs[budget_YM]['budget'] += budget['_id']['budget']
+            total_costs[budget_YM]['extra_budget'] += budget['_id']['extra']
 
         for costs in costs_result:
             costs_YM = '-'.join(costs['_id']['date'].split('-')[:2])
@@ -167,7 +167,7 @@ def report_projects(criteria):
             if not total_costs.get(costs_YM):
                  total_costs[costs_YM] = { 'salary' : 0, 'budget' : 0, 'extra_budget' : 0, 'costs' : 0}
             
-            total_costs[costs_YM]['costs'] = costs['amount']            
+            total_costs[costs_YM]['costs'] += costs['amount']
                  
         ## ORDER
         
