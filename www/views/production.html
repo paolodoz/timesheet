@@ -97,7 +97,7 @@ function loadProjectDetails(data) {
   var currentdate = startdate = new Date(data[0].start);
   var enddate = new Date(data[0].end);
   $("#productionperiod").html(generateDropDate(currentdate,enddate));
-  var table = generateEconomicsTable(data[0].economics);
+  var table = generateEconomicsTable(sortByKey(data[0].economics, 'period'));
   $("#economics").html(table);
   $("#economics table span").click(function() {
     var index = $(this).parent().parent().index();
@@ -111,6 +111,14 @@ function loadProjectDetails(data) {
   isupdate = false;
 }
 
+function sortByKey(array, key) {
+    return array.sort(function(a, b) {
+        var x = a[key]; var y = b[key];
+        return ((x < y) ? -1 : ((x > y) ? 1 : 0));
+    });
+}
+
+
 function generateEconomicsTable(data) {
   var i, table, period;
   if(!data)
@@ -118,7 +126,8 @@ function generateEconomicsTable(data) {
   table = "<table class='table table-striped'>";
   table += "<thead><tr><th>Period</th><th>Budget</th><th>Extra</th><th>Note</th><th>Invoiced</th><th></th></tr></thead><tbody>";
   for(i=0; i < data.length; i++) {
-    period = (new Date(data[i].period)).getMonthName();
+    period = new Date(data[i].period)
+    period = period.getMonthName() + "-" + period.getFullYear().toString().substr(2);
     table += "<tr><td>" + period + "</td><td>" + data[i].budget + " &euro;</td><td>" + data[i].extra + " &euro;</td><td>" + data[i].note +  "</td><td>" + data[i].invoiced + " &euro;</td><td><span class='glyphicon glyphicon-trash'></span></td></tr>";
   }
   table += "</tbody></table>";
