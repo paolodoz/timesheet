@@ -1,3 +1,58 @@
+(function( $ ){
+  //rapidsearch plugin. Hide li elements that don't match the input text
+  var methods = {
+    init : function(options) {
+      return this.each(function() {
+        $(this).keyup(function () {
+          compute(this);
+        });
+      });
+    },
+    update : function() {
+      return this.each(function() {
+        compute(this);
+      });
+    }
+  };
+
+  $.fn.rapidsearch = function (methodOrOptions) {
+    if ( methods[methodOrOptions] ) {
+      return methods[ methodOrOptions ].apply( this, Array.prototype.slice.call( arguments, 1 ));
+    } else if ( typeof methodOrOptions === 'object' || ! methodOrOptions ) {
+      // Default to "init"
+      return methods.init.apply( this, arguments );
+    } else {
+      $.error( 'Method ' +  methodOrOptions + ' does not exist on rapidsearch plugin' );
+    }
+  }
+
+  function compute (elem) {
+    var list = elem.id.substr(3);
+    var currenttext = $(elem).val().toLowerCase();
+    if (currenttext == "") {
+      resetvisibility($('#' + list + 'List li'));
+      return;
+    }
+    filterlist($('#' + list + 'List li'), currenttext);
+  }
+
+  function resetvisibility(elem) {
+    $(elem).each(function () {
+      $(this).removeClass("hidden");
+    });
+  }
+
+  function filterlist(list, currenttext) {
+    $(list).each(function () {
+      var elemname = $(this).text().toLowerCase();
+      if (elemname.indexOf(currenttext) != -1)
+        $(this).removeClass("hidden");
+      else
+        $(this).addClass("hidden");
+    });
+  }
+})( jQuery );
+
 Function.prototype.method = function (name, func) {
   if(!this.prototype[name]) {
     this.prototype[name] = func;

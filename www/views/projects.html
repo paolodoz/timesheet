@@ -10,15 +10,7 @@ $(document).ready(function() {
   }
   $("#projecttasks").html(htmltasks);
   $(".datepicker").datepicker({format: "yyyy-mm-dd", autoclose:true});
-  $('.rapidsearch').keyup(function () {
-    var list = this.id.substr(3);
-    var currenttext = $(this).val().toLowerCase();
-    if (currenttext == "") {
-      resetvisibility($('#' + list + 'List li'));
-      return;
-    }
-    filterlist($('#' + list + 'List li'), currenttext);
-  });
+  $('.rapidsearch').rapidsearch();
   $("#btnreset").click(function() {
     resetProjectsForm(true);
   });
@@ -127,9 +119,8 @@ function resetProjectsForm(load) {
   $("#projectForm")[0].reset();
   $("#project_id").val(0);
   $("#btnremove").addClass("hidden");
-  $("#projectsList li, #taglist li").removeClass("active");
+  $("#projectsList li, #taglist li, #usersList li").removeClass("active");
   $("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
-  $("#usersList li").removeClass("active");
   var $target = $("#projectbkgcolor").parent().find('span:first');
   $target.css('background-color', $("#projectbkgcolor").val());
   $target = $("#projecttxtcolor").parent().find('span:first');
@@ -161,6 +152,7 @@ function loadProjects(data, args) {
   if(me.group == "administrator")
     htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Project ...</li>";
   $("#" + container).html(htmllist);
+  $('.rapidsearch').rapidsearch('update');
   $("#" + container + " .list-group-item").click(function() {
     resetProjectsForm(true);
     $(this).addClass("active");
@@ -226,22 +218,6 @@ function loadCustomers(data, container) {
   $("#" + container).html(htmlselect);
 }
 
-//restore visibility for each element in list
-function resetvisibility(elem) {
-  $(elem).each(function () {
-    $(this).removeClass("hidden");
-  });
-}
-
-function filterlist(list, currenttext) {
-  $(list).each(function () {
-    var elemname = $(this).text().toLowerCase();
-    if (elemname.indexOf(currenttext) != -1)
-      $(this).removeClass("hidden");
-    else
-      $(this).addClass("hidden");
-  });
-}
 </script>
 <h2>Projects Management</h2>
 <div class="row">
