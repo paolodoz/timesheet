@@ -130,6 +130,11 @@ function resetProjectsForm(load) {
   $("#projectsList li, #taglist li").removeClass("active");
   $("#btnsubmit").html("<span class='glyphicon glyphicon-plus'></span> Add");
   $("#usersList li").removeClass("active");
+  var $target = $("#projectbkgcolor").parent().find('span:first');
+  $target.css('background-color', $("#projectbkgcolor").val());
+  $target = $("#projecttxtcolor").parent().find('span:first');
+  $target.css('background-color', $("#projecttxtcolor").val());
+  labelPreview();
 }
 function loadUsers(data, args) {
   var container = args[0];
