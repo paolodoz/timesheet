@@ -8,15 +8,7 @@ $(document).ready(function() {
   $("#tripstatus").html(htmlstatus);
   $("#tripstatus").val("3");
   $(".datepicker").datepicker({format: "yyyy-mm-dd", autoclose:true});
-  $('.rapidsearch').keyup(function () {
-    var list = this.id.substr(3);
-    var currenttext = $(this).val().toLowerCase();
-    if (currenttext == "") {
-      resetvisibility($('#' + list + 'List li'));
-      return;
-    }
-    filterlist($('#' + list + 'List li'), currenttext);
-  });
+  $('.rapidsearch').rapidsearch();
   $("#btnreset").click(function(event) {
     event.preventDefault();
     resetTripForm(true);
@@ -139,6 +131,7 @@ function loadTrips(data, container) {
   //add line for new trip
   htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Trip ...</li>";
   $("#" + container).html(htmllist);
+  $('.rapidsearch').rapidsearch('update');
   $("#" + container + " .list-group-item").click(function() {
     resetTripForm(true);
     $(this).addClass("active");
@@ -166,15 +159,6 @@ function loadTripDetails(data,container) {
   $("#btnsubmit").html("<span class='glyphicon glyphicon-edit'></span> Submit");
 }
 
-function filterlist(list, currenttext) {
-  $(list).each(function () {
-    var elemname = $(this).text().toLowerCase();
-    if (elemname.indexOf(currenttext) != -1)
-      $(this).removeClass("hidden");
-    else
-      $(this).addClass("hidden");
-  });
-}
 </script>
 <h2>Trips Management</h2>
 <div class="row">

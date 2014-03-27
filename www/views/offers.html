@@ -3,15 +3,7 @@ var validator, isupdate = false;
 $(document).ready(function() {
   resetOfferForm();
   loadProjectsList("offerproject");
-  $('.rapidsearch').keyup(function () {
-    var list = this.id.substr(3);
-    var currenttext = $(this).val().toLowerCase();
-    if (currenttext == "") {
-      resetvisibility($('#' + list + 'List li'));
-      return;
-    }
-    filterlist($('#' + list + 'List li'), currenttext);
-  });
+  $('.rapidsearch').rapidsearch();
   $("#btnreset").click(function() {
     resetOfferForm(true);
   });
@@ -122,6 +114,7 @@ function loadOffers(data, args) {
   //add line for new project
   htmllist += "<li class='list-group-item'><span class='glyphicon glyphicon-plus'></span> New Project ...</li>";
   $("#" + container).html(htmllist);
+  $('.rapidsearch').rapidsearch('update');
   $("#" + container + " .list-group-item").click(function() {
     resetOfferForm(true);
     $(this).addClass("active");
@@ -159,23 +152,6 @@ function loadOfferDetails(data) {
   }
   $(".btn-danger").removeClass("hidden");
   $("#btnsubmit").html("<span class='glyphicon glyphicon-edit'></span> Update");
-}
-
-//restore visibility for each element in list
-function resetvisibility(elem) {
-  $(elem).each(function () {
-    $(this).removeClass("hidden");
-  });
-}
-
-function filterlist(list, currenttext) {
-  $(list).each(function () {
-    var elemname = $(this).text().toLowerCase();
-    if (elemname.indexOf(currenttext) != -1)
-      $(this).removeClass("hidden");
-    else
-      $(this).addClass("hidden");
-  });
 }
 </script>
 <h2>Offers Management</h2>

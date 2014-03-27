@@ -9,15 +9,7 @@ $(document).ready(function() {
   $("#reporttasks").html(htmltasks);
   $("div.results").hide();
   $(".datepicker").datepicker({format: "yyyy-mm-dd", autoclose:true});
-  $('.rapidsearch').keyup(function () {
-    var list = this.id.substr(3);
-    var currenttext = $(this).val().toLowerCase();
-    if (currenttext == "") {
-      resetvisibility($('#' + list + 'List li'));
-      return;
-    }
-    filterlist($('#' + list + 'List li'), currenttext);
-  });
+  $('.rapidsearch').rapidsearch();
   $("#reportstart").change(function() {
     var firstday = new Date($(this).val());
     var lastday = new Date(firstday.getFullYear(), firstday.getMonth() + 1,0);
@@ -142,22 +134,6 @@ function printtotalhours(hours, extra) {
   return rows;
 }
 
-//restore visibility for each element in list
-function resetvisibility(elem) {
-  $(elem).each(function () {
-    $(this).removeClass("hidden");
-  });
-}
-
-function filterlist(list, currenttext) {
-  $(list).each(function () {
-    var elemname = $(this).text().toLowerCase();
-    if (elemname.indexOf(currenttext) != -1)
-      $(this).removeClass("hidden");
-    else
-      $(this).addClass("hidden");
-  });
-}
 </script>
 <h2>Reports</h2>
 <div class="row">

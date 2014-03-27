@@ -3,15 +3,7 @@ var cur_user, validator;
 $(document).ready(function() {
   loadUsersList("usersList");
   $(".datepicker").datepicker({format: "yyyy-mm-dd", autoclose:true});
-  $('.rapidsearch').keyup(function () {
-    var list = this.id.substr(3);
-    var currenttext = $(this).val().toLowerCase();
-    if (currenttext == "") {
-      resetvisibility($('#' + list + 'List li'));
-      return;
-    }
-    filterlist($('#' + list + 'List li'), currenttext);
-  });
+  $(".rapidsearch").rapidsearch();
   $("#btnreset").click(function() {
     resetUsersForm();
   });
@@ -140,23 +132,6 @@ function generateSalary(salary) {
     }
   }
   return htmllist;
-}
-
-//restore visibility for each element in list
-function resetvisibility(elem) {
-  $(elem).each(function () {
-    $(this).removeClass("hidden");
-  });
-}
-
-function filterlist(list, currenttext) {
-  $(list).each(function () {
-    var elemname = $(this).text().toLowerCase();
-    if (elemname.indexOf(currenttext) != -1)
-      $(this).removeClass("hidden");
-    else
-      $(this).addClass("hidden");
-  });
 }
 </script>
 <h2>Users Management</h2>

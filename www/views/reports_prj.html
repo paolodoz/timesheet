@@ -10,15 +10,7 @@ var validator;
 $(document).ready(function() {
   user.me(userdata);
   $(".datepicker").datepicker({format: "yyyy-mm-dd", autoclose:true});
-  $('.rapidsearch').keyup(function () {
-    var list = this.id.substr(3);
-    var currenttext = $(this).val().toLowerCase();
-    if (currenttext == "") {
-      resetvisibility($('#' + list + 'List li'));
-      return;
-    }
-    filterlist($('#' + list + 'List li'), currenttext);
-  });
+  $('.rapidsearch').rapidsearch();
   $("#reportmode").bootstrapSwitch();
   $("#reportstart").change(function() {
     if($("#reportend").val() == "") {
@@ -283,22 +275,6 @@ function createGraphDataTable(index, data, value) {
   html += "<tr><td>Grand Total</td><td>" + tbudget.toFixed(2) + " &euro;</td><td>" + textra.toFixed(2) + " &euro;</td><td>" + tsalary.toFixed(2) + " &euro;</td><td>" + tcosts.toFixed(2) + " &euro;</td><td>" + ebitda.toFixed(2) + " &euro;</td><td>" + ebitdaperc.toFixed(2) + " %</td></tr></tbody>";
   $("#summarytable" + index).html(html);
   return "";
-}
-//restore visibility for each element in list
-function resetvisibility(elem) {
-  $(elem).each(function () {
-    $(this).removeClass("hidden");
-  });
-}
-
-function filterlist(list, currenttext) {
-  $(list).each(function () {
-    var elemname = $(this).text().toLowerCase();
-    if (elemname.indexOf(currenttext) != -1)
-      $(this).removeClass("hidden");
-    else
-      $(this).addClass("hidden");
-  });
 }
 </script>
 <h2>Reports</h2>
