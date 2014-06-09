@@ -122,9 +122,9 @@ function loadReportResults(data) {
           summaryhours[data[j].hours[k].task] += data[j].hours[k].amount;
           table += "</td><td>" + getTaskName(data[j].hours[k].task) + "</td><td>" + data[j].hours[k].note + "</tr>";
         }
-        if(summaryhours[1] > 4 && summaryhours[1] > summaryhours[2]) {
+        if(summaryhours[1] >= 4 && summaryhours[1] > summaryhours[2]) {
           summarydays[1]++;
-        } else if(summaryhours[2] > 4) {
+        } else if(summaryhours[2] >= 4) {
           summarydays[2]++;
         }
         summaryhours[1] = summaryhours [2] = 0;
