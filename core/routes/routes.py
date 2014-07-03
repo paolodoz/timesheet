@@ -20,7 +20,7 @@ class Routes:
     
     @cherrypy.expose
     @require(is_logged())
-    def index(self, view = 'index'):
+    def index(self, view = 'calendar'):
         """
         Serves HTML views stored in 'view/<view>.html' rendered with template 'templates/index.tpl'
         

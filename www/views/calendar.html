@@ -213,10 +213,9 @@ function addCalEvent(start, end, event, allDay) {
       }
       //search for same event data
       for(j = 0; j < myhours[cday].users[0].hours.length; j++) {
-        if(myhours[cday].users[0].hours[j].project == event.project && myhours[cday].users[0].hours[j].isextra == event.isextra) {
+        if(myhours[cday].users[0].hours[j].project == event.project) {
           saveEvent(myhours[cday].users[0].hours[j], event);
           found = true;
-          continue;
         }
       }
       if(!found) {
