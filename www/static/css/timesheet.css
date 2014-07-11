@@ -172,6 +172,13 @@ button[type="reset"] {
   background-color:#FFF;
 }
 
+.fc-event-inner a {
+  color: white;
+  float:right;
+  margin-right:5px;
+}
+
+
 #hours.green {
   color:white;
   background-color: #49c349;

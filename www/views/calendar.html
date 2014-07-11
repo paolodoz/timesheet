@@ -3,6 +3,7 @@
 <script type="text/javascript">
 var me, validator, datestart, dateend, cevent, calendar, firstday, lastday, expectedwh, signedwh, myhours = new Array();
 $(document).ready( function() {
+  $("[data-toggle=tooltip]").tooltip({placement:'right'});
   calendar = $('#calendar').fullCalendar({
     firstDay:1,
     aspectRatio: 1.6,
@@ -274,7 +275,10 @@ function loadCalendarHours(list) {
         var event = {};
         singleentry = list[i].users[0].hours[j];
         event.id = list[i].date + "+" + singleentry.project + "+" + singleentry.isextra;
-        event.title = "<b>" + project.getname(singleentry.project) + "</b><br>" + singleentry.amount + "h -- " + getTaskName(singleentry.task);
+        event.title = "<b>" + project.getname(singleentry.project) + "</b>";
+        if(singleentry.note != "")
+	        event.title += "<a href='#' rel='tooltip'title='"+ singleentry.note + "'><span class='glyphicon glyphicon-info-sign'></span></a>";
+        event.title += "<br>" + singleentry.amount + "h -- " + getTaskName(singleentry.task);
         event.backgroundColor = project.getbkgcolor(singleentry.project);
         event.borderColor = project.getbkgcolor(singleentry.project);
         event.textColor = project.gettxtcolor(singleentry.project);
@@ -290,6 +294,7 @@ function loadCalendarHours(list) {
       }
     }
   }
+  $("[rel=tooltip]").tooltip();
   displayHours(signedwh, expectedwh);
 }
 
@@ -303,7 +308,7 @@ function displayHours(partial, total) {
   $("#menu_calendar").html(html);
 }
 </script>
-
+<!--<a title="" data-toggle="tooltip" href="#" data-original-title="Default tooltip">you probably</a>-->
 <div id="calendar"></div>
 
 <div class="modal fade" id="removehours" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
