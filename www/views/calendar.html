@@ -1,7 +1,7 @@
 <link rel='stylesheet' type='text/css' href='/static/css/fullcalendar.css' />
 <script src="/static/js/bootstrap-switch.min.js"></script>
 <script type="text/javascript">
-var me, validator, datestart, dateend, cevent, calendar, firstday, lastday, expectedwh, signedwh, myhours = new Array();
+var me, validator, datestart, dateend, isedit, cevent, calendar, firstday, lastday, expectedwh, signedwh, myhours = new Array();
 $(document).ready( function() {
   $("[data-toggle=tooltip]").tooltip({placement:'right'});
   calendar = $('#calendar').fullCalendar({
@@ -60,6 +60,16 @@ $(document).ready( function() {
     obj.task = Number($('#hourstask').find('option:selected').val());
     obj.isextra = $("#hoursisextra").is(':checked') ? true : false;
     obj.note = $("#hoursnotes").val();
+    if(isedit)
+    {
+      var revent = {};
+      var cday = cevent.start.getDate() - 1;
+      revent.project = cevent.id.substr(11,24);
+      revent.isextra = cevent.id.substr(36).bool();
+      removeEvent(revent, cday);
+      datestart = dateend = cevent.start;
+      isedit = false;
+    }
     var result = addCalEvent(datestart, dateend, obj, true);
     $('#edithours').modal('hide');
     if(result!="") {
@@ -70,20 +80,33 @@ $(document).ready( function() {
   });
   $("#btnremove").click(function () {
     var cday = cevent.start.getDate() - 1;
+    var revent = {};
+    revent.project = cevent.id.substr(11,24);
+    revent.isextra = cevent.id.substr(36).bool();
+    removeEvent(revent, cday);
+    $('#removehours').modal('hide');
+  });
+  $("#btnedit").click(function () {
+    var cday = cevent.start.getDate() - 1;
     var i, event = {};
+    event.project = cevent.id.substr(11,24);
+    event.isextra = cevent.id.substr(36).bool();
     for(i = 0; i < myhours[cday].users[0].hours.length; i++) {
-      event.project = cevent.id.substr(11,24);
-      event.isextra = cevent.id.substr(36).bool();
-      event.date = cevent.start.simpleDate();
       if(eventCompare(myhours[cday].users[0].hours[i],event)) {
-        myhours[cday].users[0].hours.splice(i,1);
-        var singleday = [{}];
-        singleday[0] = myhours[cday];
-        day.update(singleday, loadCalendarHours);
+        event = myhours[cday].users[0].hours[i];
+        $('#hoursproject').val(event.project);
+        loadtasks(project._records, event.project);
+        $('#hourstask').val(event.task);
+        $("#hoursisextra").bootstrapSwitch('setState',event.isextra);
+        $('#hoursamount').val(event.amount);
+        $("#hours-range").slider("setValue", event.amount);
+        $('#hoursnotes').text(event.note);
         break;
       }
     }
+    isedit = true;
     $('#removehours').modal('hide');
+    $('#edithours').modal('show');
   });
   $("#hoursamount").val( $("#hours-range").slider("getValue"));
   $("#hoursamount").focusout(function() {
@@ -135,6 +158,18 @@ function currentVis() {
   lastday = lastday.simpleDate();
 }
 
+function removeEvent(revent, myday) {
+  for(var i = 0; i < myhours[myday].users[0].hours.length; i++) {
+    if(eventCompare(myhours[myday].users[0].hours[i],revent)) {
+      myhours[myday].users[0].hours.splice(i,1);
+      var singleday = [{}];
+      singleday[0] = myhours[myday];
+      day.update(singleday, loadCalendarHours);
+      break;
+    }
+  }
+}
+
 function eventCompare(array, myevent) {
   if(array.project == myevent.project && array.isextra == myevent.isextra)
     return true;
@@ -165,25 +200,29 @@ function loadprojects(myprj) {
   }
   $("#hoursproject").html(htmlselect);
   $("#hoursproject").change(function() {
-    var htmlselect = "";
-    $("#hoursisextra").bootstrapSwitch('setDisabled',false);
-    for(i = 0; i < myprj.length; i++) {
-      if (myprj[i]._id == $(this).val())  {
-        for(j = 0; j < myprj[i].tasks.length; j++) {
-          index = myprj[i].tasks[j];
-          htmlselect += "<option value='" + index + "'>" + getTaskName(index) + "</option>";
-        }
-        if (myprj[i].name == "ABI_H000") {
-          $("#hoursisextra").bootstrapSwitch('setDisabled',true);
-          $("#hoursisextra").bootstrapSwitch('setState',false);
-        }
-        break;
-      }
-    }
-    $("#hourstask").html(htmlselect);
+    loadtasks(myprj, $(this).val());
   });
   filter = { 'start' : firstday, 'end' : lastday, 'user_id' : me._id };
   day.load(filter,loadDays);
+}
+
+function loadtasks(myprj, prjid) {
+  var htmlselect = "";
+  $("#hoursisextra").bootstrapSwitch('setDisabled',false);
+  for(i = 0; i < myprj.length; i++) {
+    if (myprj[i]._id == prjid)  {
+      for(j = 0; j < myprj[i].tasks.length; j++) {
+        index = myprj[i].tasks[j];
+        htmlselect += "<option value='" + index + "'>" + getTaskName(index) + "</option>";
+      }
+      if (myprj[i].name == "ABI_H000") {
+        $("#hoursisextra").bootstrapSwitch('setDisabled',true);
+        $("#hoursisextra").bootstrapSwitch('setState',false);
+      }
+      break;
+    }
+  }
+  $("#hourstask").html(htmlselect);
 }
 
 function addCalEvent(start, end, event, allDay) {
@@ -277,7 +316,7 @@ function loadCalendarHours(list) {
         event.id = list[i].date + "+" + singleentry.project + "+" + singleentry.isextra;
         event.title = "<b>" + project.getname(singleentry.project) + "</b>";
         if(singleentry.note != "")
-	        event.title += "<a href='#' rel='tooltip'title='"+ singleentry.note + "'><span class='glyphicon glyphicon-info-sign' style='color:" + project.gettxtcolor(singleentry.project) + "' ></span></a>";
+	        event.title += "<a href='#' rel='tooltip' title='"+ singleentry.note + "'><span class='glyphicon glyphicon-info-sign' style='color:" + project.gettxtcolor(singleentry.project) + "' ></span></a>";
         event.title += "<br>" + singleentry.amount + "h -- " + getTaskName(singleentry.task);
         event.backgroundColor = project.getbkgcolor(singleentry.project);
         event.borderColor = project.getbkgcolor(singleentry.project);
@@ -316,14 +355,15 @@ function displayHours(partial, total) {
       <div class="modal-content">
         <div class="modal-header">
           <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
-          <h4 class="modal-title">Remove hours</h4>
+          <h4 class="modal-title">Edit or remove hours</h4>
         </div>
         <div class="modal-body">
-          Do you really want to remove these hours from your timesheet?
+          Do you want to edit or remove these hours from your timesheet?
         </div>
         <div class="modal-footer">
           <button type="button" class="btn btn-default" data-dismiss="modal">Cancel</button>
-          <button type="button" class="btn btn-primary" id="btnremove">Remove</button>
+          <button type="button" class="btn btn-primary" id="btnedit">Edit</button>
+          <button type="button" class="btn btn-danger" id="btnremove">Remove</button>
         </div>
       </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->
