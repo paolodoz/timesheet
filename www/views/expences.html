@@ -70,7 +70,7 @@ function resetExpForm(load) {
 }
 
 function loadExpencesList(list) {
-  var filter = {status:[3], employee_id: me._id};
+  var filter = {status:[3], user_id: me._id, employee_id: me._id};
   expence.load(filter, loadExpences, "expList");
 }
 
