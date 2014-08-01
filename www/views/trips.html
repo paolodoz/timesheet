@@ -18,6 +18,8 @@ $(document).ready(function() {
     filter[0]._id = $("#tripproject").val()
     filter[0].trips = [{}];
     filter[0].trips[0]._id = $("#trip_id").val()
+    filter[0].trips[0].user_id = me._id
+
     trip.remove(filter,resetTripForm);
     loadTripsList("tripsList");
   });
